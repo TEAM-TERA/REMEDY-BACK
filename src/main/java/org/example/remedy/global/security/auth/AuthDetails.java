@@ -2,7 +2,7 @@ package org.example.remedy.global.security.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.example.prote.domain.user.domain.User;
+import org.example.remedy.domain.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

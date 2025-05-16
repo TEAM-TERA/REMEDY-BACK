@@ -8,7 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.domain.RefreshToken;
-import org.example.remedy.domain.user.domain.repository.RefreshTokenRepository;
+import org.example.remedy.domain.user.repository.RefreshTokenRepository;
 import org.example.remedy.global.config.properties.JwtProperties;
 import org.example.remedy.global.security.auth.AuthDetailsService;
 import org.example.remedy.global.security.jwt.exception.ExpiredJwtTokenException;

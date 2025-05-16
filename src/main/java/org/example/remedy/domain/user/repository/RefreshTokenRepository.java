@@ -1,4 +1,4 @@
-package org.example.remedy.domain.user.domain.repository;
+package org.example.remedy.domain.user.repository;
 
 import org.example.remedy.domain.user.domain.RefreshToken;
 import org.springframework.data.repository.CrudRepository;

@@ -1,4 +1,4 @@
-package org.example.prote.domain.user.service;
+package org.example.remedy.domain.user.service;
 
 import org.springframework.stereotype.Service;
 
