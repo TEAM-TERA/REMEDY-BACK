@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+
+jwt:
+  access-time: 3600000
+  refresh-time: 1209600000
+  prefix: Bearer
+  header: Authorization
+  secret-key: 1eXJ6qC3lK8vqjVlQTgE/Zg9Z4g6s7tX3tJK9DeV9pI=
