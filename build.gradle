@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.4.5'
+	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -24,21 +24,38 @@ repositories {
 }
 
 dependencies {
+	// MONGO
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+	// REDIS
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// POSTGRE
 	runtimeOnly 'org.postgresql:postgresql'
+
+	// SECURITY
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// LOMBOK
 	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
+
+	// JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// VALIDATION
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// SPRING BOOT
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// TEST
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// JWT
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'

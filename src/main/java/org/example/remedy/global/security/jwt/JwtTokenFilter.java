@@ -1,4 +1,4 @@
-package org.example.prote.global.security.jwt;
+package org.example.remedy.global.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,9 +20,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String parseToken = jwtTokenProvider.resolveToken(request);
-        if(parseToken != null) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(parseToken);
+        String token = jwtTokenProvider.resolveToken(request);
+        if(token != null && !token.trim().isEmpty()) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);

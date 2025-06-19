@@ -17,7 +17,7 @@ public class AuthDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return new AuthDetails(
                 userRepository.findByEmail(email)
-                        .orElseThrow(() -> UserNotFoundException.EXCEPTION)
+                        .orElseThrow(UserNotFoundException::new)
         );
     }
 }

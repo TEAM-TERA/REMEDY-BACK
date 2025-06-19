@@ -1,11 +1,10 @@
 package org.example.remedy.domain.user.exception;
 
-import org.example.remedy.global.config.error.exception.BusinessException;
-import org.example.remedy.global.config.error.exception.ErrorCode;
+import org.example.remedy.global.config.error.ErrorCode;
+import org.example.remedy.global.config.error.exception.NotFoundException;
 
-public class UserNotFoundException extends BusinessException {
-  public static final BusinessException EXCEPTION =
-          new UserNotFoundException();
-
-  private UserNotFoundException() {super(ErrorCode.USER_NOT_FOUND);}
+public class UserNotFoundException extends NotFoundException {
+    public UserNotFoundException() {
+      super(ErrorCode.USER_NOT_FOUND);
+    }
 }
