@@ -33,9 +33,15 @@ public class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
-    @Mock private PasswordEncoder passwordEncoder;
-    @Mock private JwtTokenProvider jwtTokenProvider;
-    @Mock private HttpServletResponse response;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private HttpServletResponse response;
 
     @InjectMocks
     private AuthService authService;
@@ -77,7 +83,6 @@ public class AuthServiceTest {
                 .password("password123")
                 .build();
 
-
         AuthLoginRequestDto dto = new AuthLoginRequestDto("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
@@ -111,6 +116,7 @@ public class AuthServiceTest {
                 .email("test@gmail.com")
                 .password("password123")
                 .build();
+
         AuthLoginRequestDto dto = new AuthLoginRequestDto("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
