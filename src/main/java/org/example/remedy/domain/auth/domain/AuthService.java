@@ -1,12 +1,17 @@
 package org.example.remedy.domain.auth.domain;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.auth.dto.request.AuthRegisterRequestDto;
 import org.example.remedy.domain.user.exception.UserAlreadyExistsException;
+import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
+import org.example.remedy.global.security.jwt.JwtTokenProvider;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +21,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public void createUser(AuthRegisterRequestDto req) {
         if (userRepository.existsUserByEmail(req.email())) throw new UserAlreadyExistsException();
@@ -34,5 +40,14 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    public void login(AuthLoginRequestDto req, HttpServletResponse res) {
+        User user = userRepository.findByEmail(req.email())
+                .orElseThrow(UserNotFoundException::new);
+
+        if(!passwordEncoder.matches(req.password(), user.getPassword())) throw new UserNotFoundException();
+
+        jwtTokenProvider.createTokens(user.getEmail(), res);
     }
 }

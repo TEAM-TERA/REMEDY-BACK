@@ -51,9 +51,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// TEST
+	// H2 데이터베이스 의존성
+	testImplementation 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.mockito:mockito-inline:5.2.0'
+
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
