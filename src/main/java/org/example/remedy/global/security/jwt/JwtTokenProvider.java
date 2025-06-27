@@ -47,19 +47,6 @@ public class JwtTokenProvider {
 
         response.setHeader("Authorization", "Bearer " + accessToken);
         
-        createRefreshTokenCookie(refreshToken, response);
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge((int) (jwtProperties.getRefreshTime() / 1000))
-                .sameSite("None")
-                .build();
-
-        response.addHeader("Set-Cookie", cookie.toString());
-    }
-
-    private void createRefreshTokenCookie(String refreshToken, HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
                 .httpOnly(true)
                 .secure(true)
