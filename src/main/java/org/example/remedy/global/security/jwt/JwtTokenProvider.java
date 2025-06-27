@@ -35,15 +35,18 @@ public class JwtTokenProvider {
     private static final String REFRESH_KEY = "refresh_token";
 
     public void createTokens(String email, HttpServletResponse response) {
-        String accessToken = createAccessToken(email);
-        String refreshToken = createRefreshToken(email);
-        
+        String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
+        String refreshToken = createToken(email, REFRESH_KEY, jwtProperties.getRefreshTime());
+
+        redisTemplate.opsForValue().set(
+                email,
+                refreshToken,
+                jwtProperties.getRefreshTime(),
+                TimeUnit.SECONDS
+        );
+
         response.setHeader("Authorization", "Bearer " + accessToken);
         
-        createRefreshTokenCookie(refreshToken, response);
-    }
-
-    private void createRefreshTokenCookie(String refreshToken, HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
                 .httpOnly(true)
                 .secure(true)
@@ -53,21 +56,6 @@ public class JwtTokenProvider {
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-    }
-
-    public String createAccessToken(String email) {
-        return createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
-    }
-
-    public String createRefreshToken(String email) {
-        String token = createToken(email, REFRESH_KEY, jwtProperties.getRefreshTime());
-        redisTemplate.opsForValue().set(
-                email,
-                token,
-                jwtProperties.getRefreshTime(),
-                TimeUnit.SECONDS
-        );
-        return token;
     }
 
     private String createToken(String email, String type, Long time) {
