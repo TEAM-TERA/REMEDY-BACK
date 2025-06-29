@@ -13,6 +13,7 @@ import org.example.remedy.global.config.properties.JwtProperties;
 import org.example.remedy.global.security.auth.AuthDetailsService;
 import org.example.remedy.global.security.jwt.exception.ExpiredJwtTokenException;
 import org.example.remedy.global.security.jwt.exception.InvalidJwtTokenException;
+import org.example.remedy.global.security.jwt.exception.RefreshTokenNotFoundException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -91,8 +92,9 @@ public class JwtTokenProvider {
         String refreshToken = cookie.getValue();
         validateTokenType(refreshToken, REFRESH_KEY);
         String email = getEmail(refreshToken);
-        redisTemplate.opsForValue().get("refreshToken:"+email);
-
+        if(redisTemplate.opsForValue().get("refreshToken:"+email) == null){
+            throw RefreshTokenNotFoundException.EXCEPTION;
+        }
 
         String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
         response.setHeader("Authorization", "Bearer " + accessToken);
