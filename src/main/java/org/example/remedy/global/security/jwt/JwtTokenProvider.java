@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.example.remedy.global.config.properties.JwtProperties;
 import org.example.remedy.global.security.auth.AuthDetailsService;
 import org.example.remedy.global.security.jwt.exception.ExpiredJwtTokenException;
 import org.example.remedy.global.security.jwt.exception.InvalidJwtTokenException;
+import org.example.remedy.global.security.jwt.exception.RefreshTokenNotFoundException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,22 +40,17 @@ public class JwtTokenProvider {
         String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
         String refreshToken = createToken(email, REFRESH_KEY, jwtProperties.getRefreshTime());
 
-        redisTemplate.opsForValue().set(
-                email,
-                refreshToken,
-                jwtProperties.getRefreshTime(),
-                TimeUnit.SECONDS
-        );
-
         response.setHeader("Authorization", "Bearer " + accessToken);
-        
+
         ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge((int) (jwtProperties.getRefreshTime() / 1000))
+                .maxAge((int) (jwtProperties.getRefreshTime()))
                 .sameSite("None")
                 .build();
+
+        redisTemplate.opsForValue().set("refreshToken:" + email, accessToken, jwtProperties.getRefreshTime(), TimeUnit.SECONDS);
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
@@ -91,9 +88,21 @@ public class JwtTokenProvider {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
+    public void refresh(Cookie cookie, HttpServletResponse response){
+        String refreshToken = cookie.getValue();
+        validateTokenType(refreshToken, REFRESH_KEY);
+        String email = getEmail(refreshToken);
+        if(redisTemplate.opsForValue().get("refreshToken:"+email) == null){
+            throw RefreshTokenNotFoundException.EXCEPTION;
+        }
+
+        String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
+        response.setHeader("Authorization", "Bearer " + accessToken);
+    }
+
     public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        String bearerToken = request.getHeader(jwtProperties.getHeader());
+        if (bearerToken != null && bearerToken.startsWith(jwtProperties.getPrefix())) {
             return bearerToken.substring(7);
         }
         return null;

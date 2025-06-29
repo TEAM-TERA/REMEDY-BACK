@@ -1,4 +1,4 @@
-package org.example.remedy.domain.user.controller;
+package org.example.remedy.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
