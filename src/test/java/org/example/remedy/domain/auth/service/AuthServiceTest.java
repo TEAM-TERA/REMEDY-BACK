@@ -1,7 +1,6 @@
-package org.example.remedy.domain.auth.domain;
+package org.example.remedy.domain.auth.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.remedy.domain.auth.domain.AuthService;
 import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
 import org.example.remedy.domain.auth.dto.request.AuthRegisterRequestDto;
 import org.example.remedy.domain.user.domain.User;
