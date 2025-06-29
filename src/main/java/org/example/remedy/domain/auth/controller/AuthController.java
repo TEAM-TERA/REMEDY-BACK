@@ -1,5 +1,6 @@
 package org.example.remedy.domain.auth.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.domain.AuthService;
@@ -28,6 +29,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody AuthLoginRequestDto req, HttpServletResponse res) {
         authService.login(req, res);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refresh(@RequestBody Cookie cookie, HttpServletResponse res) {
+        authService.refresh(cookie, res);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

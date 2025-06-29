@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,14 +47,16 @@ public class JwtTokenProvider {
         );
 
         response.setHeader("Authorization", "Bearer " + accessToken);
-        
+
         ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge((int) (jwtProperties.getRefreshTime() / 1000))
+                .maxAge((int) (jwtProperties.getRefreshTime()))
                 .sameSite("None")
                 .build();
+
+        redisTemplate.opsForValue().set("refreshToken:" + email, accessToken, jwtProperties.getRefreshTime(), TimeUnit.SECONDS);
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
@@ -91,9 +94,20 @@ public class JwtTokenProvider {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
+    public void refresh(Cookie cookie, HttpServletResponse response){
+        String refreshToken = cookie.getValue();
+        validateTokenType(refreshToken, REFRESH_KEY);
+        String email = getEmail(refreshToken);
+        redisTemplate.opsForValue().get("refreshToken:"+email);
+
+
+        String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
+        response.setHeader("Authorization", "Bearer " + accessToken);
+    }
+
     public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        String bearerToken = request.getHeader(jwtProperties.getHeader());
+        if (bearerToken != null && bearerToken.startsWith(jwtProperties.getPrefix())) {
             return bearerToken.substring(7);
         }
         return null;

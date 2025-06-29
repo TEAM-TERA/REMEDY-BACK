@@ -1,5 +1,6 @@
 package org.example.remedy.domain.auth.domain;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
@@ -14,6 +15,7 @@ import org.example.remedy.global.security.jwt.JwtTokenProvider;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CookieValue;
 
 @RequiredArgsConstructor
 @Service
@@ -49,5 +51,9 @@ public class AuthService {
         if(!passwordEncoder.matches(req.password(), user.getPassword())) throw new UserNotFoundException();
 
         jwtTokenProvider.createTokens(user.getEmail(), res);
+    }
+
+    public void refresh(@CookieValue(value = "refresh_token")Cookie cookie, HttpServletResponse response) {
+        jwtTokenProvider.refresh(cookie, response);
     }
 }
