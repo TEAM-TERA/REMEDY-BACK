@@ -39,13 +39,6 @@ public class JwtTokenProvider {
         String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
         String refreshToken = createToken(email, REFRESH_KEY, jwtProperties.getRefreshTime());
 
-        redisTemplate.opsForValue().set(
-                email,
-                refreshToken,
-                jwtProperties.getRefreshTime(),
-                TimeUnit.SECONDS
-        );
-
         response.setHeader("Authorization", "Bearer " + accessToken);
 
         ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
