@@ -12,10 +12,8 @@ import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
 import org.example.remedy.global.security.jwt.JwtTokenProvider;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CookieValue;
 
 @RequiredArgsConstructor
 @Service
@@ -53,7 +51,7 @@ public class AuthService {
         jwtTokenProvider.createTokens(user.getEmail(), res);
     }
 
-    public void refresh(@CookieValue(value = "refresh_token")Cookie cookie, HttpServletResponse response) {
+    public void refresh(Cookie cookie, HttpServletResponse response) {
         jwtTokenProvider.refresh(cookie, response);
     }
 }

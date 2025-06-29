@@ -8,10 +8,7 @@ import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
 import org.example.remedy.domain.auth.dto.request.AuthRegisterRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Void> refresh(@RequestBody Cookie cookie, HttpServletResponse res) {
+    public ResponseEntity<Void> refresh(@CookieValue(value = "refresh_token") Cookie cookie, HttpServletResponse res) {
         authService.refresh(cookie, res);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
