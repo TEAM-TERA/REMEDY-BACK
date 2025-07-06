@@ -1,6 +1,7 @@
 package org.example.remedy.domain.auth.domain;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
 import org.example.remedy.domain.user.domain.User;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+
 
     public void createUser(AuthRegisterRequestDto req) {
         if (userRepository.existsUserByEmail(req.email())) throw new UserAlreadyExistsException();
