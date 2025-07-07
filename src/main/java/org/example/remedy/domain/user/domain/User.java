@@ -44,4 +44,9 @@ public class User {
 
     @Column(nullable = false)
     private boolean gender; // true : 남성, false : 여성
+
+    public void updateProfile(String username, Boolean gender) {
+        this.username = username;
+        this.gender = gender;
+    }
 }
