@@ -16,7 +16,7 @@ public class UserService {
 
     public UserProfileResponse getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저 못 찾음"));
+                .orElseThrow(UserNotFoundException::new);
 
         return new UserProfileResponse(
                 user.getUsername(),
