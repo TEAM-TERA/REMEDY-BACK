@@ -5,12 +5,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
   datasource:
     url: ${POSTGRE_URL}
     username: ${POSTGRE_USER}
     password: ${POSTGRE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
 
 server:

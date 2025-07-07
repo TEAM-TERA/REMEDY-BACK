@@ -1,4 +1,4 @@
-package org.example.remedy.domain.auth.domain;
+package org.example.remedy.domain.auth.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
