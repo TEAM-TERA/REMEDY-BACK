@@ -1,4 +1,4 @@
-package org.example.remedy.domain.auth.dto.request;
+package org.example.remedy.domain.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.Builder;
 import java.time.LocalDate;
 
 @Builder
-public record AuthRegisterRequestDto(
+public record AuthRegisterRequest(
         @Size(min = 1, max = 15, message = "닉네임은 최소 1자 이상, 최대 15자 이하여야 합니다.")
         @NotBlank(message = "닉네임은 필수입니다.")
         String username,

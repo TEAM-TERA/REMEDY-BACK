@@ -6,7 +6,6 @@ import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
@@ -17,7 +16,7 @@ import java.util.Date;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     @Column(nullable = false, length = 15, unique = true)
     private String username;

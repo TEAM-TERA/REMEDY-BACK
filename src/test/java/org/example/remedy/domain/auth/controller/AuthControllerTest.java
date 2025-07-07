@@ -1,8 +1,8 @@
 package org.example.remedy.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
-import org.example.remedy.domain.auth.dto.request.AuthRegisterRequestDto;
+import org.example.remedy.domain.auth.dto.AuthLoginRequest;
+import org.example.remedy.domain.auth.dto.AuthRegisterRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ class AuthControllerTest {
     void register_success() throws Exception {
 
         //given
-        AuthRegisterRequestDto request = AuthRegisterRequestDto.builder()
+        AuthRegisterRequest request = AuthRegisterRequest.builder()
                 .username("sejin")
                 .password("password7777")
                 .email("test@gmail.com")
@@ -53,7 +53,7 @@ class AuthControllerTest {
     void login_success() throws Exception {
 
         //given
-        AuthRegisterRequestDto register = AuthRegisterRequestDto.builder()
+        AuthRegisterRequest register = AuthRegisterRequest.builder()
                 .username("sejin")
                 .password("password7777")
                 .email("login@gmail.com")
@@ -67,7 +67,7 @@ class AuthControllerTest {
                 .andExpect(status().isCreated());
 
         //when
-        AuthLoginRequestDto login = new AuthLoginRequestDto("password7777", "login@gmail.com");
+        AuthLoginRequest login = new AuthLoginRequest("password7777", "login@gmail.com");
 
         //then
         mockMvc.perform(post("/auth/login")
