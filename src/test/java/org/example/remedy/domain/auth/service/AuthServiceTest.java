@@ -1,14 +1,13 @@
-package org.example.remedy.domain.user.service;
+package org.example.remedy.domain.auth.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.remedy.domain.auth.domain.AuthService;
-import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
-import org.example.remedy.domain.auth.dto.request.AuthRegisterRequestDto;
+import org.example.remedy.domain.auth.dto.AuthLoginRequest;
+import org.example.remedy.domain.auth.dto.AuthRegisterRequest;
 import org.example.remedy.domain.user.domain.User;
-import org.example.remedy.domain.user.exception.UserAlreadyExistsException;
+import org.example.remedy.domain.auth.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
-import org.example.remedy.global.security.jwt.JwtTokenProvider;
+import org.example.remedy.global.security.jwt.TokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +37,7 @@ public class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private TokenProvider jwtTokenProvider;
 
     @Mock
     private HttpServletResponse response;
@@ -51,7 +50,7 @@ public class AuthServiceTest {
     void register_success() {
 
         //given
-        AuthRegisterRequestDto dto = new AuthRegisterRequestDto("sejin", "password123", "test@gmail.com", LocalDate.now(), true);
+        AuthRegisterRequest dto = new AuthRegisterRequest("sejin", "password123", "test@gmail.com", LocalDate.now(), true);
         given(userRepository.existsUserByEmail(anyString())).willReturn(false);
         given(passwordEncoder.encode(anyString())).willReturn("encodedPw");
 
@@ -66,7 +65,7 @@ public class AuthServiceTest {
     void register_duplicateEmail() {
 
         //given
-        AuthRegisterRequestDto dto = new AuthRegisterRequestDto("sejin", "password123", "test@gmail.com", LocalDate.now(), true);
+        AuthRegisterRequest dto = new AuthRegisterRequest("sejin", "password123", "test@gmail.com", LocalDate.now(), true);
         given(userRepository.existsUserByEmail(anyString())).willReturn(true);
 
         //when & then
@@ -83,7 +82,7 @@ public class AuthServiceTest {
                 .password("password123")
                 .build();
 
-        AuthLoginRequestDto dto = new AuthLoginRequestDto("password123", "test@gmail.com");
+        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(dto.password(), user.getPassword())).willReturn(true);
@@ -100,7 +99,7 @@ public class AuthServiceTest {
     void login_EmailNotFound() {
 
         //given
-        AuthLoginRequestDto dto = new AuthLoginRequestDto("password123", "test@gmail.com");
+        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.empty());
 
         // when & then
@@ -117,7 +116,7 @@ public class AuthServiceTest {
                 .password("password123")
                 .build();
 
-        AuthLoginRequestDto dto = new AuthLoginRequestDto("password123", "test@gmail.com");
+        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(dto.password(), user.getPassword())).willReturn(false);

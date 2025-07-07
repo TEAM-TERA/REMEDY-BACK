@@ -1,9 +1,9 @@
-package org.example.remedy.domain.auth.dto.request;
+package org.example.remedy.domain.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record AuthLoginRequestDto(
+public record AuthLoginRequest(
         @NotBlank(message = "비밀번호를 입력해주세요.")
         String password,
 
