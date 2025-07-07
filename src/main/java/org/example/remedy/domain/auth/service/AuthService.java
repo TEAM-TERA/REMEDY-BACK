@@ -48,7 +48,7 @@ public class AuthService {
 
         userRepository.save(user);
     }
-
+  
     public void login(AuthLoginRequest req, HttpServletResponse res) {
         String email = req.email();
 
