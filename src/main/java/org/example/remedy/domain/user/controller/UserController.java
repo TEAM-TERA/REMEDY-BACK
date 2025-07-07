@@ -23,7 +23,7 @@ public class UserController {
         );
     }
 
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<Void> updateProfile(
             @RequestBody @Valid UserProfileUpdateRequest req,
             @AuthenticationPrincipal AuthDetails authDetails) {
