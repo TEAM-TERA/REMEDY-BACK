@@ -3,27 +3,34 @@ package org.example.remedy.domain.auth.service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.domain.auth.dto.request.AuthLoginRequestDto;
+import org.example.remedy.domain.auth.dto.AuthLoginRequest;
+import org.example.remedy.domain.auth.exception.InvalidPasswordException;
 import org.example.remedy.domain.user.domain.User;
-import org.example.remedy.domain.auth.dto.request.AuthRegisterRequestDto;
-import org.example.remedy.domain.user.exception.UserAlreadyExistsException;
+import org.example.remedy.domain.auth.dto.AuthRegisterRequest;
+import org.example.remedy.domain.auth.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
-import org.example.remedy.global.security.jwt.JwtTokenProvider;
+import org.example.remedy.global.security.jwt.TokenProvider;
+import org.example.remedy.global.security.util.CookieManager;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class AuthService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
+    private final CookieManager cookieManager;
+    private final RedisTemplate<String, String> redisTemplate;
+    private static final String REDIS_REFRESH_KEY_PREFIX = "refreshToken:";
 
-    public void createUser(AuthRegisterRequestDto req) {
+    @Transactional
+    public void createUser(AuthRegisterRequest req) {
         if (userRepository.existsUserByEmail(req.email())) throw new UserAlreadyExistsException();
 
         String password = passwordEncoder.encode(req.password());
@@ -41,17 +48,25 @@ public class AuthService {
 
         userRepository.save(user);
     }
+  
+    public void login(AuthLoginRequest req, HttpServletResponse res) {
+        String email = req.email();
 
-    public void login(AuthLoginRequestDto req, HttpServletResponse res) {
-        User user = userRepository.findByEmail(req.email())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
 
-        if(!passwordEncoder.matches(req.password(), user.getPassword())) throw new UserNotFoundException();
+        if(!passwordEncoder.matches(req.password(), user.getPassword())) throw new InvalidPasswordException();
 
-        jwtTokenProvider.createTokens(user.getEmail(), res);
+        String accessToken = tokenProvider.createAccessToken(email);
+        String refreshToken = tokenProvider.createRefreshToken(email);
+
+        redisTemplate.opsForValue().set(REDIS_REFRESH_KEY_PREFIX+email, refreshToken);
+
+        cookieManager.setAuthorizationHeader(res, accessToken);
+        cookieManager.setRefreshTokenCookie(res, refreshToken);
     }
 
-    public void refresh(Cookie cookie, HttpServletResponse response) {
-        jwtTokenProvider.refresh(cookie, response);
+    public void refresh(Cookie cookie, HttpServletResponse res) {
+        cookieManager.setAuthorizationHeader(res, tokenProvider.refresh(cookie));
     }
 }
