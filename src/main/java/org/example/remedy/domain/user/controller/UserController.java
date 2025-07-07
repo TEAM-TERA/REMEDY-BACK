@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
         return ResponseEntity.ok(
                 userService.getMyProfile(authDetails.getUserId())
         );
     }
 
-    @PatchMapping("/users")
+    @PutMapping
     public ResponseEntity<Void> updateProfile(
             @RequestBody @Valid UserProfileUpdateRequest req,
             @AuthenticationPrincipal AuthDetails authDetails) {
