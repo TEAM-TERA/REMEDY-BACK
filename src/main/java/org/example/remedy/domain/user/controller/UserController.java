@@ -8,7 +8,6 @@ import org.example.remedy.domain.user.service.UserService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor

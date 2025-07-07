@@ -9,8 +9,6 @@ import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Service
 public class UserService {
