@@ -2,8 +2,10 @@ package org.example.remedy.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,8 +16,8 @@ import org.example.remedy.global.security.auth.AuthDetailsService;
 import org.example.remedy.global.security.jwt.exception.ExpiredJwtTokenException;
 import org.example.remedy.global.security.jwt.exception.InvalidJwtTokenException;
 import org.example.remedy.global.security.jwt.exception.RefreshTokenNotFoundException;
+import org.example.remedy.global.security.util.CookieManager;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,76 +30,73 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class TokenProvider {
     private final JwtProperties jwtProperties;
     private final AuthDetailsService authDetailsService;
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String ACCESS_KEY = "access_token";
     private static final String REFRESH_KEY = "refresh_token";
+    private static final String REDIS_REFRESH_KEY_PREFIX = "refreshToken:";
 
-    public void createTokens(String email, HttpServletResponse response) {
-        String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
-        String refreshToken = createToken(email, REFRESH_KEY, jwtProperties.getRefreshTime());
+    private SecretKey secretKey;
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
-
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge((int) (jwtProperties.getRefreshTime()))
-                .sameSite("None")
-                .build();
-
-        redisTemplate.opsForValue().set("refreshToken:" + email, accessToken, jwtProperties.getRefreshTime(), TimeUnit.SECONDS);
-
-        response.addHeader("Set-Cookie", cookie.toString());
+    @PostConstruct
+    private void initKey() {
+        this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtProperties.getSecretKey()));
     }
 
-    private String createToken(String email, String type, Long time) {
+    public String createRefreshToken(String email) {
         Date now = new Date();
-        SecretKey key = Keys.hmacShaKeyFor(
-                Base64.getDecoder().decode(jwtProperties.getSecretKey())
-        );
 
-        return Jwts.builder()
-                .signWith(key)
+        String refreshToken = Jwts.builder()
+                .signWith(secretKey)
                 .header()
                 .add("typ", "JWT")
                 .and()
                 .subject(email)
                 .claim("role", Role.ROLE_USER.name())
-                .claim("type", type)
+                .claim("type", REFRESH_KEY)
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + time))
+                .expiration(new Date(now.getTime() + jwtProperties.getRefreshTime()))
+                .compact();
+
+        redisTemplate.opsForValue().set(
+                REDIS_REFRESH_KEY_PREFIX + email,
+                refreshToken,
+                jwtProperties.getRefreshTime(),
+                TimeUnit.SECONDS
+        );
+
+        return refreshToken;
+    }
+
+    public String createAccessToken(String email) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .signWith(secretKey)
+                .header()
+                .add("typ", "JWT")
+                .and()
+                .subject(email)
+                .claim("role", Role.ROLE_USER.name())
+                .claim("type", ACCESS_KEY)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtProperties.getAccessTime()))
                 .compact();
     }
 
-    public void deleteTokens(HttpServletResponse response) {
-        response.setHeader("Authorization", "");
-        
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_KEY, "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .sameSite("None")
-                .build();
-            
-        response.addHeader("Set-Cookie", cookie.toString());
-    }
-
-    public void refresh(Cookie cookie, HttpServletResponse response){
+    public String refresh(Cookie cookie){
         String refreshToken = cookie.getValue();
         validateTokenType(refreshToken, REFRESH_KEY);
         String email = getEmail(refreshToken);
-        if(redisTemplate.opsForValue().get("refreshToken:"+email) == null){
+
+        if(redisTemplate.opsForValue().get(REDIS_REFRESH_KEY_PREFIX+email) == null){
             throw RefreshTokenNotFoundException.EXCEPTION;
         }
 
-        String accessToken = createToken(email, ACCESS_KEY, jwtProperties.getAccessTime());
-        response.setHeader("Authorization", "Bearer " + accessToken);
+        return createAccessToken(email);
     }
 
     public String resolveToken(HttpServletRequest request) {
@@ -120,10 +119,7 @@ public class JwtTokenProvider {
 
     private Claims getTokenBody(String token) {
         try {
-            SecretKey key = Keys.hmacShaKeyFor(
-                    Base64.getDecoder().decode(jwtProperties.getSecretKey())
-            );
-
+            SecretKey key = secretKey;
             return Jwts.parser()
                     .verifyWith(key)
                     .build()
@@ -131,7 +127,7 @@ public class JwtTokenProvider {
                     .getPayload();
         } catch (ExpiredJwtException e) {
             throw ExpiredJwtTokenException.EXCEPTION;
-        } catch (Exception e) {
+        } catch (JwtException e) {
             throw InvalidJwtTokenException.EXCEPTION;
         }
     }

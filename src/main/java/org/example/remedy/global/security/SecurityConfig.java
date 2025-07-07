@@ -1,8 +1,8 @@
 package org.example.remedy.global.security;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.global.security.jwt.JwtTokenFilter;
-import org.example.remedy.global.security.jwt.JwtTokenProvider;
+import org.example.remedy.global.security.jwt.TokenFilter;
+import org.example.remedy.global.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,17 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -51,7 +46,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(
-                new JwtTokenFilter(jwtTokenProvider),
+                new TokenFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
         );
 
