@@ -1,15 +1,15 @@
 package org.example.remedy.domain.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.service.UserService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,4 +22,14 @@ public class UserController {
                 userService.getMyProfile(authDetails.getUserId())
         );
     }
+
+    @PatchMapping("/users")
+    public ResponseEntity<Void> updateProfile(
+            @RequestBody @Valid UserProfileUpdateRequest req,
+            @AuthenticationPrincipal AuthDetails authDetails) {
+
+        userService.updateUserProfile(req, authDetails.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
 }

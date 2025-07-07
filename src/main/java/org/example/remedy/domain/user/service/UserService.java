@@ -1,7 +1,9 @@
 package org.example.remedy.domain.user.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
@@ -22,5 +24,12 @@ public class UserService {
                 user.getUsername(),
                 user.getProfileImage()
         );
+    }
+    @Transactional
+    public void updateUserProfile(UserProfileUpdateRequest req, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.updateProfile(req.username(), req.gender());
     }
 }
