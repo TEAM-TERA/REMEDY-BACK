@@ -1,11 +1,15 @@
 package org.example.remedy.domain.user.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.example.remedy.domain.user.domain.User;
 
-@Getter
-@AllArgsConstructor
-public class UserProfileResponse {
-    private final String username;
-    private final String ProfileImageUrl;
+public record UserProfileResponse (
+        String username,
+        String profileImageUrl
+){
+    public static UserProfileResponse newInstance(User user) {
+        return new UserProfileResponse(
+                user.getUsername(),
+                user.getProfileImage()
+        );
+    }
 }
