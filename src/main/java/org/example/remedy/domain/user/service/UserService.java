@@ -23,6 +23,7 @@ public class UserService {
                 user.getProfileImage()
         );
     }
+
     @Transactional
     public void updateUserProfile(UserProfileUpdateRequest req, String email) {
         User user = userRepository.findByEmail(email)
