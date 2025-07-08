@@ -1,7 +1,9 @@
 package org.example.remedy.domain.user.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,7 +22,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -33,6 +38,9 @@ class UserControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private final String baseUrl = "/users";
     private User user;
@@ -65,4 +73,24 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.username").value("sejin"))
                 .andExpect(jsonPath("$.profileImageUrl").value("https://image.com/profile.png"));
     }
+
+    @Test
+    @DisplayName("프로필 수정 성공")
+    void updateProfile_success() throws Exception {
+        //given
+        UserProfileUpdateRequest request = new UserProfileUpdateRequest("newName", false);
+        String json = objectMapper.writeValueAsString(request);
+
+        //when
+        mockMvc.perform(patch(baseUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
+
+        //then
+        User updatedUser = userRepository.findByEmail("test@example.com").orElseThrow();
+        assertThat(updatedUser.getUsername()).isEqualTo("newName");
+        assertThat(updatedUser.isGender()).isFalse();
+    }
+
 }

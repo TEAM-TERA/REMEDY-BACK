@@ -1,6 +1,7 @@
 package org.example.remedy.domain.user.service;
 
 import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
@@ -61,6 +62,47 @@ class UserServiceTest {
 
         //when & then
         assertThatThrownBy(() -> userService.getMyProfile(99L))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("사용자 프로필 수정 성공")
+    void updateProfile_success() {
+        // given
+        User user = User.builder()
+                .userId(1L)
+                .username("sejin")
+                .email("test@example.com")
+                .password("password7777")
+                .profileImage("https://image.com/profile.png")
+                .birthdate(LocalDate.of(2008, 7, 31))
+                .gender(true)
+                .role(Role.ROLE_USER)
+                .provider(Provider.SELF)
+                .build();
+
+        UserProfileUpdateRequest req = new UserProfileUpdateRequest("newName", false);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        // when
+        userService.updateUserProfile(req, "test@example.com");
+
+        // then
+        assertThat(user.getUsername()).isEqualTo("newName");
+        assertThat(user.isGender()).isFalse();
+    }
+
+    @Test
+    @DisplayName("사용자 프로필 수정 실패 - 존재하지 않는 사용자")
+    void updateProfile_fail_userNotFound() {
+        // given
+        UserProfileUpdateRequest req = new UserProfileUpdateRequest("newName", false);
+        when(userRepository.findByEmail("notfound@example.com"))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> userService.updateUserProfile(req, "notfound@example.com"))
                 .isInstanceOf(UserNotFoundException.class);
     }
 }
