@@ -32,17 +32,7 @@ class UserServiceTest {
     @DisplayName("사용자 프로필 조회 성공")
     void getMyProfile_success() {
         //given
-        User user = User.builder()
-                .userId(1L)
-                .username("sejin")
-                .email("test@example.com")
-                .password("password7777")
-                .profileImage("https://image.com/profile.png")
-                .birthdate(LocalDate.of(2008, 7, 31))
-                .gender(true)
-                .role(Role.ROLE_USER)
-                .provider(Provider.SELF)
-                .build();
+        User user = createUser();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -69,17 +59,7 @@ class UserServiceTest {
     @DisplayName("사용자 프로필 수정 성공")
     void updateProfile_success() {
         // given
-        User user = User.builder()
-                .userId(1L)
-                .username("sejin")
-                .email("test@example.com")
-                .password("password7777")
-                .profileImage("https://image.com/profile.png")
-                .birthdate(LocalDate.of(2008, 7, 31))
-                .gender(true)
-                .role(Role.ROLE_USER)
-                .provider(Provider.SELF)
-                .build();
+        User user = createUser();
 
         UserProfileUpdateRequest req = new UserProfileUpdateRequest("newName", false);
 
@@ -105,4 +85,19 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.updateUserProfile(req, "notfound@example.com"))
                 .isInstanceOf(UserNotFoundException.class);
     }
+
+    private User createUser() {
+        return User.builder()
+                .userId(1L)
+                .username("sejin")
+                .email("test@example.com")
+                .password("password7777")
+                .profileImage("https://image.com/profile.png")
+                .birthdate(LocalDate.of(2008, 7, 31))
+                .gender(true)
+                .role(Role.ROLE_USER)
+                .provider(Provider.SELF)
+                .build();
+    }
+
 }
