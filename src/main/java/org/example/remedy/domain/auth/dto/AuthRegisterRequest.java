@@ -23,7 +23,7 @@ public record AuthRegisterRequest(
         String email,
 
         @NotBlank(message = "생년월일은 필수입니다.")
-        LocalDate birthdate,
+        LocalDate birthDate,
 
         Boolean gender // true : 남성, false : 여성
 ) { }
