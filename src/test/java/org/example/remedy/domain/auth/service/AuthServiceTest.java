@@ -1,4 +1,3 @@
-
 package org.example.remedy.domain.auth.service;
 
 import jakarta.servlet.http.HttpServletResponse;
