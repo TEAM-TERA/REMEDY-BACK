@@ -19,7 +19,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
         return ResponseEntity.ok(
-                userService.getMyProfile(authDetails.getUserId())
+                userService.getMyProfile(authDetails.getUser())
         );
     }
 
