@@ -28,7 +28,7 @@ public class UserController {
             @RequestBody @Valid UserProfileUpdateRequest req,
             @AuthenticationPrincipal AuthDetails authDetails) {
 
-        userService.updateUserProfile(req, authDetails.getUsername());
+        userService.updateUserProfile(req, authDetails.getUser());
         return ResponseEntity.ok().build();
     }
 

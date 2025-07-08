@@ -2,6 +2,7 @@ package org.example.remedy.domain.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
 
@@ -40,13 +41,14 @@ public class User {
     private Provider provider = Provider.SELF;
 
     @Column(nullable = false)
-    private LocalDate birthdate;
+    private LocalDate birthDate;
 
     @Column(nullable = false)
     private boolean gender; // true : 남성, false : 여성
 
-    public void updateProfile(String username, Boolean gender) {
-        this.username = username;
-        this.gender = gender;
+    public void updateProfile(UserProfileUpdateRequest req) {
+        if(req.username() != null && !this.username.equals(req.username())) this.username = req.username();
+        if(req.birthDate() != null && !this.birthDate.equals(req.birthDate())) this.birthDate = req.birthDate();
+        if(req.gender() != null && !this.gender == req.gender()) this.gender = req.gender();
     }
 }

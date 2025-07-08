@@ -1,11 +1,12 @@
 package org.example.remedy.domain.user.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
 
 public record UserProfileUpdateRequest(
-        @NotBlank(message = "닉네임은 필수입니다.")
+        @Size(max = 15, message = "닉네임은 최대 15자 이하여야 합니다.")
         String username,
-
-
-        Boolean gender
+        Boolean gender,
+        LocalDate birthDate
 ) {}

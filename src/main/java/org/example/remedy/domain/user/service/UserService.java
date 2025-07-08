@@ -25,10 +25,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserProfile(UserProfileUpdateRequest req, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
-
-        user.updateProfile(req.username(), req.gender());
+    public void updateUserProfile(UserProfileUpdateRequest req, User user) {
+        user.updateProfile(req);
+        userRepository.save(user);
     }
 }
