@@ -71,4 +71,14 @@ public class User {
         if(req.birthDate() != null && !this.birthDate.equals(req.birthDate())) this.birthDate = req.birthDate();
         if(req.gender() != null && !this.gender == req.gender()) this.gender = req.gender();
     }
+
+    public static User testUser(String username, String email) {
+        return new User(
+                username,
+                "password7777",
+                email,
+                LocalDate.of(2008, 7, 31),
+                true
+        );
+    }
 }
