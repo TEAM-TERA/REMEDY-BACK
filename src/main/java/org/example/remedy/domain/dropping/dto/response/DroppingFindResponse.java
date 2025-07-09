@@ -1,7 +1,6 @@
 package org.example.remedy.domain.dropping.dto.response;
 
 import org.example.remedy.domain.dropping.domain.Dropping;
-
 import java.time.LocalDateTime;
 
 public record DroppingFindResponse(
