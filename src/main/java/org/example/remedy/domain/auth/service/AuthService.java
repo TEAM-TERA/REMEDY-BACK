@@ -4,14 +4,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.dto.AuthLoginRequest;
-import org.example.remedy.domain.auth.exception.InvalidPasswordException;
-import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.auth.dto.AuthRegisterRequest;
+import org.example.remedy.domain.auth.exception.InvalidPasswordException;
 import org.example.remedy.domain.auth.exception.UserAlreadyExistsException;
+import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
-import org.example.remedy.domain.user.type.Provider;
-import org.example.remedy.domain.user.type.Role;
 import org.example.remedy.global.security.jwt.TokenProvider;
 import org.example.remedy.global.security.util.CookieManager;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,16 +33,7 @@ public class AuthService {
 
         String password = passwordEncoder.encode(req.password());
 
-        User user = User.builder()
-                .username(req.username())
-                .password(password)
-                .profileImage("https://mblogthumb-phinf.pstatic.net/MjAyMDExMDFfODMg/MDAxNjA0MjI4ODc1MDgz.gQ3xcHrLXaZyxcFAoEcdB7tJWuRs7fKgOxQwPvsTsrUg.0OBtKHq2r3smX5guFQtnT7EDwjzksz5Js0wCV4zjfpcg.JPEG.gambasg/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EA%B8%B0%EB%B3%B8%ED%94%84%EB%A1%9C%ED%95%84_%EB%B3%B4%EB%9D%BC.jpg?type=w400")
-                .email(req.email())
-                .role(Role.ROLE_USER)
-                .provider(Provider.SELF)
-                .birthdate(req.birthdate())
-                .gender(req.gender())
-                .build();
+        User user = User.newInstance(req, password);
 
         userRepository.save(user);
     }
