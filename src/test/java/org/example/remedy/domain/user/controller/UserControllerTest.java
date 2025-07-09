@@ -24,6 +24,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.example.remedy.domain.user.UserTestFactory.create;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,7 +47,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(User.testUser("sejin", "test@example.com"));
+        user = userRepository.save(create("sejin", "test@example.com"));
 
         AuthDetails authDetails = new AuthDetails(user);
         SecurityContextHolder.getContext().setAuthentication(

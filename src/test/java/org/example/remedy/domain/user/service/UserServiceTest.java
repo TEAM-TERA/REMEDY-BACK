@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.example.remedy.domain.user.UserTestFactory.create;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -28,7 +29,7 @@ class UserServiceTest {
     @DisplayName("사용자 프로필 조회 성공")
     void getMyProfile_success() {
         //given
-        User user = createUser();
+        User user = create("sejin", "test@example.com");
 
         //when
         UserProfileResponse response = userService.getMyProfile(user);
@@ -42,7 +43,7 @@ class UserServiceTest {
     @DisplayName("사용자 프로필 수정 성공")
     void updateProfile_success() {
         // given
-        User user = createUser();
+        User user = create("sejin", "test@example.com");
 
         UserProfileUpdateRequest req = new UserProfileUpdateRequest("newName", Boolean.FALSE,null);
 
@@ -52,16 +53,6 @@ class UserServiceTest {
         // then
         assertThat(user.getUsername()).isEqualTo("newName");
         assertThat(user.isGender()).isFalse();
-    }
-
-    private User createUser() {
-        return new User(
-                "sejin",
-                "password7777",
-                "test@example.com",
-                LocalDate.of(2008, 7, 31),
-                true
-        );
     }
 
 }
