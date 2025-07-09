@@ -42,6 +42,13 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                        //dropping
+                        .requestMatchers(HttpMethod.GET, "/droppings").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/droppings").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/droppings/{song-id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/droppings/{song-id}").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/droppings/{song-id}").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/droppings/playing/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 );
 
