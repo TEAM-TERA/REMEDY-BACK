@@ -19,7 +19,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
         return ResponseEntity.ok(
-                userService.getMyProfile(authDetails.getUserId())
+                userService.getMyProfile(authDetails.getUser())
         );
     }
 
@@ -28,7 +28,7 @@ public class UserController {
             @RequestBody @Valid UserProfileUpdateRequest req,
             @AuthenticationPrincipal AuthDetails authDetails) {
 
-        userService.updateUserProfile(req, authDetails.getUsername());
+        userService.updateUserProfile(req, authDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
