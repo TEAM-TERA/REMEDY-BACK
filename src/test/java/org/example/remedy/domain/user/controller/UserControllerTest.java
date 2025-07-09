@@ -2,6 +2,7 @@ package org.example.remedy.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.example.remedy.domain.auth.config.DroppingMockConfig;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
+@Import(DroppingMockConfig.class)
 class UserControllerTest {
 
     @Autowired
@@ -62,7 +65,7 @@ class UserControllerTest {
                 //then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("sejin"))
-                .andExpect(jsonPath("$.profileImageUrl").value("https://image.com/profile.png"));
+                .andExpect(jsonPath("$.profileImageUrl").value("https://mblogthumb-phinf.pstatic.net/MjAyMDExMDFfODMg/MDAxNjA0MjI4ODc1MDgz.gQ3xcHrLXaZyxcFAoEcdB7tJWuRs7fKgOxQwPvsTsrUg.0OBtKHq2r3smX5guFQtnT7EDwjzksz5Js0wCV4zjfpcg.JPEG.gambasg/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EA%B8%B0%EB%B3%B8%ED%94%84%EB%A1%9C%ED%95%84_%EB%B3%B4%EB%9D%BC.jpg?type=w400"));
     }
 
     @Test
