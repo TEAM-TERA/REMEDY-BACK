@@ -38,18 +38,6 @@ class UserServiceTest {
         assertThat(response.profileImageUrl()).isEqualTo(user.getProfileImage());
     }
 
-    /*@Test
-    @DisplayName("사용자 프로필 조회 실패 - 존재하지 않는 사용자")
-    void getMyProfile_fail_userNotFound() {
-        //given
-        User user = createUser();
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        //when & then
-        assertThatThrownBy(() -> userService.getMyProfile(user))
-                .isInstanceOf(UserNotFoundException.class);
-    }*/
-
     @Test
     @DisplayName("사용자 프로필 수정 성공")
     void updateProfile_success() {
@@ -65,20 +53,6 @@ class UserServiceTest {
         assertThat(user.getUsername()).isEqualTo("newName");
         assertThat(user.isGender()).isFalse();
     }
-
-    /*@Test
-    @DisplayName("사용자 프로필 수정 실패 - 존재하지 않는 사용자")
-    void updateProfile_fail_userNotFound() {
-        // given
-        User user = createUser();
-        UserProfileUpdateRequest req = new UserProfileUpdateRequest("newName", Boolean.FALSE,null);
-        when(userRepository.findByEmail("notfound@example.com"))
-                .thenReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> userService.updateUserProfile(req, user))
-                .isInstanceOf(UserNotFoundException.class);
-    }*/
 
     private User createUser() {
         return new User(
