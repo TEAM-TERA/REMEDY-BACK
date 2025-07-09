@@ -11,6 +11,12 @@ public record DroppingFindResponse(
         LocalDateTime expiryDate,
         LocalDateTime createdAt
 ) {
+    /**
+     * Dropping 도메인 객체로부터 DroppingFindResponse 인스턴스를 생성합니다.
+     *
+     * @param dropping 변환할 Dropping 도메인 객체
+     * @return Dropping 객체의 정보를 담은 DroppingFindResponse 인스턴스
+     */
     public static DroppingFindResponse newInstance(Dropping dropping) {
         return new DroppingFindResponse(
                 dropping.getDroppingId(),
