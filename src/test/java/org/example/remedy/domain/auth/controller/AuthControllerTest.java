@@ -1,7 +1,7 @@
 package org.example.remedy.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.remedy.domain.auth.config.DroppingMockConfig;
+import org.example.remedy.global.config.DroppingMockConfig;
 import org.example.remedy.domain.auth.dto.AuthLoginRequest;
 import org.example.remedy.domain.auth.dto.AuthRegisterRequest;
 import org.junit.jupiter.api.DisplayName;

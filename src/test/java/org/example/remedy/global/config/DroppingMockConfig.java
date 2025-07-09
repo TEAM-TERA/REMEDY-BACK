@@ -1,4 +1,4 @@
-package org.example.remedy.domain.auth.config;
+package org.example.remedy.global.config;
 
 import org.example.remedy.domain.auth.service.AuthService;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;

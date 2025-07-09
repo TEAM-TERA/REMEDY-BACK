@@ -2,7 +2,7 @@ package org.example.remedy.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.example.remedy.domain.auth.config.DroppingMockConfig;
+import org.example.remedy.global.config.DroppingMockConfig;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.repository.UserRepository;
