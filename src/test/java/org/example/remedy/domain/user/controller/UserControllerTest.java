@@ -47,16 +47,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(User.builder()
-                .username("sejin")
-                .password("password7777")
-                .email("test@example.com")
-                .profileImage("https://image.com/profile.png")
-                .birthdate(LocalDate.of(2008, 7, 31))
-                .gender(true)
-                .role(Role.ROLE_USER)
-                .provider(Provider.SELF)
-                .build());
+        user = userRepository.save(User.testUser("sejin", "test@example.com"));
 
         AuthDetails authDetails = new AuthDetails(user);
         SecurityContextHolder.getContext().setAuthentication(
@@ -78,7 +69,7 @@ class UserControllerTest {
     @DisplayName("프로필 수정 성공")
     void updateProfile_success() throws Exception {
         //given
-        UserProfileUpdateRequest request = new UserProfileUpdateRequest("newName", false);
+        UserProfileUpdateRequest request = new UserProfileUpdateRequest("newName", Boolean.FALSE,null);
         String json = objectMapper.writeValueAsString(request);
 
         //when
