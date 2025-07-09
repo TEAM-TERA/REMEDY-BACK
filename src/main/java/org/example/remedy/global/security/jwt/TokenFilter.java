@@ -20,7 +20,9 @@ public class TokenFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDE_PATHS = List.of(
             "/api/v1/auth/login",
             "/api/v1/auth/register",
-            "/api/v1/auth/refresh"
+            "/api/v1/auth/refresh",
+            "/api/v1/droppings/{dropping-id}",
+            "/api/v1/songs"
     );
 
     @Override

@@ -14,6 +14,9 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "U5", "존재하지 않는 RefreshToken입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "U6", "올바르지 않은 비밀번호입니다."),
 
+    DROPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "D1", "반경 5미터 이내에 이미 드랍이 존재합니다."),
+    DROPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "D2", "삭제되었거나 존재하지 않는 드랍입니다."),
+
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "S1", "올바르지 않은 입력값입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "S2", "잘못된 HTTP 메서드를 호출했습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3", "서버 에러가 발생했습니다."),

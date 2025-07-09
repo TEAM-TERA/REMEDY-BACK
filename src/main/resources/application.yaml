@@ -12,6 +12,9 @@ spring:
     password: ${POSTGRE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
 
 server:
   servlet:
