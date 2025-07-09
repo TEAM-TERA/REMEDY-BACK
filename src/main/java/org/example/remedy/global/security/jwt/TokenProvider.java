@@ -65,7 +65,7 @@ public class TokenProvider {
                 REDIS_REFRESH_KEY_PREFIX + email,
                 refreshToken,
                 jwtProperties.getRefreshTime(),
-                TimeUnit.SECONDS
+                TimeUnit.MILLISECONDS
         );
 
         return refreshToken;
