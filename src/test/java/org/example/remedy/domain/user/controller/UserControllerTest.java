@@ -61,7 +61,7 @@ class UserControllerTest {
                 //then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("sejin"))
-                .andExpect(jsonPath("$.profileImageUrl").value("https://mblogthumb-phinf.pstatic.net/MjAyMDExMDFfODMg/MDAxNjA0MjI4ODc1MDgz.gQ3xcHrLXaZyxcFAoEcdB7tJWuRs7fKgOxQwPvsTsrUg.0OBtKHq2r3smX5guFQtnT7EDwjzksz5Js0wCV4zjfpcg.JPEG.gambasg/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EA%B8%B0%EB%B3%B8%ED%94%84%EB%A1%9C%ED%95%84_%EB%B3%B4%EB%9D%BC.jpg?type=w400"));
+                .andExpect(jsonPath("$.profileImageUrl").value(user.getProfileImage()));
     }
 
     @Test
