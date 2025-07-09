@@ -91,12 +91,12 @@ public class AuthServiceTest {
     void login_success() {
 
         //given
-        User user = User.builder()
-                .email("test@gmail.com")
-                .password("password123")
-                .build();
+        AuthRegisterRequest dto = new AuthRegisterRequest(
+                "sejin", "password123", "test@gmail.com", LocalDate.of(2008, 7, 31), true
+        );
+        User user = User.newInstance(dto, dto.password());
 
-        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
+        AuthLoginRequest loginReq = new AuthLoginRequest("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(dto.password(), user.getPassword())).willReturn(true);
@@ -107,7 +107,7 @@ public class AuthServiceTest {
 
 
         //when
-        authService.login(dto, response);
+        authService.login(loginReq, response);
 
         //then
         then(jwtTokenProvider).should(times(1)).createAccessToken(user.getEmail());
@@ -131,17 +131,17 @@ public class AuthServiceTest {
     void login_PasswordMismatch() {
 
         // given
-        User user = User.builder()
-                .email("test@gmail.com")
-                .password("password123")
-                .build();
+        AuthRegisterRequest dto = new AuthRegisterRequest(
+                "sejin", "password123", "test@gmail.com", LocalDate.of(2008, 7, 31), true
+        );
+        User user = User.newInstance(dto, dto.password());
 
-        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
+        AuthLoginRequest loginReq = new AuthLoginRequest("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(dto.password(), user.getPassword())).willReturn(false);
 
         // when & then
-        assertThrows(InvalidPasswordException.class, () -> authService.login(dto, response));
+        assertThrows(InvalidPasswordException.class, () -> authService.login(loginReq, response));
     }
 }
