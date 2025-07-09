@@ -133,7 +133,7 @@ public class AuthServiceTest {
         AuthLoginRequest loginReq = new AuthLoginRequest("password123", "test@gmail.com");
 
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(user.getPassword(), user.getPassword())).willReturn(false);
+        given(passwordEncoder.matches("password123", user.getPassword())).willReturn(false);
 
         // when & then
         assertThrows(InvalidPasswordException.class, () -> authService.login(loginReq, response));
