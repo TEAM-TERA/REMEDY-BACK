@@ -6,8 +6,6 @@ import org.example.remedy.domain.auth.config.DroppingMockConfig;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.repository.UserRepository;
-import org.example.remedy.domain.user.type.Provider;
-import org.example.remedy.domain.user.type.Role;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,8 +19,6 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

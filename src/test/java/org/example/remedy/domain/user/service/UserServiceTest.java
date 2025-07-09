@@ -3,10 +3,7 @@ package org.example.remedy.domain.user.service;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
-import org.example.remedy.domain.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
-import org.example.remedy.domain.user.type.Provider;
-import org.example.remedy.domain.user.type.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
