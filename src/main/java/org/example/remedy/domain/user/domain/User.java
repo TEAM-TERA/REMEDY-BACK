@@ -72,13 +72,4 @@ public class User {
         if(req.gender() != null && !this.gender == req.gender()) this.gender = req.gender();
     }
 
-    public static User testUser(String username, String email) {
-        return new User(
-                username,
-                "password7777",
-                email,
-                LocalDate.of(2008, 7, 31),
-                true
-        );
-    }
 }
