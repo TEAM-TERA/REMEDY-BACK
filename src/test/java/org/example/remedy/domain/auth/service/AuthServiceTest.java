@@ -91,15 +91,12 @@ public class AuthServiceTest {
     void login_success() {
 
         //given
-        User user = User.builder()
-                .email("test@gmail.com")
-                .password("password123")
-                .build();
+        User user = createTestUser();
 
-        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
+        AuthLoginRequest loginReq = new AuthLoginRequest("password123", "test@gmail.com");
 
-        given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(dto.password(), user.getPassword())).willReturn(true);
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(user.getPassword(), user.getPassword())).willReturn(true);
         given(jwtTokenProvider.createAccessToken(user.getEmail())).willReturn("mockAccessToken");
         given(jwtTokenProvider.createRefreshToken(user.getEmail())).willReturn("mockRefreshToken");
         given(redisTemplate.opsForValue()).willReturn(valueOperations);
@@ -107,7 +104,7 @@ public class AuthServiceTest {
 
 
         //when
-        authService.login(dto, response);
+        authService.login(loginReq, response);
 
         //then
         then(jwtTokenProvider).should(times(1)).createAccessToken(user.getEmail());
@@ -131,17 +128,21 @@ public class AuthServiceTest {
     void login_PasswordMismatch() {
 
         // given
-        User user = User.builder()
-                .email("test@gmail.com")
-                .password("password123")
-                .build();
+        User user = createTestUser();
 
-        AuthLoginRequest dto = new AuthLoginRequest("password123", "test@gmail.com");
+        AuthLoginRequest loginReq = new AuthLoginRequest("password123", "test@gmail.com");
 
-        given(userRepository.findByEmail(dto.email())).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(dto.password(), user.getPassword())).willReturn(false);
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches("password123", user.getPassword())).willReturn(false);
 
         // when & then
-        assertThrows(InvalidPasswordException.class, () -> authService.login(dto, response));
+        assertThrows(InvalidPasswordException.class, () -> authService.login(loginReq, response));
+    }
+
+    private static final AuthRegisterRequest TEST_REGISTER_REQUEST = new AuthRegisterRequest(
+            "sejin", "password123", "test@gmail.com", LocalDate.of(2008, 7, 31), true);
+
+    private User createTestUser() {
+        return User.newInstance(TEST_REGISTER_REQUEST, TEST_REGISTER_REQUEST.password());
     }
 }
