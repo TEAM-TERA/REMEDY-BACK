@@ -55,7 +55,7 @@ public class DroppingService {
     public List<DroppingSearchResponse> getUserDroppings(Long userId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<Dropping> droppings = droppingRepository.findByUserId(userId, sort);
-        
+
         return droppings.stream()
                 .map(DroppingSearchResponse::create)
                 .collect(Collectors.toList());
@@ -80,5 +80,10 @@ public class DroppingService {
         droppingRepository.saveAll(expiredDroppings);
 
         log.info("만료된 Dropping {}개 자동 soft delete 완료", expiredDroppings.size());
+    }
+
+    public List<Dropping> findDroppingsByUserId(Long userId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        return droppingRepository.findByUserId(userId, sort);
     }
 }
