@@ -17,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/users")
 public class UserProfileController {
-    private final UserProfileService userService;
+    private final UserProfileService userProfileService;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
         return ResponseEntity.ok(
-                userService.getMyProfile(authDetails.getUser())
+                userProfileService.getMyProfile(authDetails.getUser())
         );
     }
 
@@ -31,13 +31,13 @@ public class UserProfileController {
             @RequestBody @Valid UserProfileUpdateRequest req,
             @AuthenticationPrincipal AuthDetails authDetails) {
 
-        userService.updateUserProfile(req, authDetails.getUser());
+        userProfileService.updateUserProfile(req, authDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/profile-image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UserProfileImageResponse> updateProfileImage(MultipartFile image, @AuthenticationPrincipal AuthDetails authDetails) {
-        UserProfileImageResponse res = userService.updateUserProfileImage(image, authDetails.getUser());
+        UserProfileImageResponse res = userProfileService.updateUserProfileImage(image, authDetails.getUser());
         return ResponseEntity.ok(res);
     }
 }
