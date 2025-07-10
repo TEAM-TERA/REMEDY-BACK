@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -19,25 +21,22 @@ public class MyDroppingService {
 
     private final ApplicationEventPublisher publisher;
 
-    public List<MyDroppingResponse> getMyDroppings(Long userId) {
+    public CompletableFuture<List<MyDroppingResponse>> getMyDroppings(Long userId) {
         UUID requestId = UUID.randomUUID();
         DroppingEvent event = new DroppingEvent(userId, requestId);
 
+        CompletableFuture<List<MyDroppingResponse>> future = new CompletableFuture<>();
+        DroppingResponseCache.register(requestId, future);
+
         publisher.publishEvent(event);
 
-        for (int i = 0; i < 10; i++) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(() -> {
+            if (!future.isDone()) {
+                future.complete(List.of());
+                log.warn("드롭핑 조회 타임아웃 발생: userId={}", userId);
             }
+        });
 
-            if (DroppingResponseCache.contains(requestId)) {
-                return DroppingResponseCache.consume(requestId);
-            }
-        }
-
-        log.warn("사용자 드롭핑 조회 타임아웃: userId={}", userId);
-        return List.of();
+        return future;
     }
 }
