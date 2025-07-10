@@ -18,6 +18,7 @@ import java.util.List;
 public class DroppingListener {
 
     private final DroppingService droppingService;
+    private final DroppingResponseCache droppingResponseCache;
 
     @EventListener
     public void onDroppingEvent(DroppingEvent droppingEvent) {
@@ -28,10 +29,10 @@ public class DroppingListener {
                     .map(MyDroppingResponse::from)
                     .toList();
 
-            DroppingResponseCache.complete(droppingEvent.getRequestId(), converted);
+            droppingResponseCache.complete(droppingEvent.getRequestId(), converted);
         } catch (Exception e) {
 
-            DroppingResponseCache.complete(droppingEvent.getRequestId(), List.of());
+            droppingResponseCache.complete(droppingEvent.getRequestId(), List.of());
             log.error("사용자 드롭핑 조회 중 오류 발생: userId={}", droppingEvent.getUserId(), e);
         }
 
