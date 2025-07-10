@@ -1,6 +1,5 @@
 package org.example.remedy.domain.user.service;
 
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.minio.service.MinioService;

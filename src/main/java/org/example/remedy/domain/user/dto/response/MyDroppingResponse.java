@@ -2,8 +2,6 @@ package org.example.remedy.domain.user.dto.response;
 
 import org.example.remedy.domain.dropping.domain.Dropping;
 
-
-
 public record MyDroppingResponse(
         String droppingId,
         String content,
