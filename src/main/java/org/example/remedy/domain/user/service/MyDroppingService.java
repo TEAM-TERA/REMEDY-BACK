@@ -23,6 +23,6 @@ public class MyDroppingService {
         );
         return droppings.stream()
                 .map(MyDroppingResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
