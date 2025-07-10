@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,15 +49,6 @@ public class DroppingService {
                 .orElseThrow(DroppingNotFoundException::new);
         
         return DroppingFindResponse.newInstance(dropping);
-    }
-
-    public List<DroppingSearchResponse> getUserDroppings(Long userId) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        List<Dropping> droppings = droppingRepository.findByUserId(userId, sort);
-
-        return droppings.stream()
-                .map(DroppingSearchResponse::create)
-                .collect(Collectors.toList());
     }
 
     @Transactional
