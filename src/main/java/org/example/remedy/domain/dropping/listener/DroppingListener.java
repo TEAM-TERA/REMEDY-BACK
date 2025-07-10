@@ -28,10 +28,10 @@ public class DroppingListener {
                     .map(MyDroppingResponse::from)
                     .toList();
 
-            DroppingResponseCache.save(droppingEvent.getRequestId(), converted);
+            DroppingResponseCache.complete(droppingEvent.getRequestId(), converted);
         } catch (Exception e) {
 
-            DroppingResponseCache.save(droppingEvent.getRequestId(), List.of());
+            DroppingResponseCache.complete(droppingEvent.getRequestId(), List.of());
             log.error("사용자 드롭핑 조회 중 오류 발생: userId={}", droppingEvent.getUserId(), e);
         }
 

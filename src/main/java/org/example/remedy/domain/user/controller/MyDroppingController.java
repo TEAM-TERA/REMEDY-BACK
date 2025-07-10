@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +23,12 @@ public class MyDroppingController {
     @GetMapping("/my-drop")
     public ResponseEntity<List<MyDroppingResponse>> getMyDroppings(
             @AuthenticationPrincipal AuthDetails authDetails) {
-        List<MyDroppingResponse> responses = myDroppingService.getMyDroppings(authDetails.getUserId());
-        return ResponseEntity.ok(responses);
+        try {
+            List<MyDroppingResponse> responses =
+                    myDroppingService.getMyDroppings(authDetails.getUserId()).get();
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
