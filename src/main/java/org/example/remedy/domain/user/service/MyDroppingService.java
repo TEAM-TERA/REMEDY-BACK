@@ -2,6 +2,7 @@ package org.example.remedy.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.domain.user.dto.response.MyDroppingResponse;
 import org.example.remedy.domain.user.event.DroppingEvent;
 import org.example.remedy.global.event.DroppingResponseCache;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MyDroppingService {
@@ -35,6 +37,7 @@ public class MyDroppingService {
             }
         }
 
+        log.warn("사용자 드롭핑 조회 타임아웃: userId={}", userId);
         return List.of();
     }
 }
