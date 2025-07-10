@@ -2,7 +2,6 @@ package org.example.remedy.domain.dropping.listener;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.domain.Dropping;
-
 import org.example.remedy.domain.dropping.service.DroppingService;
 import org.example.remedy.domain.user.dto.response.MyDroppingResponse;
 import org.example.remedy.domain.user.event.DroppingEvent;
@@ -11,8 +10,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
-
 
 @Component
 @RequiredArgsConstructor

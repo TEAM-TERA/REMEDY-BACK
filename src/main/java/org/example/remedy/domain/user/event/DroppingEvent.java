@@ -1,6 +1,5 @@
 package org.example.remedy.domain.user.event;
 
-
 import lombok.Getter;
 
 import java.util.UUID;
