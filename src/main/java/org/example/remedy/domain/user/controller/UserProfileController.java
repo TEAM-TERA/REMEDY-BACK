@@ -1,14 +1,12 @@
 package org.example.remedy.domain.user.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.service.UserProfileService;
 import org.example.remedy.global.security.auth.AuthDetails;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/users")
 public class UserProfileController {
-    private final UserProfileService userService;
+    private final UserProfileService userProfileService;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
         return ResponseEntity.ok(
-                userService.getMyProfile(authDetails.getUser())
+                userProfileService.getMyProfile(authDetails.getUser())
         );
     }
 
@@ -33,13 +31,13 @@ public class UserProfileController {
             @RequestBody @Valid UserProfileUpdateRequest req,
             @AuthenticationPrincipal AuthDetails authDetails) {
 
-        userService.updateUserProfile(req, authDetails.getUser());
+        userProfileService.updateUserProfile(req, authDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/profile-image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<UserProfileImageResponse> updateProfileImage(@RequestParam MultipartFile image, @AuthenticationPrincipal AuthDetails authDetails) {
-        UserProfileImageResponse res = userService.updateUserProfileImage(image, authDetails.getUser());
+    public ResponseEntity<UserProfileImageResponse> updateProfileImage(MultipartFile image, @AuthenticationPrincipal AuthDetails authDetails) {
+        UserProfileImageResponse res = userProfileService.updateUserProfileImage(image, authDetails.getUser());
         return ResponseEntity.ok(res);
     }
 }
