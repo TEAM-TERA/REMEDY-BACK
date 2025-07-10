@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
-import org.example.remedy.domain.user.service.UserService;
+import org.example.remedy.domain.user.service.UserProfileService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
@@ -18,8 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
-public class UserController {
-    private final UserService userService;
+public class UserProfileController {
+    private final UserProfileService userService;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
