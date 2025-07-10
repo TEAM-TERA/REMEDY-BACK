@@ -27,6 +27,12 @@ jwt:
   header: ${header}
   secret-key: ${secret-key}
 
+minio:
+  minio-url: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
+  default-bucket: ${DEFAULT_BUCKET}
+
 logging:
   level:
     web: info

@@ -7,6 +7,7 @@ import org.example.remedy.domain.auth.dto.AuthRegisterRequest;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.type.Provider;
 import org.example.remedy.domain.user.type.Role;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -72,4 +73,7 @@ public class User {
         if(req.gender() != null && !this.gender == req.gender()) this.gender = req.gender();
     }
 
+    public void updateUserProfileImage(String imageUrl) {
+        this.profileImage = imageUrl;
+    }
 }

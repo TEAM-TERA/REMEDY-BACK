@@ -68,6 +68,8 @@ dependencies {
 	//.env
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
+	// MINIO
+	implementation 'io.minio:minio:8.5.12'
 }
 
 tasks.named('test') {
