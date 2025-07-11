@@ -1,6 +1,5 @@
 package org.example.remedy.domain.user.service;
 
-import io.minio.MinioClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.minio.service.MinioService;
@@ -14,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
-public class UserService {
+public class UserProfileService {
     private final UserRepository userRepository;
     private final MinioService minioService;
 
