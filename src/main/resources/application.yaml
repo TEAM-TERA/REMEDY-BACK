@@ -16,6 +16,13 @@ spring:
     mongodb:
       uri: ${MONGO_URI}
 
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
+    username: ${ELASTICSEARCH_USERNAME:}
+    password: ${ELASTICSEARCH_PASSWORD:}
+    connection-timeout: 10s
+    socket-timeout: 60s
+
 server:
   servlet:
     context-path: /api/v1
