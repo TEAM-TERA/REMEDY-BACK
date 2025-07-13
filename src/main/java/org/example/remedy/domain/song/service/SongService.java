@@ -35,7 +35,7 @@ public class SongService {
      * 노래 추가 (YouTube → MP3 → HLS → DB 저장)
      */
     @Transactional
-    public SongListResponse createSongs(SongCreateRequest request) throws IOException, InterruptedException {
+    public SongListResponse createSongs(SongCreateRequest request) {
         List<Song> songs = new ArrayList<>();
 
         for (String title : request.titles()) {

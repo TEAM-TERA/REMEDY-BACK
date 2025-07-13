@@ -26,7 +26,7 @@ public class SongController {
      * Request Body: {"title": "좋은날"}
      */
     @PostMapping
-    public ResponseEntity<SongListResponse> addSongs(@RequestBody SongCreateRequest request) throws IOException, InterruptedException {
+    public ResponseEntity<SongListResponse> addSongs(@RequestBody SongCreateRequest request) {
         SongListResponse response = songService.createSongs(request);
         return ResponseEntity.ok(response);
     }
