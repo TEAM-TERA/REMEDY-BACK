@@ -3,17 +3,16 @@ package org.example.remedy.domain.song.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.domain.song.domain.Song;
+import org.example.remedy.domain.song.dto.YouTubeMetadata;
 import org.example.remedy.domain.song.dto.request.SongCreateRequest;
 import org.example.remedy.domain.song.dto.response.SongListResponse;
 import org.example.remedy.domain.song.dto.response.SongResponse;
-import org.example.remedy.domain.song.dto.YouTubeMetadata;
 import org.example.remedy.domain.song.dto.response.SongSearchListResponse;
 import org.example.remedy.domain.song.exception.SongNotFoundException;
 import org.example.remedy.domain.song.repository.SongRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
