@@ -31,7 +31,7 @@ import static org.example.remedy.domain.user.UserTestFactory.create;
 @ActiveProfiles("test")
 @Transactional
 @Import(DroppingMockConfig.class)
-class UserControllerTest {
+class UserProfileControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
