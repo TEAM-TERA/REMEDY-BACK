@@ -91,35 +91,4 @@ public class HLSService {
         logger.info("HLS 변환 완료: {}", relativePath);
         return relativePath;
     }
-
-    /**
-     * HLS 파일들 삭제
-     */
-    public void deleteHLSFiles(String songId) {
-        try {
-            Path hlsPath = Paths.get(hlsDirectory, songId);
-            if (Files.exists(hlsPath)) {
-                Files.walk(hlsPath)
-                        .sorted((a, b) -> b.compareTo(a)) // 역순 정렬 (파일 먼저, 디렉토리 나중)
-                        .forEach(path -> {
-                            try {
-                                Files.deleteIfExists(path);
-                            } catch (IOException e) {
-                                logger.warn("파일 삭제 실패: {}", path, e);
-                            }
-                        });
-                logger.info("HLS 파일 삭제 완료: {}", songId);
-            }
-        } catch (IOException e) {
-            logger.error("HLS 파일 삭제 중 오류 발생: {}", songId, e);
-        }
-    }
-
-    /**
-     * HLS 파일 존재 여부 확인
-     */
-    public boolean hlsExists(String songId) {
-        Path playlistPath = Paths.get(hlsDirectory, songId, "playlist.m3u8");
-        return Files.exists(playlistPath);
-    }
 }
