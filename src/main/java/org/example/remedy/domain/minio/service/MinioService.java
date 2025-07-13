@@ -3,6 +3,7 @@ package org.example.remedy.domain.minio.service;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.global.config.properties.MinioProperties;
