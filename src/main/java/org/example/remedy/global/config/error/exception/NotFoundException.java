@@ -6,8 +6,4 @@ public class NotFoundException extends BusinessBaseException {
     public NotFoundException(ErrorCode errorCode) {
         super(errorCode.getMessage(), errorCode);
     }
-
-    public NotFoundException(String message) {
-        super(ErrorCode.NOT_FOUND);
-    }
 }
