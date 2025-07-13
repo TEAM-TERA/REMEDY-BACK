@@ -1,14 +1,13 @@
 package org.example.remedy.domain.user.service;
 
-import io.minio.MinioClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.domain.minio.service.MinioService;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.repository.UserRepository;
+import org.example.remedy.global.storage.StorageUploader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final MinioService minioService;
+    private final StorageUploader storageUploader;
 
     public UserProfileResponse getMyProfile(User user) {
         return UserProfileResponse.newInstance(user);
@@ -30,7 +29,7 @@ public class UserService {
 
     @Transactional
     public UserProfileImageResponse updateUserProfileImage(MultipartFile image, User user) {
-        String imageUrl = minioService.createImageUrl(image);
+        String imageUrl = storageUploader.upload(image);
         user.updateUserProfileImage(imageUrl);
         userRepository.save(user);
         return UserProfileImageResponse.newInstance(user);
