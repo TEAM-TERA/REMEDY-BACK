@@ -22,7 +22,7 @@ public class Song {
     private String artist;       // YouTube 채널명/아티스트
 
     @Field(type = FieldType.Integer)
-    private Integer duration;    // 재생 시간 (초)
+    private int duration;    // 재생 시간 (초)
 
     @Field(type = FieldType.Keyword)
     private String hlsPath;      // HLS 플레이리스트 경로
