@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.song.dto.YouTubeMetadata;
+import org.example.remedy.domain.song.exception.MetadataNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +56,9 @@ public class YouTubeService {
         // JSON 파싱
         String output = new String(process.getInputStream().readAllBytes());
         JsonNode jsonNode = objectMapper.readTree(output);
-
+        if (jsonNode == null || jsonNode.isNull()) {
+            throw new MetadataNotFoundException();
+        }
         YouTubeMetadata metadata = YouTubeMetadata.newInstance(jsonNode);
 
         logger.info("메타데이터 추출 완료: {}", metadata);
