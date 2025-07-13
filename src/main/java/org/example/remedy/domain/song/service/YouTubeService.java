@@ -87,7 +87,7 @@ public class YouTubeService {
         pb.redirectErrorStream(true);
         Process process = pb.start();
 
-        boolean finished = process.waitFor(30, TimeUnit.SECONDS); // 5분 타임아웃
+        boolean finished = process.waitFor(30, TimeUnit.SECONDS); // 30초 타임아웃
         if (!finished) {
             process.destroyForcibly();
             throw new RuntimeException("MP3 다운로드 타임아웃");
