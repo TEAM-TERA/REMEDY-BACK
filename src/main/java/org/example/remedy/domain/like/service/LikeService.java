@@ -7,6 +7,7 @@ import org.example.remedy.domain.like.repository.LikeRepository;
 import org.springframework.stereotype.Service;
 import org.example.remedy.domain.like.domain.TargetType;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -17,12 +18,14 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     public void like(Long userId, String targetId, TargetType targetType) {
-        if (likeRepository.findByUserIdAndTargetIdAndTargetType(userId, targetId, targetType).isPresent()) {
-            return;
-        }
+        Optional<Like> existingLike = likeRepository.findByUserIdAndTargetIdAndTargetType(userId, targetId, targetType);
 
-        Like like = Like.getInstance(userId, targetId, targetType);
-        likeRepository.save(like);
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+        } else {
+            Like like = Like.getInstance(userId, targetId, targetType);
+            likeRepository.save(like);
+        }
     }
 
     public List<LikeResponse> getMyLikes(Long userId) {
