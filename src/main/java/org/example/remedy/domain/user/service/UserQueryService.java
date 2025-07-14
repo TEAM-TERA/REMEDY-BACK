@@ -30,6 +30,6 @@ public class UserQueryService {
         );
         return droppings.stream()
                 .map(MyDroppingResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
