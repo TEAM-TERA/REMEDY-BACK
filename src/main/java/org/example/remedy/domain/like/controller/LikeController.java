@@ -3,8 +3,10 @@ package org.example.remedy.domain.like.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.like.dto.response.LikeResponse;
 import org.example.remedy.domain.like.service.LikeService;
+import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.web.bind.annotation.*;
 import org.example.remedy.domain.like.domain.TargetType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -17,11 +19,11 @@ public class LikeController {
 
     @PostMapping
     public void like(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal AuthDetails authDetails,
             @RequestParam String targetId,
             @RequestParam TargetType targetType
     ) {
-        likeService.like(userId, targetId, targetType);
+        likeService.like(authDetails.getUserId(), targetId, targetType);
     }
 
     @GetMapping("/count")
