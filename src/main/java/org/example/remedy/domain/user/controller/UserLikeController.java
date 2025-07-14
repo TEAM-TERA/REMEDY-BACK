@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/like")
+@RequestMapping("/likes")
 public class UserLikeController {
 
     private final UserQueryService userQueryService;
