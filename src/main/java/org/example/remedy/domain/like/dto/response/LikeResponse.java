@@ -18,6 +18,9 @@ public class LikeResponse {
     }
 
     public static LikeResponse of(Like like) {
+        if (like == null) {
+            throw new IllegalArgumentException("Like cannot be null");
+        }
         return new LikeResponse(
                 like.getId(),
                 like.getTargetId(),
