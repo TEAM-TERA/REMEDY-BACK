@@ -3,6 +3,7 @@ package org.example.remedy.domain.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.dto.response.MyDroppingResponse;
 import org.example.remedy.domain.user.service.MyDroppingService;
+import org.example.remedy.domain.user.service.UserQueryService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,12 +18,12 @@ import java.util.List;
 @RequestMapping("/dropping")
 public class MyDroppingController {
 
-    private final MyDroppingService myDroppingService;
+    private final UserQueryService userQueryService;
 
     @GetMapping("/my-drop")
     public ResponseEntity<List<MyDroppingResponse>> getMyDroppings(
             @AuthenticationPrincipal AuthDetails authDetails) {
-        List<MyDroppingResponse> responses = myDroppingService.getMyDroppings(authDetails.getUserId());
+        List<MyDroppingResponse> responses = userQueryService.getUserDroppings(authDetails.getUserId());
         return ResponseEntity.ok(responses);
     }
 }
