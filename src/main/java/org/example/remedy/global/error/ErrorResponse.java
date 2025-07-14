@@ -1,4 +1,4 @@
-package org.example.remedy.global.config.error;
+package org.example.remedy.global.error;
 
 import lombok.AccessLevel;
 import lombok.Getter;

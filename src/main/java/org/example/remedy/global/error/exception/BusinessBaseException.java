@@ -1,6 +1,6 @@
-package org.example.remedy.global.config.error.exception;
+package org.example.remedy.global.error.exception;
 
-import org.example.remedy.global.config.error.ErrorCode;
+import org.example.remedy.global.error.ErrorCode;
 
 public class BusinessBaseException extends RuntimeException {
     private final ErrorCode errorCode;

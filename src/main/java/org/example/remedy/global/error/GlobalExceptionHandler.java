@@ -1,7 +1,7 @@
-package org.example.remedy.global.config.error;
+package org.example.remedy.global.error;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.remedy.global.config.error.exception.BusinessBaseException;
+import org.example.remedy.global.error.exception.BusinessBaseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
