@@ -4,8 +4,6 @@ import lombok.Getter;
 import org.example.remedy.domain.like.domain.Like;
 import org.example.remedy.domain.like.domain.TargetType;
 
-import java.time.LocalDateTime;
-
 @Getter
 public class LikeResponse {
 
