@@ -2,7 +2,6 @@ package org.example.remedy.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.dto.response.MyDroppingResponse;
-import org.example.remedy.domain.user.service.MyDroppingService;
 import org.example.remedy.domain.user.service.UserQueryService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.ResponseEntity;
