@@ -12,21 +12,18 @@ public class LikeResponse {
     private final Long id;
     private final String targetId;
     private final TargetType targetType;
-    private final LocalDateTime createdAt;
 
-    private LikeResponse(Long id, String targetId, TargetType targetType, LocalDateTime createdAt) {
+    private LikeResponse(Long id, String targetId, TargetType targetType) {
         this.id = id;
         this.targetId = targetId;
         this.targetType = targetType;
-        this.createdAt = createdAt;
     }
 
     public static LikeResponse of(Like like) {
         return new LikeResponse(
                 like.getId(),
                 like.getTargetId(),
-                like.getTargetType(),
-                like.getCreatedAt()
+                like.getTargetType()
         );
     }
 }
