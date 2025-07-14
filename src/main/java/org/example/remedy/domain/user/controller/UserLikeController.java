@@ -2,7 +2,6 @@ package org.example.remedy.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.like.dto.response.LikeResponse;
-import org.example.remedy.domain.user.facade.UserLikeFacade;
 import org.example.remedy.domain.user.service.UserQueryService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.web.bind.annotation.*;
