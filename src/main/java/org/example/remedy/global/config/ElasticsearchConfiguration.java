@@ -12,7 +12,7 @@ public class ElasticsearchConfiguration extends org.springframework.data.elastic
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
-                .connectedTo("localhost:9200")
+                .connectedTo(elasticsearchProperties.getElasticsearchUrl())
                 .build();
     }
 }
