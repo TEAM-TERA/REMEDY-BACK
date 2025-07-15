@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("songElasticsearchRepository")
 public interface SongElasticsearchRepository extends ElasticsearchRepository<Song, String> {
     List<Song> findByTitleContainingOrArtistContaining(String title, String artist);
 }
