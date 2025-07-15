@@ -12,6 +12,11 @@ services:
       - "9300:9300"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
+    command: >
+      bash -c "
+        bin/elasticsearch-plugin list | grep -q analysis-nori || bin/elasticsearch-plugin install analysis-nori;
+        /usr/local/bin/docker-entrypoint.sh eswrapper
+      "
 
 volumes:
   elasticsearch_data:
