@@ -3,24 +3,22 @@ package org.example.remedy.domain.like.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "likes")
+@Document(collection = "likes")
 public class Like {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private Long userId;
 
     private String targetId;
 
-    @Enumerated(EnumType.STRING)
     private TargetType targetType;
 
     private LocalDateTime createdAt;

@@ -7,11 +7,11 @@ import org.example.remedy.domain.like.domain.TargetType;
 @Getter
 public class LikeResponse {
 
-    private final Long id;
+    private final String id;
     private final String targetId;
     private final TargetType targetType;
 
-    private LikeResponse(Long id, String targetId, TargetType targetType) {
+    private LikeResponse(String id, String targetId, TargetType targetType) {
         this.id = id;
         this.targetId = targetId;
         this.targetType = targetType;
