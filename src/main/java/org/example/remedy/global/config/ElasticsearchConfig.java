@@ -18,8 +18,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
                 classes = SongElasticsearchRepository.class  // 오직 이것만 포함
         )
 )
-public class ElasticsearchConfiguration extends org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration {
-    private final ElasticsearchProperties elasticsearchProperties;
+public class ElasticsearchConfig {
 
     @Override
     public ClientConfiguration clientConfiguration() {
