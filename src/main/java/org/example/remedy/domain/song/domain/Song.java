@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.remedy.domain.song.dto.YouTubeMetadata;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Getter
 @NoArgsConstructor
-@org.springframework.data.mongodb.core.mapping.Document(collection = "songs")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "songs")
+@Document(indexName = "songs")
 public class Song {
     @Id
     private String id;

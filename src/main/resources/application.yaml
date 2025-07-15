@@ -1,8 +1,6 @@
 spring:
   application:
     name: Remedy
-  main:
-    allow-bean-definition-overriding: true
   jpa:
     hibernate:
       ddl-auto: update
