@@ -2,7 +2,6 @@ package org.example.remedy.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.song.repository.SongElasticsearchRepository;
-import org.example.remedy.global.config.properties.ElasticsearchProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
