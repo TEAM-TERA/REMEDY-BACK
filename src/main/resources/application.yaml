@@ -17,9 +17,7 @@ spring:
       uri: ${MONGO_URI}
 
   elasticsearch:
-    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:}
-    password: ${ELASTICSEARCH_PASSWORD:}
+    uris: ${ELASTICSEARCH_URL}
     connection-timeout: 10s
     socket-timeout: 60s
 
