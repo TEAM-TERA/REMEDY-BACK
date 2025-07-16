@@ -19,8 +19,8 @@ public class UserQueryService {
     private final LikeService likeService;
     private final DroppingRepository droppingRepository;
 
-    public List<LikeResponse> getMyLikes(Long userId) {
-        return likeService.getMyLikes(userId);
+    public List<LikeResponse> getUserLikes(Long userId) {
+        return likeService.getUserLikes(userId);
     }
 
     public List<MyDroppingResponse> getUserDroppings(Long userId) {

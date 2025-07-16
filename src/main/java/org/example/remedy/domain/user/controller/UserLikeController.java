@@ -17,6 +17,6 @@ public class UserLikeController {
 
     @GetMapping("/my-like")
     public List<LikeResponse> getMyLikes(@AuthenticationPrincipal AuthDetails authDetails) {
-        return userQueryService.getMyLikes(authDetails.getUserId());
+        return userQueryService.getUserLikes(authDetails.getUserId());
     }
 }

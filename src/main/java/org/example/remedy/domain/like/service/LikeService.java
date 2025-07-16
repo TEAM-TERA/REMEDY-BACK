@@ -28,7 +28,7 @@ public class LikeService {
         }
     }
 
-    public List<LikeResponse> getMyLikes(Long userId) {
+    public List<LikeResponse> getUserLikes(Long userId) {
         return likeRepository.findByUserId(userId).stream()
                 .map(LikeResponse::of)
                 .collect(Collectors.toList());
