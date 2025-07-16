@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LikeRepository extends MongoRepository<Like, String> {
+
     Optional<Like> findByUserIdAndTargetIdAndTargetType(Long userId, String targetId, TargetType targetType);
 
     List<Like> findByUserId(Long userId);
