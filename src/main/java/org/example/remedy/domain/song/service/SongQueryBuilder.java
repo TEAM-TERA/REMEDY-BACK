@@ -4,7 +4,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.domain.song.domain.Song;
-import org.example.remedy.domain.song.repository.SongElasticsearchRepository;
+import org.example.remedy.domain.song.repository.SongRepository;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Component
 public class SongQueryBuilder {
-    private final SongElasticsearchRepository songElasticsearchRepository;
+    private final SongRepository songRepository;
     private final ElasticsearchOperations elasticsearchOperations;
 
     /**
@@ -46,7 +46,7 @@ public class SongQueryBuilder {
             log.warn("Elasticsearch 검색 실패, fallback 사용: {}", e.getMessage());
         }
 
-        return songElasticsearchRepository
+        return songRepository
                 .findByTitleContainingOrArtistContaining(cleanQuery, cleanQuery); // 여기도 없으면 List.of() 반환됨
     }
 

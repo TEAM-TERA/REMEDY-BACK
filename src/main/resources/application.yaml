@@ -1,15 +1,14 @@
 spring:
   application:
     name: Remedy
-
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
   datasource:
-    url: ${POSTGRE_URL}
-    username: ${POSTGRE_USER}
-    password: ${POSTGRE_PASSWORD}
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   data:
@@ -17,9 +16,7 @@ spring:
       uri: ${MONGO_URI}
 
   elasticsearch:
-    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:}
-    password: ${ELASTICSEARCH_PASSWORD:}
+    uris: ${ELASTICSEARCH_URL}
     connection-timeout: 10s
     socket-timeout: 60s
 

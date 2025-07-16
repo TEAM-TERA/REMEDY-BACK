@@ -35,6 +35,7 @@ public class YouTubeService {
     public YouTubeMetadata extractMetadata(String title) throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(
                 "yt-dlp",
+                "--cookies-from-browser", "chrome",
                 "--dump-json",
                 "--no-download",
                 "ytsearch1:" + title
@@ -79,6 +80,7 @@ public class YouTubeService {
 
         ProcessBuilder pb = new ProcessBuilder(
                 "yt-dlp",
+                "--cookies-from-browser", "chrome",
                 "-x", "--audio-format", "mp3",
                 "--output", outputPath,
                 "ytsearch1:" + searchQuery

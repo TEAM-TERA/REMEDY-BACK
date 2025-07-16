@@ -9,6 +9,7 @@ import org.example.remedy.domain.song.dto.response.SongListResponse;
 import org.example.remedy.domain.song.dto.response.SongResponse;
 import org.example.remedy.domain.song.dto.response.SongSearchListResponse;
 import org.example.remedy.domain.song.exception.SongNotFoundException;
+import org.example.remedy.domain.song.mapper.Mapper;
 import org.example.remedy.domain.song.repository.SongRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +26,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class SongService {
-    private final SongRepository songRepository;
     private final YouTubeService youTubeService;
     private final HLSService hlsService;
     private final SongQueryBuilder songQueryBuilder;  // 검색 로직 위임
+    private final SongRepository songRepository;
 
     /**
      * 노래 추가 (YouTube → MP3 → HLS → DB 저장)
@@ -51,7 +52,9 @@ public class SongService {
             }
         }
 
-        songs = songRepository.saveAll(songs);
+        // songRepository의 Iterable<Song> 반환값을 Mapper 클래스의 toList()로 List로 변환
+        songs = Mapper.toList(songRepository.saveAll(songs));
+
         return SongListResponse.newInstanceBySongs(songs);
     }
 
@@ -76,7 +79,8 @@ public class SongService {
      * 모든 곡 조회 (관리자용)
      */
     public SongListResponse getAllSongs() {
-        List<Song> songs = songRepository.findAll();
+        // songRepository의 Iterable<Song> 반환값을 Mapper 클래스의 toList()로 List로 변환
+        List<Song> songs = Mapper.toList(songRepository.findAll());
         return SongListResponse.newInstanceBySongs(songs);
     }
 }
