@@ -1,6 +1,7 @@
 spring:
   application:
     name: Remedy
+
   jpa:
     hibernate:
       ddl-auto: update
