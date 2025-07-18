@@ -40,3 +40,7 @@ minio:
 logging:
   level:
     web: info
+
+dropping:
+  timeout:
+    seconds: 1

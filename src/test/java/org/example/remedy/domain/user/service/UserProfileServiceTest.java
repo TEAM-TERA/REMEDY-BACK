@@ -15,13 +15,13 @@ import static org.assertj.core.api.Assertions.*;
 import static org.example.remedy.domain.user.UserTestFactory.create;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserProfileServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserService userService;
+    private UserProfileService userService;
 
     @Test
     @DisplayName("사용자 프로필 조회 성공")

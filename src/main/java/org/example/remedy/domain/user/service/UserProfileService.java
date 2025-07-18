@@ -7,15 +7,15 @@ import org.example.remedy.domain.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.domain.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.repository.UserRepository;
-import org.example.remedy.global.storage.StorageUploader;
+import org.example.remedy.global.storage.minio.MinioStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
-public class UserService {
+public class UserProfileService {
     private final UserRepository userRepository;
-    private final StorageUploader storageUploader;
+    private final MinioStorageService minioStorageService;
 
     public UserProfileResponse getMyProfile(User user) {
         return UserProfileResponse.newInstance(user);
@@ -29,9 +29,10 @@ public class UserService {
 
     @Transactional
     public UserProfileImageResponse updateUserProfileImage(MultipartFile image, User user) {
-        String imageUrl = storageUploader.upload(image);
+        String imageUrl = minioStorageService.upload(image);
         user.updateUserProfileImage(imageUrl);
         userRepository.save(user);
         return UserProfileImageResponse.newInstance(user);
     }
 }
+

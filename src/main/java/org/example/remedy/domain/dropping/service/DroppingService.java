@@ -55,7 +55,7 @@ public class DroppingService {
     public List<DroppingSearchResponse> getUserDroppings(Long userId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<Dropping> droppings = droppingRepository.findByUserId(userId, sort);
-        
+
         return droppings.stream()
                 .map(DroppingSearchResponse::create)
                 .collect(Collectors.toList());
