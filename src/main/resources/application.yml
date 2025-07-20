@@ -1,10 +1,12 @@
 spring:
   application:
     name: Remedy
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}
