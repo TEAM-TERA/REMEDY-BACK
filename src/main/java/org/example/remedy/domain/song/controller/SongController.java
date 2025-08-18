@@ -1,11 +1,14 @@
 package org.example.remedy.domain.song.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.song.dto.request.SongCreateRequest;
 import org.example.remedy.domain.song.dto.response.SongListResponse;
 import org.example.remedy.domain.song.dto.response.SongResponse;
 import org.example.remedy.domain.song.dto.response.SongSearchListResponse;
 import org.example.remedy.domain.song.service.SongService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,5 +63,10 @@ public class SongController {
     public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
         SongResponse song = songService.getSongById(id);
         return ResponseEntity.ok(song);
+    }
+
+    @GetMapping("/{title}/stream")
+    public ResponseEntity<Resource> streamMp3(@PathVariable String title) throws IOException {
+        return songService.streamSong(title);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -44,12 +45,15 @@ public class DroppingRepositoryCustom implements CreateDropping, FindActiveDropp
         Point location = new Point(longitude, latitude);
         Distance radius = new Distance(distance, Metrics.KILOMETERS);
 
-        NearQuery nearQuery = NearQuery.near(location).maxDistance(radius).spherical(true);
+        NearQuery nearQuery = NearQuery.near(location)
+                .maxDistance(radius)
+                .spherical(true)
+                .query(Query.query(Criteria.where("isDeleted").is(false)
+                        .and("expiryDate").gt(LocalDateTime.now())));
 
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.geoNear(nearQuery, "distance"),
-                Aggregation.match(Criteria.where("isDeleted").is(false)
-                        .and("expiryDate").gt(LocalDateTime.now()))
+                Aggregation.project("userId", "songId", "content", "location", "distance", "latitude", "longitude", "address", "expiryDate", "createdAt", "isDeleted")
         );
 
         return mongoTemplate.aggregate(agg, "droppings", Dropping.class);

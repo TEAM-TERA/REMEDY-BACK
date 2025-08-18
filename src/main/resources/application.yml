@@ -2,6 +2,10 @@ spring:
   application:
     name: Remedy
 
+  web:
+    resources:
+      static-locations: classpath:/static/,file:./songs/music/
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,7 +19,9 @@ spring:
 
   data:
     mongodb:
-      uri: ${MONGO_URI}
+      uri: ${MONGO_DB_URI}
+    redis:
+      url: ${REDIS_URL}
 
   elasticsearch:
     uris: ${ELASTICSEARCH_URL}
@@ -27,11 +33,11 @@ server:
     context-path: /api/v1
 
 jwt:
-  access-time: ${access-time}
-  refresh-time: ${refresh-time}
-  prefix: ${prefix}
-  header: ${header}
-  secret-key: ${secret-key}
+  access-time: ${JWT_ACCESS_TIME}
+  refresh-time: ${JWT_REFRESH_TIME}
+  prefix: ${JWT_PREFIX}
+  header: ${JWT_HEADER}
+  secret-key: ${JWT_SECRET_KEY}
 
 minio:
   minio-url: ${MINIO_URL}
