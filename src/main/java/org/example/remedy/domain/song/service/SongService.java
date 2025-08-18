@@ -11,9 +11,17 @@ import org.example.remedy.domain.song.dto.response.SongSearchListResponse;
 import org.example.remedy.domain.song.exception.SongNotFoundException;
 import org.example.remedy.domain.song.mapper.Mapper;
 import org.example.remedy.domain.song.repository.SongRepository;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,5 +90,44 @@ public class SongService {
         // songRepository의 Iterable<Song> 반환값을 Mapper 클래스의 toList()로 List로 변환
         List<Song> songs = Mapper.toList(songRepository.findAll());
         return SongListResponse.newInstanceBySongs(songs);
+    }
+
+    public ResponseEntity<Resource> streamSong(String title) throws IOException {
+        // 1. 곡 정보 조회
+        Song song = songRepository.findByTitle(title)
+                .orElseThrow(SongNotFoundException::new);
+
+        // 2. MP3 파일 경로 구성 (안전한 파일명 사용)
+        String safeFileName = song.getTitle()
+                .replaceAll("[^a-zA-Z0-9가-힣\\s]", "_")  // 특수문자 제거
+                .trim();
+        String mp3FilePath = "songs/music/" + safeFileName + ".mp3";
+        Path filePath = Paths.get(mp3FilePath);
+
+        // 3. 파일 존재 확인
+        if (!Files.exists(filePath)) {
+            log.error("MP3 파일을 찾을 수 없습니다: {}", mp3FilePath);
+            throw new SongNotFoundException();
+        }
+
+        // 4. 파일 리소스 생성
+        Resource resource = new UrlResource(filePath.toUri());
+
+        // 5. 파일 크기 계산
+        long fileSize = Files.size(filePath);
+
+        // 6. HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "audio/mpeg");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + song.getTitle() + ".mp3\"");
+        headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize));
+        headers.add(HttpHeaders.ACCEPT_RANGES, "bytes");  // Range 요청 지원
+        headers.add(HttpHeaders.CACHE_CONTROL, "public, max-age=3600");  // 캐시 허용
+        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+        // 7. ResponseEntity 반환
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
     }
 }

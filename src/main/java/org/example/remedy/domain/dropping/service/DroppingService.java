@@ -30,7 +30,7 @@ public class DroppingService {
     @Transactional
     public void createDropping(AuthDetails authDetails, DroppingCreateRequest request) {
         Dropping dropping = Dropping.getInstance(authDetails.getUserId(), request);
-        
+        System.out.println(authDetails.getUserId());
         droppingRepositoryCustom.createDropping(dropping);
     }
 
