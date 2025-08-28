@@ -12,5 +12,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Optional<Like> findByUserAndDroppingId(User user, String droppingId);
 
     long countByUser(User user);
+
+    long countByDroppingId(String droppingId);
 }
 

@@ -1,6 +1,7 @@
 package org.example.remedy.domain.like.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.domain.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.example.remedy.domain.like.domain.Like;
@@ -43,5 +44,11 @@ public class LikeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         return likeRepository.countByUser(user);
+    }
+
+    public long getLikeCountByDropping(String droppingId) {
+        Dropping dropping = droppingRepository.findById(droppingId)
+                .orElseThrow(DroppingNotFoundException::new);
+        return likeRepository.countByDroppingId(droppingId);
     }
 }

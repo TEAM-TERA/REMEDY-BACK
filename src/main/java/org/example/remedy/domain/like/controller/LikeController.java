@@ -25,5 +25,11 @@ public class LikeController {
         long count = likeService.getLikeCountByUser(userId);
         return ResponseEntity.ok(Map.of("likeCount", count));
     }
+
+    @GetMapping("/count/dropping/{droppingId}")
+    public ResponseEntity<Map<String, Long>> getLikeCountByDropping(@PathVariable String droppingId) {
+        long count = likeService.getLikeCountByDropping(droppingId);
+        return ResponseEntity.ok(Map.of("likeCount", count));
+    }
 }
 
