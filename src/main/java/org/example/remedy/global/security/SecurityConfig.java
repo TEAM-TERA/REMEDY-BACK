@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/droppings/playing/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/songs/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/likes").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/likes/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 );
 
