@@ -32,6 +32,6 @@ public class UserService {
         String imageUrl = storageUploader.upload(image);
         user.updateUserProfileImage(imageUrl);
         userRepository.save(user);
-        return UserProfileImageResponse.newInstance(user);
+        return UserProfileImageResponse.newInstance(user.extractProfileImageUrl());
     }
 }

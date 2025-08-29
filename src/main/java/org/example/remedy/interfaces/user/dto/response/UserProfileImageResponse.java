@@ -1,13 +1,11 @@
 package org.example.remedy.interfaces.user.dto.response;
 
-import org.example.remedy.domain.user.User;
-
 public record UserProfileImageResponse(
         String profileImageUrl
 ) {
-    public static UserProfileImageResponse newInstance(User user) {
+    public static UserProfileImageResponse newInstance(String userProfileImageUrl) {
         return new UserProfileImageResponse(
-                user.getProfileImage()
+                userProfileImageUrl
         );
     }
 }

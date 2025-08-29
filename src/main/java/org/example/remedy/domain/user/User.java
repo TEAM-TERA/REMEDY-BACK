@@ -8,7 +8,6 @@ import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
 
 import java.time.LocalDate;
 
-@Getter
 @NoArgsConstructor
 @Table(name = "users")
 @Entity
@@ -62,6 +61,10 @@ public class User {
                 req.birthDate(),
                 req.gender()
         );
+    }
+
+    public String extractProfileImageUrl() {
+        return this.profileImage;
     }
 
     public void updateProfile(UserProfileUpdateRequest req) {
