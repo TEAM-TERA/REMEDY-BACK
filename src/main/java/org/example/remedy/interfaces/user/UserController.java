@@ -2,10 +2,11 @@ package org.example.remedy.interfaces.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.application.user.UserService;
 import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.interfaces.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.interfaces.user.dto.response.UserProfileResponse;
-import org.example.remedy.application.user.UserService;
+import org.example.remedy.application.user.UserServiceImpl;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
