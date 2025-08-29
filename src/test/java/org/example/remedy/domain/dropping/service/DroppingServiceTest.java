@@ -1,8 +1,8 @@
 package org.example.remedy.domain.dropping.service;
 
-import org.example.remedy.domain.dropping.domain.Dropping;
-import org.example.remedy.domain.dropping.repository.DroppingRepository;
-import org.example.remedy.domain.dropping.repository.FindActiveDroppings;
+import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.domain.dropping.DroppingRepository;
+import org.example.remedy.domain.dropping.FindActiveDroppings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
