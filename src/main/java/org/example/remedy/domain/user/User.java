@@ -3,7 +3,7 @@ package org.example.remedy.domain.user;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.remedy.interfaces.auth.dto.AuthRegisterRequest;
+import org.example.remedy.presentation.auth.dto.AuthRegisterRequest;
 
 import java.time.LocalDate;
 

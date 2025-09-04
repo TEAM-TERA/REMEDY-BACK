@@ -1,10 +1,9 @@
-package org.example.remedy.application.song;
+package org.example.remedy.infrastructure.persistence.song;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.domain.song.Song;
-import org.example.remedy.infrastructure.persistence.song.SongRepository;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class SongQueryBuilder {
+public class SongCustomRepository {
     private final SongRepository songRepository;
     private final ElasticsearchOperations elasticsearchOperations;
 

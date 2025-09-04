@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.user.mapper.UserMapper;
 import org.example.remedy.domain.user.User;
-import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
+import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
 import org.example.remedy.domain.user.UserRepository;
