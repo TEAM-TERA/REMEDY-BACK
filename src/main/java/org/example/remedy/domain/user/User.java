@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.remedy.interfaces.auth.dto.AuthRegisterRequest;
-import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
 
 import java.time.LocalDate;
 
@@ -64,10 +63,10 @@ public class User {
         );
     }
 
-    public void updateProfile(UserProfileUpdateRequest req) {
-        if(req.username() != null && !this.username.equals(req.username())) this.username = req.username();
-        if(req.birthDate() != null && !this.birthDate.equals(req.birthDate())) this.birthDate = req.birthDate();
-        if(req.gender() != null && !this.gender == req.gender()) this.gender = req.gender();
+    public void updateProfile(String username, LocalDate birthDate, boolean gender) {
+        if(username != null && !this.username.equals(username)) this.username = username;
+        if(birthDate != null && !this.birthDate.equals(birthDate)) this.birthDate = birthDate;
+        if(this.gender != gender) this.gender = gender;
     }
 
     public void updateUserProfileImage(String imageUrl) {
