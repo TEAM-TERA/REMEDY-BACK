@@ -3,6 +3,7 @@ package org.example.remedy.application.song;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.domain.song.Song;
+import org.example.remedy.domain.song.SongCustomRepository;
 import org.example.remedy.interfaces.song.dto.YouTubeMetadata;
 import org.example.remedy.interfaces.song.dto.request.SongCreateRequest;
 import org.example.remedy.interfaces.song.dto.response.SongListResponse;
@@ -33,10 +34,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SongService {
+public class SongServiceImpl implements SongService {
     private final YouTubeService youTubeService;
     private final HLSService hlsService;
-    private final SongQueryBuilder songQueryBuilder;  // 검색 로직 위임
+    private final SongCustomRepository songCustomRepository;  // 검색 로직 위임
     private final SongRepository songRepository;
 
     /**
@@ -79,7 +80,7 @@ public class SongService {
      * 유사도 기반 통합 검색 (SongQueryBuilder 위임)
      */
     public SongSearchListResponse searchSongs(String query) {
-        List<Song> songs = songQueryBuilder.searchSongs(query);
+        List<Song> songs = songCustomRepository.searchSongs(query);
         return SongSearchListResponse.newInstanceBySongList(songs);
     }
 
