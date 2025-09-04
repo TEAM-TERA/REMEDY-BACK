@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.remedy.interfaces.auth.dto.AuthRegisterRequest;
-import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
 
 import java.time.LocalDate;
 
