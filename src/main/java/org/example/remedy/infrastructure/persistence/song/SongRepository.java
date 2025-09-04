@@ -1,5 +1,6 @@
-package org.example.remedy.domain.song;
+package org.example.remedy.infrastructure.persistence.song;
 
+import org.example.remedy.domain.song.Song;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
