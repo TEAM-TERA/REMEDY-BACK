@@ -1,8 +1,8 @@
-package org.example.remedy.application.user;
+package org.example.remedy.application.user.mapper;
 
 import org.example.remedy.domain.user.User;
-import org.example.remedy.interfaces.user.dto.response.UserProfileImageResponse;
-import org.example.remedy.interfaces.user.dto.response.UserProfileResponse;
+import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
+import org.example.remedy.application.user.dto.response.UserProfileResponse;
 
 public class UserMapper {
     public static UserProfileImageResponse toUserProfileImageResponse(User user) {

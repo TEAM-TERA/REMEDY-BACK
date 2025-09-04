@@ -1,11 +1,11 @@
 package org.example.remedy.interfaces.song;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.application.song.SongServiceImpl;
 import org.example.remedy.interfaces.song.dto.request.SongCreateRequest;
 import org.example.remedy.interfaces.song.dto.response.SongListResponse;
 import org.example.remedy.interfaces.song.dto.response.SongResponse;
 import org.example.remedy.interfaces.song.dto.response.SongSearchListResponse;
-import org.example.remedy.application.song.SongService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import java.io.IOException;
 @RequestMapping("/songs")
 @RequiredArgsConstructor
 public class SongController {
-    private final SongService songService;
+    private final SongServiceImpl songService;
 
     /**
      * 관리자가 노래 제목 입력 시 전체 프로세스 수행

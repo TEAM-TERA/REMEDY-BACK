@@ -2,8 +2,8 @@ package org.example.remedy.application.user;
 
 import org.example.remedy.domain.user.User;
 import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
-import org.example.remedy.interfaces.user.dto.response.UserProfileImageResponse;
-import org.example.remedy.interfaces.user.dto.response.UserProfileResponse;
+import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
+import org.example.remedy.application.user.dto.response.UserProfileResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
