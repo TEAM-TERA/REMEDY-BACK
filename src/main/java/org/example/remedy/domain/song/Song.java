@@ -2,7 +2,7 @@ package org.example.remedy.domain.song;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.remedy.interfaces.song.dto.YouTubeMetadata;
+import org.example.remedy.presentation.song.dto.YouTubeMetadata;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;

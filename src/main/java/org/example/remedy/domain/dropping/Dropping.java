@@ -1,7 +1,7 @@
 package org.example.remedy.domain.dropping;
 
 import lombok.Getter;
-import org.example.remedy.interfaces.dropping.dto.request.DroppingCreateRequest;
+import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;

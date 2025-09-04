@@ -3,7 +3,7 @@ package org.example.remedy.application.song;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.interfaces.song.dto.YouTubeMetadata;
+import org.example.remedy.presentation.song.dto.YouTubeMetadata;
 import org.example.remedy.application.song.exception.MetadataNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
