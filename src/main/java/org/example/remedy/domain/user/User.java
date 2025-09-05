@@ -32,10 +32,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Provider provider;
-
     @Column(nullable = false)
     private LocalDate birthDate;
 
@@ -48,12 +44,11 @@ public class User {
         this.profileImage = "https://mblogthumb-phinf.pstatic.net/MjAyMDExMDFfODMg/MDAxNjA0MjI4ODc1MDgz.gQ3xcHrLXaZyxcFAoEcdB7tJWuRs7fKgOxQwPvsTsrUg.0OBtKHq2r3smX5guFQtnT7EDwjzksz5Js0wCV4zjfpcg.JPEG.gambasg/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EA%B8%B0%EB%B3%B8%ED%94%84%EB%A1%9C%ED%95%84_%EB%B3%B4%EB%9D%BC.jpg?type=w400";
         this.email = email;
         this.role = Role.ROLE_ADMIN;
-        this.provider = Provider.SELF;
         this.birthDate = birthDate;
         this.gender = gender;
     }
 
-    public static User newInstance(AuthRegisterRequest req, String password) {
+    public static User create(AuthRegisterRequest req, String password) {
         return new User(
                 req.username(),
                 password,
@@ -69,7 +64,7 @@ public class User {
         if(this.gender != gender) this.gender = gender;
     }
 
-    public void updateUserProfileImage(String imageUrl) {
+    public void updateProfileImage(String imageUrl) {
         this.profileImage = imageUrl;
     }
 }
