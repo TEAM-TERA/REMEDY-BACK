@@ -1,4 +1,4 @@
-package org.example.remedy.global.storage;
+package org.example.remedy.infrastructure.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 

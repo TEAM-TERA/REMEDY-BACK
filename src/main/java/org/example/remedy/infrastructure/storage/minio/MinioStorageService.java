@@ -1,4 +1,4 @@
-package org.example.remedy.global.storage.minio;
+package org.example.remedy.infrastructure.storage.minio;
 
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
@@ -7,7 +7,7 @@ import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.global.config.properties.MinioProperties;
-import org.example.remedy.global.storage.StorageUploader;
+import org.example.remedy.infrastructure.storage.StorageUploader;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
