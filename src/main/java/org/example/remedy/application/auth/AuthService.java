@@ -9,7 +9,7 @@ import org.example.remedy.application.auth.exception.InvalidPasswordException;
 import org.example.remedy.application.auth.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.application.user.exception.UserNotFoundException;
-import org.example.remedy.domain.user.UserRepository;
+import org.example.remedy.infrastructure.persistence.user.UserRepository;
 import org.example.remedy.global.security.jwt.TokenProvider;
 import org.example.remedy.global.security.util.CookieManager;
 import org.springframework.data.redis.core.RedisTemplate;
