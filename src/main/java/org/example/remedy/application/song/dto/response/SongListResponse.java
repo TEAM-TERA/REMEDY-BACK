@@ -1,4 +1,4 @@
-package org.example.remedy.presentation.song.dto.response;
+package org.example.remedy.application.song.dto.response;
 
 import org.example.remedy.domain.song.Song;
 

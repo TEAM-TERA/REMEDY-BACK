@@ -1,9 +1,9 @@
 package org.example.remedy.application.song;
 
 import org.example.remedy.presentation.song.dto.request.SongCreateRequest;
-import org.example.remedy.presentation.song.dto.response.SongListResponse;
-import org.example.remedy.presentation.song.dto.response.SongResponse;
-import org.example.remedy.presentation.song.dto.response.SongSearchListResponse;
+import org.example.remedy.application.song.dto.response.SongListResponse;
+import org.example.remedy.application.song.dto.response.SongResponse;
+import org.example.remedy.application.song.dto.response.SongSearchListResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
