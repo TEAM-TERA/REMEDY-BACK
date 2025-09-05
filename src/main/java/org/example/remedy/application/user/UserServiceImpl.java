@@ -7,7 +7,7 @@ import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
-import org.example.remedy.domain.user.UserRepository;
+import org.example.remedy.infrastructure.persistence.user.UserRepository;
 import org.example.remedy.infrastructure.storage.StorageUploader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

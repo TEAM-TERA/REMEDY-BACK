@@ -1,5 +1,6 @@
-package org.example.remedy.domain.user;
+package org.example.remedy.infrastructure.persistence.user;
 
+import org.example.remedy.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
