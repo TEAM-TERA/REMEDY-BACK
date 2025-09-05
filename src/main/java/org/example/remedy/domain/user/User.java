@@ -48,7 +48,7 @@ public class User {
         this.gender = gender;
     }
 
-    public static User newInstance(AuthRegisterRequest req, String password) {
+    public static User create(AuthRegisterRequest req, String password) {
         return new User(
                 req.username(),
                 password,
@@ -64,7 +64,7 @@ public class User {
         if(this.gender != gender) this.gender = gender;
     }
 
-    public void updateUserProfileImage(String imageUrl) {
+    public void updateProfileImage(String imageUrl) {
         this.profileImage = imageUrl;
     }
 }

@@ -33,7 +33,7 @@ public class AuthService {
 
         String password = passwordEncoder.encode(req.password());
 
-        User user = User.newInstance(req, password);
+        User user = User.create(req, password);
 
         userRepository.save(user);
     }

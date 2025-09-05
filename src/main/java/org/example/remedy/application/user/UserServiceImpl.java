@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserProfileImageResponse updateUserProfileImage(MultipartFile image, User user) {
         String imageUrl = storageUploader.upload(image);
-        user.updateUserProfileImage(imageUrl);
+        user.updateProfileImage(imageUrl);
         userRepository.save(user);
         return UserMapper.toUserProfileImageResponse(user);
     }
