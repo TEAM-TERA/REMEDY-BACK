@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 
 public interface SongService {
-    SongListResponse createSongs(SongCreateRequest request);
-
     SongResponse getSongById(String id);
 
     SongSearchListResponse searchSongs(String query);
