@@ -1,4 +1,4 @@
-package org.example.remedy.infrastructure.persistence.song;
+package org.example.remedy.application.song.port.out;
 
 import org.example.remedy.domain.song.Song;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
