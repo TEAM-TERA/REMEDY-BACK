@@ -2,8 +2,10 @@ package org.example.remedy.presentation.like;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.presentation.like.dto.LikeCountResponse;
 import org.example.remedy.presentation.like.dto.LikeRequest;
 import org.example.remedy.application.like.LikeService;
+import org.example.remedy.presentation.like.dto.LikeToggleResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,23 +19,23 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping
-    public ResponseEntity<Map<String, Boolean>> toggleLike(
+    public ResponseEntity<LikeToggleResponse> toggleLike(
             @AuthenticationPrincipal(expression = "userId") Long userId,
             @RequestBody @Valid LikeRequest request) {
         boolean liked = likeService.toggleLike(userId, request.droppingId());
-        return ResponseEntity.ok(Map.of("liked", liked));
+        return ResponseEntity.ok(new LikeToggleResponse(liked));
     }
 
     @GetMapping("/count/user/{userId}")
-    public ResponseEntity<Map<String, Long>> getLikeCountByUser(@PathVariable Long userId) {
+    public ResponseEntity<LikeCountResponse> getLikeCountByUser(@PathVariable Long userId) {
         long count = likeService.getLikeCountByUser(userId);
-        return ResponseEntity.ok(Map.of("likeCount", count));
+        return ResponseEntity.ok(new LikeCountResponse(count));
     }
 
     @GetMapping("/count/dropping/{droppingId}")
-    public ResponseEntity<Map<String, Long>> getLikeCountByDropping(@PathVariable String droppingId) {
+    public ResponseEntity<LikeCountResponse> getLikeCountByDropping(@PathVariable String droppingId) {
         long count = likeService.getLikeCountByDropping(droppingId);
-        return ResponseEntity.ok(Map.of("likeCount", count));
+        return ResponseEntity.ok(new LikeCountResponse(count));
     }
 }
 
