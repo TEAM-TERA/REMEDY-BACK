@@ -3,7 +3,7 @@ package org.example.remedy.presentation.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.application.auth.AuthService;
+import org.example.remedy.application.auth.port.in.AuthService;
 import org.example.remedy.presentation.auth.dto.AuthLoginRequest;
 import org.example.remedy.presentation.auth.dto.AuthRegisterRequest;
 import org.springframework.http.HttpStatus;
