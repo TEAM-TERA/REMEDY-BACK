@@ -10,7 +10,7 @@ import org.example.remedy.application.auth.exception.InvalidPasswordException;
 import org.example.remedy.application.auth.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.application.user.exception.UserNotFoundException;
-import org.example.remedy.infrastructure.persistence.user.UserRepository;
+import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.global.security.jwt.TokenProvider;
 import org.example.remedy.global.security.util.CookieManager;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
-    private final UserRepository userRepository;
+    private final UserPersistencePort userPersistencePort;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final CookieManager cookieManager;
@@ -30,19 +30,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public void signup (AuthRegisterRequest req) {
-        if (userRepository.existsUserByEmail(req.email())) throw new UserAlreadyExistsException();
+        if (userPersistencePort.existsUserByEmail(req.email())) throw new UserAlreadyExistsException();
 
         String password = passwordEncoder.encode(req.password());
 
         User user = User.create(req, password);
 
-        userRepository.save(user);
+        userPersistencePort.save(user);
     }
   
     public void login(AuthLoginRequest req, HttpServletResponse res) {
         String email = req.email();
 
-        User user = userRepository.findByEmail(email)
+        User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
 
         if(!passwordEncoder.matches(req.password(), user.getPassword())) throw new InvalidPasswordException();
