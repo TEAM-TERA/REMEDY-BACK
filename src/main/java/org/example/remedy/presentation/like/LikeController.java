@@ -1,5 +1,6 @@
 package org.example.remedy.presentation.like;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.presentation.like.dto.LikeRequest;
 import org.example.remedy.application.like.LikeService;
@@ -18,7 +19,7 @@ public class LikeController {
     @PostMapping
     public ResponseEntity<Map<String, Boolean>> toggleLike(
             @AuthenticationPrincipal(expression = "userId") Long userId,
-            @RequestBody LikeRequest request) {
+            @RequestBody @Valid LikeRequest request) {
         boolean liked = likeService.toggleLike(userId, request.droppingId());
         return ResponseEntity.ok(Map.of("liked", liked));
     }
