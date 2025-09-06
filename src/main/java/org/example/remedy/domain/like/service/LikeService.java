@@ -1,14 +1,15 @@
 package org.example.remedy.domain.like.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.domain.dropping.domain.Dropping;
-import org.example.remedy.domain.dropping.exception.DroppingNotFoundException;
-import org.example.remedy.domain.dropping.repository.DroppingRepository;
+
+import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
+import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.like.domain.Like;
 import org.example.remedy.domain.like.repository.LikeRepository;
-import org.example.remedy.domain.user.domain.User;
-import org.example.remedy.domain.user.exception.UserNotFoundException;
-import org.example.remedy.domain.user.repository.UserRepository;
+import org.example.remedy.application.user.exception.UserNotFoundException;
+import org.example.remedy.domain.user.User;
+import org.example.remedy.infrastructure.persistence.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

@@ -1,7 +1,8 @@
 package org.example.remedy.domain.like.domain;
 
 import jakarta.persistence.*;
-import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.user.User;
+
 
 @Entity
 @Table(name = "likes")
