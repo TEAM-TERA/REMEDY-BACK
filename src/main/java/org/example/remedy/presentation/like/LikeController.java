@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.remedy.presentation.like.dto.LikeRequest;
 import org.example.remedy.application.like.LikeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -15,8 +16,10 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping
-    public ResponseEntity<Map<String, Boolean>> toggleLike(@RequestBody LikeRequest request) {
-        boolean liked = likeService.toggleLike(request.userId(), request.droppingId());
+    public ResponseEntity<Map<String, Boolean>> toggleLike(
+            @AuthenticationPrincipal(expression = "userId") Long userId,
+            @RequestBody LikeRequest request) {
+        boolean liked = likeService.toggleLike(userId, request.droppingId());
         return ResponseEntity.ok(Map.of("liked", liked));
     }
 
