@@ -3,7 +3,6 @@ package org.example.remedy.infrastructure.persistence.song;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.remedy.application.song.port.out.SongRepository;
 import org.example.remedy.domain.song.Song;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
