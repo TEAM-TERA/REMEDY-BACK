@@ -2,7 +2,6 @@ package org.example.remedy.domain.song;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.remedy.presentation.song.dto.YouTubeMetadata;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -26,19 +25,4 @@ public class Song {
 
     @Field(type = FieldType.Keyword)
     private String hlsPath;      // HLS 플레이리스트 경로
-
-    public static Song newInstance(YouTubeMetadata metadata, String hlsPath) {
-        return new Song(
-                metadata.getTitle(),
-                metadata.getCleanArtist(),
-                metadata.getDuration(),
-                hlsPath
-        );
-    }
-    public Song(String title, String artist, int duration, String hlsPath) {
-        this.title = title;
-        this.artist = artist;
-        this.duration = duration;
-        this.hlsPath = hlsPath;
-    }
 }
