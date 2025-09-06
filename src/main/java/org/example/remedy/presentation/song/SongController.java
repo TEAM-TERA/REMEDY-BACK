@@ -2,7 +2,6 @@ package org.example.remedy.presentation.song;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.song.SongServiceImpl;
-import org.example.remedy.presentation.song.dto.request.SongCreateRequest;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
@@ -21,16 +20,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SongController {
     private final SongServiceImpl songService;
-
-    /**
-     * 관리자가 노래 제목 입력 시 전체 프로세스 수행
-     * Request Body: {"title": "좋은날"}
-     */
-    @PostMapping
-    public ResponseEntity<SongListResponse> addSongs(@RequestBody SongCreateRequest request) {
-        SongListResponse response = songService.createSongs(request);
-        return ResponseEntity.ok(response);
-    }
 
     /**
      * 모든 곡 목록 조회
