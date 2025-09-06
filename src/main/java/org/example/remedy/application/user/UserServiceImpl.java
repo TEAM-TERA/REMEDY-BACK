@@ -3,6 +3,7 @@ package org.example.remedy.application.user;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.user.mapper.UserMapper;
+import org.example.remedy.application.user.port.in.UserService;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
@@ -14,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final StorageUploader storageUploader;
 

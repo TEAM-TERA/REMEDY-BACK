@@ -1,4 +1,4 @@
-package org.example.remedy.application.user;
+package org.example.remedy.application.user.port.in;
 
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
