@@ -19,7 +19,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody AuthRegisterRequest req) {
-        authService.createUser(req);
+        authService.signup(req);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
