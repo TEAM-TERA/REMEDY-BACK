@@ -11,6 +11,7 @@ import org.example.remedy.application.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.infrastructure.persistence.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public class LikeService {
     private final UserRepository userRepository;
     private final DroppingRepository droppingRepository;
 
+    @Transactional
     public boolean toggleLike(Long userId, String droppingId) {
         User user = userRepository.findById(userId).
                 orElseThrow(UserNotFoundException::new);
@@ -41,12 +43,15 @@ public class LikeService {
         }
 
     }
+
+    @Transactional(readOnly = true)
     public long getLikeCountByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         return likeRepository.countByUser(user);
     }
 
+    @Transactional(readOnly = true)
     public long getLikeCountByDropping(String droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(DroppingNotFoundException::new);
