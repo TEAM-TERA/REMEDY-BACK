@@ -2,6 +2,7 @@ package org.example.remedy.presentation.like;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.global.security.auth.AuthDetails;
 import org.example.remedy.presentation.like.dto.response.LikeCountResponse;
 import org.example.remedy.presentation.like.dto.request.LikeRequest;
 import org.example.remedy.application.like.LikeService;
@@ -18,9 +19,9 @@ public class LikeController {
 
     @PostMapping
     public ResponseEntity<LikeToggleResponse> toggleLike(
-            @AuthenticationPrincipal(expression = "userId") Long userId,
+            @AuthenticationPrincipal AuthDetails authDetails,
             @RequestBody @Valid LikeRequest request) {
-        boolean liked = likeService.toggleLike(userId, request.droppingId());
+        boolean liked = likeService.toggleLike(authDetails.getUserId(), request.droppingId());
         return ResponseEntity.ok(new LikeToggleResponse(liked));
     }
 
