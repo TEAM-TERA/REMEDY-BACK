@@ -9,7 +9,7 @@ import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
 import org.example.remedy.application.user.port.out.UserPersistencePort;
-import org.example.remedy.infrastructure.storage.StorageUploader;
+import org.example.remedy.application.storage.port.out.StoragePort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserPersistencePort userPersistencePort;
-    private final StorageUploader storageUploader;
+    private final StoragePort storagePort;
 
     @Transactional
     public void updateUserProfile(UserProfileUpdateRequest req, User user) {
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public UserProfileImageResponse updateUserProfileImage(MultipartFile image, User user) {
-        String imageUrl = storageUploader.upload(image);
+        String imageUrl = storagePort.uploadFile(image);
         user.updateProfileImage(imageUrl);
         userPersistencePort.save(user);
         return UserMapper.toUserProfileImageResponse(user);
