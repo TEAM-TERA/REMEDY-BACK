@@ -1,4 +1,4 @@
-package org.example.remedy.presentation.like.dto.response;
+package org.example.remedy.application.like.dto.response;
 
 public record LikeCountResponse(
         long likeCount
