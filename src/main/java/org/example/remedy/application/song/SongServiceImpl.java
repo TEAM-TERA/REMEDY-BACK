@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.application.song.exception.SongNotFoundException;
 import org.example.remedy.application.song.port.in.SongService;
+import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.domain.song.Song;
 import org.example.remedy.global.util.mapper.Mapper;
 import org.example.remedy.infrastructure.persistence.song.SongCustomRepository;
-import org.example.remedy.application.song.port.out.SongRepository;
-import org.example.remedy.presentation.song.dto.YouTubeMetadata;
-import org.example.remedy.presentation.song.dto.request.SongCreateRequest;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
@@ -24,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,13 +35,13 @@ import java.util.List;
 public class SongServiceImpl implements SongService {
     private final HLSService hlsService;
     private final SongCustomRepository songCustomRepository;  // 검색 로직 위임
-    private final SongRepository songRepository;
+    private final SongPersistencePort songPersistencePort;
 
     /**
      * ID로 곡 조회
      */
     public SongResponse getSongById(String id) {
-        Song song = songRepository.findById(id)
+        Song song = songPersistencePort.findById(id)
                 .orElseThrow(SongNotFoundException::new);
         return SongResponse.newInstance(song);
     }
@@ -62,13 +59,13 @@ public class SongServiceImpl implements SongService {
      */
     public SongListResponse getAllSongs() {
         // songRepository의 Iterable<Song> 반환값을 Mapper 클래스의 toList()로 List로 변환
-        List<Song> songs = Mapper.toList(songRepository.findAll());
+        List<Song> songs = Mapper.toList(songPersistencePort.findAll());
         return SongListResponse.newInstanceBySongs(songs);
     }
 
     public ResponseEntity<Resource> streamSong(String title) throws IOException {
         // 1. 곡 정보 조회
-        Song song = songRepository.findByTitle(title)
+        Song song = songPersistencePort.findByTitle(title)
                 .orElseThrow(SongNotFoundException::new);
 
         // 2. MP3 파일 경로 구성 (안전한 파일명 사용)
