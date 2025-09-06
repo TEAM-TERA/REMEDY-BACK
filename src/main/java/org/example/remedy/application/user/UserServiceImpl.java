@@ -4,11 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.user.mapper.UserMapper;
 import org.example.remedy.domain.user.User;
-import org.example.remedy.interfaces.user.dto.request.UserProfileUpdateRequest;
+import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
-import org.example.remedy.domain.user.UserRepository;
-import org.example.remedy.global.storage.StorageUploader;
+import org.example.remedy.infrastructure.persistence.user.UserRepository;
+import org.example.remedy.infrastructure.storage.StorageUploader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserProfileImageResponse updateUserProfileImage(MultipartFile image, User user) {
         String imageUrl = storageUploader.upload(image);
-        user.updateUserProfileImage(imageUrl);
+        user.updateProfileImage(imageUrl);
         userRepository.save(user);
         return UserMapper.toUserProfileImageResponse(user);
     }

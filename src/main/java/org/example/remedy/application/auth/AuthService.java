@@ -3,13 +3,13 @@ package org.example.remedy.application.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.interfaces.auth.dto.AuthLoginRequest;
-import org.example.remedy.interfaces.auth.dto.AuthRegisterRequest;
+import org.example.remedy.presentation.auth.dto.AuthLoginRequest;
+import org.example.remedy.presentation.auth.dto.AuthRegisterRequest;
 import org.example.remedy.application.auth.exception.InvalidPasswordException;
 import org.example.remedy.application.auth.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.application.user.exception.UserNotFoundException;
-import org.example.remedy.domain.user.UserRepository;
+import org.example.remedy.infrastructure.persistence.user.UserRepository;
 import org.example.remedy.global.security.jwt.TokenProvider;
 import org.example.remedy.global.security.util.CookieManager;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,7 +33,7 @@ public class AuthService {
 
         String password = passwordEncoder.encode(req.password());
 
-        User user = User.newInstance(req, password);
+        User user = User.create(req, password);
 
         userRepository.save(user);
     }
