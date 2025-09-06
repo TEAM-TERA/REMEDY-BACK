@@ -1,4 +1,4 @@
-package org.example.remedy.domain.like.dto.request;
+package org.example.remedy.presentation.like.dto;
 
 public record LikeRequest(
         Long userId,

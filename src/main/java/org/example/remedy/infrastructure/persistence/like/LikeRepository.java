@@ -1,6 +1,6 @@
-package org.example.remedy.domain.like.repository;
+package org.example.remedy.infrastructure.persistence.like;
 
-import org.example.remedy.domain.like.domain.Like;
+import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

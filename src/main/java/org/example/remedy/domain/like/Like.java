@@ -1,4 +1,4 @@
-package org.example.remedy.domain.like.domain;
+package org.example.remedy.domain.like;
 
 import jakarta.persistence.*;
 import org.example.remedy.domain.user.User;

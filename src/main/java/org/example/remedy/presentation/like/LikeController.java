@@ -1,8 +1,8 @@
-package org.example.remedy.domain.like.controller;
+package org.example.remedy.presentation.like;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.domain.like.dto.request.LikeRequest;
-import org.example.remedy.domain.like.service.LikeService;
+import org.example.remedy.presentation.like.dto.LikeRequest;
+import org.example.remedy.application.like.LikeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
