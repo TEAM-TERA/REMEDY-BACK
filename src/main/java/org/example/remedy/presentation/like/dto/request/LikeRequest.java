@@ -1,4 +1,4 @@
-package org.example.remedy.presentation.like.dto;
+package org.example.remedy.presentation.like.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

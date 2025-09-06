@@ -2,15 +2,13 @@ package org.example.remedy.presentation.like;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.presentation.like.dto.LikeCountResponse;
-import org.example.remedy.presentation.like.dto.LikeRequest;
+import org.example.remedy.presentation.like.dto.response.LikeCountResponse;
+import org.example.remedy.presentation.like.dto.request.LikeRequest;
 import org.example.remedy.application.like.LikeService;
-import org.example.remedy.presentation.like.dto.LikeToggleResponse;
+import org.example.remedy.presentation.like.dto.response.LikeToggleResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
