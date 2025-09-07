@@ -9,6 +9,7 @@ import org.example.remedy.domain.comment.Comment;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentPersistencePort commentPersistencePort;
     private final DroppingRepository droppingRepository;
 
+    @Transactional
     @Override
     public void createComment(String content, User user, String droppingId) {
 
@@ -30,6 +32,7 @@ public class CommentServiceImpl implements CommentService {
         commentPersistencePort.save(comment);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CommentResponse> getCommentsByDropping(String droppingId) {
 
