@@ -24,7 +24,7 @@ public class CommentController {
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody CreateCommentRequest request
     ) {
-        commentService.createComment(request.content(),authDetails.getUser(), request.droppingId());
+        commentService.createComment(request.content(), authDetails.getUser(), request.droppingId());
         return ResponseEntity.ok().build();
     }
 
