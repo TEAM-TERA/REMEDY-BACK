@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.application.like.port.out.LikePersistencePort;
+import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.like.Like;
@@ -21,13 +22,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
     private final LikePersistencePort likePersistencePort;
-    private final UserRepository userRepository;
+    private final UserPersistencePort userPersistencePort;
     private final DroppingRepository droppingRepository;
 
     @Override
     @Transactional
     public boolean toggleLike(Long userId, String droppingId) {
-        User user = userRepository.findById(userId).
+        User user = userPersistencePort.findById(userId).
                 orElseThrow(UserNotFoundException::new);
 
         if (!droppingRepository.existsById(droppingId)) {
@@ -50,7 +51,7 @@ public class LikeServiceImpl implements LikeService {
     @Override
     @Transactional(readOnly = true)
     public long getLikeCountByUser(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userPersistencePort.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         return likePersistencePort.countByUser(user);
     }
