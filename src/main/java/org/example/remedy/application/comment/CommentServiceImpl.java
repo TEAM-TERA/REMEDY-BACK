@@ -10,7 +10,6 @@ import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
