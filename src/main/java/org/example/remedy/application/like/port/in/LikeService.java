@@ -1,8 +1,10 @@
 package org.example.remedy.application.like.port.in;
 
+import org.example.remedy.domain.user.User;
+
 public interface LikeService {
 
-    boolean toggleLike(Long userId, String droppingId);
-    long getLikeCountByUser(Long userId);
+    boolean toggleLike(User user, String droppingId);
+    long getLikeCountByUser(User user);
     long getLikeCountByDropping(String droppingId);
 }

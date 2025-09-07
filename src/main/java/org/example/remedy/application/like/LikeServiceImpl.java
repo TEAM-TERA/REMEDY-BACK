@@ -25,9 +25,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @Transactional
-    public boolean toggleLike(Long userId, String droppingId) {
-        User user = userPersistencePort.findById(userId).
-                orElseThrow(UserNotFoundException::new);
+    public boolean toggleLike(User user, String droppingId) {
 
         if (!droppingRepository.existsById(droppingId)) {
             throw new DroppingNotFoundException();
@@ -48,9 +46,8 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @Transactional(readOnly = true)
-    public long getLikeCountByUser(Long userId) {
-        User user = userPersistencePort.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+    public long getLikeCountByUser(User user) {
+
         return likePersistencePort.countByUser(user);
     }
 
