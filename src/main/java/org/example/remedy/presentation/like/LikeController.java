@@ -28,7 +28,7 @@ public class LikeController {
         return ResponseEntity.ok(new LikeToggleResponse(liked));
     }
 
-    @GetMapping("/count/user/")
+    @GetMapping("/count/user")
     public ResponseEntity<LikeCountResponse> getLikeCountByUser(
             @AuthenticationPrincipal AuthDetails authDetails) {
 
