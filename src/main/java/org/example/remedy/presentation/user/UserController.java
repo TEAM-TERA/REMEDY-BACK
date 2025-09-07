@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
-import org.example.remedy.application.user.UserService;
+import org.example.remedy.application.user.port.in.UserService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

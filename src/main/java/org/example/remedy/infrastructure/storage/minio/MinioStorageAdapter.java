@@ -7,7 +7,7 @@ import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.global.config.properties.MinioProperties;
-import org.example.remedy.infrastructure.storage.StorageUploader;
+import org.example.remedy.application.storage.port.out.StoragePort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -18,16 +18,12 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class MinioStorageService implements StorageUploader {
+public class MinioStorageAdapter implements StoragePort {
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
 
     @Override
-    public String upload(MultipartFile image) {
-        return uploadFile(image);
-    }
-
-    private String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             putFile(file, fileName, inputStream);
