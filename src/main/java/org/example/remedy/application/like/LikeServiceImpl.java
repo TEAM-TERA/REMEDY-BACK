@@ -3,6 +3,8 @@ package org.example.remedy.application.like;
 import lombok.RequiredArgsConstructor;
 
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
+import org.example.remedy.application.like.port.in.LikeService;
+import org.example.remedy.application.like.port.out.LikePersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.like.Like;
@@ -17,11 +19,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class LikeService {
-    private final LikeRepository likeRepository;
+public class LikeServiceImpl implements LikeService {
+    private final LikePersistencePort likePersistencePort;
     private final UserRepository userRepository;
     private final DroppingRepository droppingRepository;
 
+    @Override
     @Transactional
     public boolean toggleLike(Long userId, String droppingId) {
         User user = userRepository.findById(userId).
@@ -31,30 +34,32 @@ public class LikeService {
             throw new DroppingNotFoundException();
         }
 
-        Optional<Like> existingLike = likeRepository.findByUserAndDroppingId(user, droppingId);
+        Optional<Like> existingLike = likePersistencePort.findByUserAndDroppingId(user, droppingId);
 
         if (existingLike.isPresent()) {
-            likeRepository.delete(existingLike.get());
+            likePersistencePort.delete(existingLike.get());
             return false;
         } else {
             Like like = new Like(user, droppingId);
-            likeRepository.save(like);
+            likePersistencePort.save(like);
             return true;
         }
 
     }
 
+    @Override
     @Transactional(readOnly = true)
     public long getLikeCountByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        return likeRepository.countByUser(user);
+        return likePersistencePort.countByUser(user);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public long getLikeCountByDropping(String droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(DroppingNotFoundException::new);
-        return likeRepository.countByDroppingId(droppingId);
+        return likePersistencePort.countByDroppingId(droppingId);
     }
 }
