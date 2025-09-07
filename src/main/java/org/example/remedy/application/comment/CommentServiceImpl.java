@@ -5,13 +5,12 @@ import org.example.remedy.application.comment.dto.response.CommentResponse;
 import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
-import org.example.remedy.application.user.exception.UserNotFoundException;
-import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.domain.comment.Comment;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,13 +19,9 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentPersistencePort commentPersistencePort;
     private final DroppingRepository droppingRepository;
-    private final UserPersistencePort userPersistencePort;
 
     @Override
-    public void createComment(String content, Long userId, String droppingId) {
-
-        User user = userPersistencePort.findById(userId).
-                orElseThrow(UserNotFoundException::new);
+    public void createComment(String content, User user, String droppingId) {
 
         if (!droppingRepository.existsById(droppingId)) {
             throw new DroppingNotFoundException();
@@ -38,16 +33,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentResponse> getCommentsByDropping(String droppingId) {
-        if (!droppingRepository.existsById(droppingId)) {
+
+        List<Comment> comments = commentPersistencePort.findAllByDroppingIdDesc(droppingId);
+
+        if (comments.isEmpty() && !droppingRepository.existsById(droppingId)) {
             throw new DroppingNotFoundException();
         }
 
-        return commentPersistencePort.findAllByDroppingId(droppingId).stream()
-                .map(c -> new CommentResponse(
-                        c.getId(),
-                        c.getContent(),
-                        c.getDroppingId()
-                ))
+        return comments.stream()
+                .map(c -> new CommentResponse(c.getId(), c.getContent(), c.getDroppingId()))
                 .toList();
     }
 }

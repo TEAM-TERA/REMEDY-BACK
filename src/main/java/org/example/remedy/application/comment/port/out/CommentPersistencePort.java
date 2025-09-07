@@ -7,5 +7,5 @@ import java.util.List;
 public interface CommentPersistencePort {
     void save(Comment comment);
 
-    List<Comment> findAllByDroppingId(String droppingId);
+    List<Comment> findAllByDroppingIdDesc(String droppingId);
 }

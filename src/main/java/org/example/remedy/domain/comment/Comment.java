@@ -2,6 +2,7 @@ package org.example.remedy.domain.comment;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.user.User;
@@ -10,6 +11,7 @@ import org.example.remedy.domain.user.User;
 @NoArgsConstructor
 @Table(name = "comments")
 @AllArgsConstructor
+@Getter
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
