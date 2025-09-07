@@ -50,6 +50,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/droppings/{song-id}").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/droppings/playing/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/songs/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/likes/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 );
 

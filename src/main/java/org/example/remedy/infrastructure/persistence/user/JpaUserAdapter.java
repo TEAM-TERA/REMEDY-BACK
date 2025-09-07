@@ -27,4 +27,9 @@ public class JpaUserAdapter implements UserPersistencePort {
     public boolean existsUserByEmail(String email) {
         return userRepository.existsUserByEmail(email);
     }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
 }
