@@ -9,10 +9,8 @@ import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.like.Like;
-import org.example.remedy.infrastructure.persistence.like.LikeRepository;
 import org.example.remedy.application.user.exception.UserNotFoundException;
 import org.example.remedy.domain.user.User;
-import org.example.remedy.infrastructure.persistence.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

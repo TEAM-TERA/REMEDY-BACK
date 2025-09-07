@@ -6,7 +6,6 @@ import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.example.remedy.application.like.dto.response.LikeCountResponse;
 import org.example.remedy.presentation.like.dto.request.LikeRequest;
-import org.example.remedy.application.like.LikeServiceImpl;
 import org.example.remedy.application.like.dto.response.LikeToggleResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
