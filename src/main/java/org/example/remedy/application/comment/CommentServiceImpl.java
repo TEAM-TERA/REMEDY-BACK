@@ -1,6 +1,7 @@
 package org.example.remedy.application.comment;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.application.comment.dto.response.CommentResponse;
 import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
@@ -10,6 +11,8 @@ import org.example.remedy.domain.comment.Comment;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,20 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = new Comment(content, user, droppingId);
         commentPersistencePort.save(comment);
+    }
+
+    @Override
+    public List<CommentResponse> getCommentsByDropping(String droppingId) {
+        if (!droppingRepository.existsById(droppingId)) {
+            throw new DroppingNotFoundException();
+        }
+
+        return commentPersistencePort.findAllByDroppingId(droppingId).stream()
+                .map(c -> new CommentResponse(
+                        c.getId(),
+                        c.getContent(),
+                        c.getDroppingId()
+                ))
+                .toList();
     }
 }
