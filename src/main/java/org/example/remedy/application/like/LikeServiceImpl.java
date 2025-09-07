@@ -57,8 +57,11 @@ public class LikeServiceImpl implements LikeService {
     @Override
     @Transactional(readOnly = true)
     public long getLikeCountByDropping(String droppingId) {
-        Dropping dropping = droppingRepository.findById(droppingId)
-                .orElseThrow(DroppingNotFoundException::new);
+
+        if (!droppingRepository.existsById(droppingId)) {
+            throw new DroppingNotFoundException();
+        }
+
         return likePersistencePort.countByDroppingId(droppingId);
     }
 }
