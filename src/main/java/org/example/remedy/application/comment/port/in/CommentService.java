@@ -15,4 +15,6 @@ public interface CommentService {
     void updateComment(Long userId, Long commentId, CommentUpdateRequest request);
 
     void deleteComment(Long userId, Long commentId);
+
+    long countByDroppingId(String droppingId);
 }

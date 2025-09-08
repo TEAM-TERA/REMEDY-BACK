@@ -79,4 +79,11 @@ public class CommentServiceImpl implements CommentService {
 
         commentPersistencePort.delete(comment);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public long countByDroppingId(String droppingId) {
+
+        return commentPersistencePort.countByDroppingId(droppingId);
+    }
 }

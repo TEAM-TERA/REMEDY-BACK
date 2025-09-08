@@ -14,4 +14,6 @@ public interface CommentPersistencePort {
     Optional<Comment> findById(Long id);
 
     void delete(Comment comment);
+
+    long countByDroppingId(String droppingId);
 }

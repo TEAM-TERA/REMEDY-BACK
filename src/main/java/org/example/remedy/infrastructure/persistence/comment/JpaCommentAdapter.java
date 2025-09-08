@@ -33,4 +33,9 @@ public class JpaCommentAdapter implements CommentPersistencePort {
     public void delete(Comment comment) {
         commentRepository.delete(comment);
     }
+
+    @Override
+    public long countByDroppingId(String droppingId) {
+        return commentRepository.countByDroppingId(droppingId);
+    }
 }

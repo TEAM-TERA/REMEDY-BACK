@@ -54,4 +54,11 @@ public class CommentController {
         commentService.deleteComment(authDetails.getUserId(), commentId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/count/{droppingId}")
+    public ResponseEntity<Long> getCommentCount(@PathVariable String droppingId) {
+        long count = commentService.countByDroppingId(droppingId);
+
+        return ResponseEntity.ok(count);
+    }
 }
