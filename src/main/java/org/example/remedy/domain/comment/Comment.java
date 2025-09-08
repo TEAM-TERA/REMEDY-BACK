@@ -30,4 +30,8 @@ public class Comment {
         this.user = user;
         this.droppingId = droppingId;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

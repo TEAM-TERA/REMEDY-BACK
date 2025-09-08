@@ -2,12 +2,14 @@ package org.example.remedy.application.comment;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.comment.dto.response.CommentResponse;
+import org.example.remedy.application.comment.exception.CommentNotFoundException;
 import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.domain.comment.Comment;
 import org.example.remedy.domain.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
+import org.example.remedy.presentation.comment.dto.request.CommentUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,5 +47,16 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream()
                 .map(c -> new CommentResponse(c.getId(), c.getContent(), c.getDroppingId()))
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    public void updateComment(Long commentId ,CommentUpdateRequest request) {
+        Comment comment = commentPersistencePort.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+
+        comment.updateContent(request.content());
+
+        commentPersistencePort.save(comment);
     }
 }
