@@ -12,7 +12,7 @@ public interface CommentService {
 
     List<CommentResponse> getCommentsByDropping(String droppingId);
 
-    void updateComment(Long commentId, CommentUpdateRequest request);
+    void updateComment(Long userId, Long commentId, CommentUpdateRequest request);
 
-    void deleteComment(Long commentId);
+    void deleteComment(Long userId, Long commentId);
 }

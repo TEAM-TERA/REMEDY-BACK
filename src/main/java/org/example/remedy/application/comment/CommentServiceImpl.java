@@ -2,6 +2,7 @@ package org.example.remedy.application.comment;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.comment.dto.response.CommentResponse;
+import org.example.remedy.application.comment.exception.CommentAccessDeniedException;
 import org.example.remedy.application.comment.exception.CommentNotFoundException;
 import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
@@ -51,10 +52,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void updateComment(Long commentId ,CommentUpdateRequest request) {
+    public void updateComment(Long userId, Long commentId ,CommentUpdateRequest request) {
 
         Comment comment = commentPersistencePort.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.getUser().getUserId().equals(userId)) {
+            throw new CommentAccessDeniedException();
+        }
 
         comment.updateContent(request.content());
 
@@ -63,10 +68,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long userId, Long commentId) {
 
         Comment comment = commentPersistencePort.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.getUser().getUserId().equals(userId)) {
+            throw new CommentAccessDeniedException();
+        }
 
         commentPersistencePort.delete(comment);
     }

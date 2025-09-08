@@ -25,7 +25,9 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "S4", "존재하지 않는 엔티티입니다."),
     ALREADY_EXISTS(HttpStatus.CONFLICT, "S5", "이미 존재하는 엔티티입니다."),
 
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C1", "존재하지 않는 댓글입니다.");
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C1", "존재하지 않는 댓글입니다."),
+    COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C2",  "본인 댓글만 수정/삭제할 수 있습니다.");
+
 
     private final HttpStatus status;
     private final String code;
