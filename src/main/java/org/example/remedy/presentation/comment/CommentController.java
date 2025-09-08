@@ -7,6 +7,7 @@ import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.example.remedy.presentation.comment.dto.request.CommentUpdateRequest;
 import org.example.remedy.presentation.comment.dto.request.CreateCommentRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +21,16 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Void> createComment(
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody CreateCommentRequest request
     ) {
         commentService.createComment(request.content(), authDetails.getUser(), request.droppingId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/drop/{droppingId}")
+    @GetMapping("/droppings/{droppingId}")
     public ResponseEntity<List<CommentResponse>> getCommentsByDropping(
             @PathVariable String droppingId
     ) {
