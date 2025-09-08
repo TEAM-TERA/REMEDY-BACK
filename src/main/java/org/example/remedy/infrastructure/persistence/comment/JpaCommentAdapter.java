@@ -28,4 +28,9 @@ public class JpaCommentAdapter implements CommentPersistencePort {
     public Optional<Comment> findById(Long id) {
         return commentRepository.findById(id);
     }
+
+    @Override
+    public void delete(Comment comment) {
+        commentRepository.delete(comment);
+    }
 }

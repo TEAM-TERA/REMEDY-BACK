@@ -52,11 +52,22 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void updateComment(Long commentId ,CommentUpdateRequest request) {
+
         Comment comment = commentPersistencePort.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
 
         comment.updateContent(request.content());
 
         commentPersistencePort.save(comment);
+    }
+
+    @Transactional
+    @Override
+    public void deleteComment(Long commentId) {
+
+        Comment comment = commentPersistencePort.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+
+        commentPersistencePort.delete(comment);
     }
 }
