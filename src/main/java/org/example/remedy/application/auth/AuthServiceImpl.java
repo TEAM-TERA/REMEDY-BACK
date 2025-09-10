@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public void signup (AuthRegisterRequest req) {
-        if (userPersistencePort.existsUserByEmail(req.email())) throw new UserAlreadyExistsException();
+        if (userPersistencePort.existsUserByEmail(req.email())) throw UserAlreadyExistsException.EXCEPTION;
 
         String password = passwordEncoder.encode(req.password());
 
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
 
-        if(!passwordEncoder.matches(req.password(), user.getPassword())) throw new InvalidPasswordException();
+        if(!passwordEncoder.matches(req.password(), user.getPassword())) throw InvalidPasswordException.EXCEPTION;
 
         String accessToken = tokenProvider.createAccessToken(email);
         String refreshToken = tokenProvider.createRefreshToken(email);
