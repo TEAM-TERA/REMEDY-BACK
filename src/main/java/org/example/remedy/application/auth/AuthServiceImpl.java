@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
         String email = req.email();
 
         User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(()-> UserNotFoundException.EXCEPTION);
 
         if(!passwordEncoder.matches(req.password(), user.getPassword())) throw InvalidPasswordException.EXCEPTION;
 
