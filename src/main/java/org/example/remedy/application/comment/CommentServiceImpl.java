@@ -84,6 +84,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public long countByDroppingId(String droppingId) {
 
+        if (!droppingRepository.existsById(droppingId)) {
+            throw DroppingNotFoundException.EXCEPTION;
+        }
+
         return commentPersistencePort.countByDroppingId(droppingId);
     }
 }
