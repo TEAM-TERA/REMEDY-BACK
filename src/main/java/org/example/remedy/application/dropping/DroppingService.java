@@ -47,7 +47,7 @@ public class DroppingService {
 
     public DroppingFindResponse getDropping(String droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
-                .orElseThrow(DroppingNotFoundException::new);
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         
         return DroppingFindResponse.newInstance(dropping);
     }
@@ -64,7 +64,7 @@ public class DroppingService {
     @Transactional
     public void deleteDropping(String droppingId, Long userId) {
         Dropping dropping = droppingRepository.findById(droppingId)
-                .orElseThrow(DroppingNotFoundException::new);
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
         if (dropping.getUserId().equals(userId)) droppingRepository.deleteById(droppingId);
     }

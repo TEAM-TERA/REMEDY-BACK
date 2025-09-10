@@ -28,7 +28,7 @@ public class CommentServiceImpl implements CommentService {
     public void createComment(String content, User user, String droppingId) {
 
         if (!droppingRepository.existsById(droppingId)) {
-            throw new DroppingNotFoundException();
+            throw DroppingNotFoundException.EXCEPTION;
         }
 
         Comment comment = new Comment(content, user, droppingId);
@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentPersistencePort.findAllByDroppingIdDesc(droppingId);
 
         if (comments.isEmpty() && !droppingRepository.existsById(droppingId)) {
-            throw new DroppingNotFoundException();
+            throw DroppingNotFoundException.EXCEPTION;
         }
 
         return comments.stream()
