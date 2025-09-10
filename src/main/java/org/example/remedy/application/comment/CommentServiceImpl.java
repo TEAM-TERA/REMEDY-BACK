@@ -46,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return comments.stream()
-                .map(c -> new CommentResponse(c.getId(), c.getContent(), c.getDroppingId()))
+                .map(CommentResponse::of)
                 .toList();
     }
 
