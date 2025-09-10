@@ -42,7 +42,7 @@ public class SongServiceImpl implements SongService {
      */
     public SongResponse getSongById(String id) {
         Song song = songPersistencePort.findById(id)
-                .orElseThrow(SongNotFoundException::new);
+                .orElseThrow(()-> SongNotFoundException.EXCEPTION);
         return SongResponse.newInstance(song);
     }
 
@@ -66,7 +66,7 @@ public class SongServiceImpl implements SongService {
     public ResponseEntity<Resource> streamSong(String title) throws IOException {
         // 1. 곡 정보 조회
         Song song = songPersistencePort.findByTitle(title)
-                .orElseThrow(SongNotFoundException::new);
+                .orElseThrow(()-> SongNotFoundException.EXCEPTION);
 
         // 2. MP3 파일 경로 구성 (안전한 파일명 사용)
         String safeFileName = song.getTitle()
@@ -78,7 +78,7 @@ public class SongServiceImpl implements SongService {
         // 3. 파일 존재 확인
         if (!Files.exists(filePath)) {
             log.error("MP3 파일을 찾을 수 없습니다: {}", mp3FilePath);
-            throw new SongNotFoundException();
+            throw SongNotFoundException.EXCEPTION;
         }
 
         // 4. 파일 리소스 생성
