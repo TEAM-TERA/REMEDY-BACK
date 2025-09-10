@@ -55,10 +55,10 @@ public class CommentServiceImpl implements CommentService {
     public void updateComment(Long userId, Long commentId ,CommentUpdateRequest request) {
 
         Comment comment = commentPersistencePort.findById(commentId)
-                .orElseThrow(CommentNotFoundException::new);
+                .orElseThrow(()-> CommentNotFoundException.EXCEPTION);
 
         if (!comment.getUser().getUserId().equals(userId)) {
-            throw new CommentAccessDeniedException();
+            throw CommentAccessDeniedException.EXCEPTION;
         }
 
         comment.updateContent(request.content());
@@ -71,10 +71,10 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long userId, Long commentId) {
 
         Comment comment = commentPersistencePort.findById(commentId)
-                .orElseThrow(CommentNotFoundException::new);
+                .orElseThrow(()->CommentNotFoundException.EXCEPTION);
 
         if (!comment.getUser().getUserId().equals(userId)) {
-            throw new CommentAccessDeniedException();
+            throw CommentAccessDeniedException.EXCEPTION;
         }
 
         commentPersistencePort.delete(comment);

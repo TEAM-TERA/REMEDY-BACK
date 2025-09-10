@@ -4,7 +4,10 @@ import org.example.remedy.global.error.ErrorCode;
 import org.example.remedy.global.error.exception.BusinessBaseException;
 
 public class CommentAccessDeniedException extends BusinessBaseException {
-    public CommentAccessDeniedException() {
+
+    public static CommentAccessDeniedException EXCEPTION = new CommentAccessDeniedException();
+
+    private CommentAccessDeniedException() {
         super(ErrorCode.COMMENT_ACCESS_DENIED);
     }
 }
