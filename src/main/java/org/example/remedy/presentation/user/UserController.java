@@ -2,8 +2,8 @@ package org.example.remedy.presentation.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.application.dropping.DroppingService;
-import org.example.remedy.presentation.dropping.dto.response.DroppingSearchResponse;
+import org.example.remedy.application.dropping.DroppingServiceImpl;
+import org.example.remedy.application.dropping.dto.response.DroppingSearchResponse;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final DroppingService droppingService;
+    private final DroppingServiceImpl droppingService;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
