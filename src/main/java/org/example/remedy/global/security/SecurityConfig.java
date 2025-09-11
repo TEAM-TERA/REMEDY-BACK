@@ -42,6 +42,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                        // Admin endpoints
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         //dropping
                         .requestMatchers(HttpMethod.GET, "/droppings").permitAll()
                         .requestMatchers(HttpMethod.POST, "/droppings").hasAnyRole("USER", "ADMIN")
