@@ -2,6 +2,8 @@ package org.example.remedy.presentation.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.application.dropping.DroppingService;
+import org.example.remedy.presentation.dropping.dto.response.DroppingSearchResponse;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
@@ -13,11 +15,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final DroppingService droppingService;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
@@ -39,5 +44,11 @@ public class UserController {
     public ResponseEntity<UserProfileImageResponse> updateProfileImage(@RequestParam MultipartFile image, @AuthenticationPrincipal AuthDetails authDetails) {
         UserProfileImageResponse res = userService.updateUserProfileImage(image, authDetails.getUser());
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/my-drop")
+    public ResponseEntity<List<DroppingSearchResponse>> getMyDroppings(@AuthenticationPrincipal AuthDetails authDetails) {
+        List<DroppingSearchResponse> responses = droppingService.getUserDroppings(authDetails.getUserId());
+        return ResponseEntity.ok(responses);
     }
 }

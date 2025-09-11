@@ -50,10 +50,4 @@ public class DroppingController {
         droppingService.deleteDropping(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/my-drop")
-    public ResponseEntity<List<DroppingSearchResponse>> getMyDroppings(@AuthenticationPrincipal AuthDetails authDetails) {
-        List<DroppingSearchResponse> responses = droppingService.getUserDroppings(authDetails.getUserId());
-        return ResponseEntity.ok(responses);
-    }
 }
