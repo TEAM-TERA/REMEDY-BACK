@@ -26,7 +26,23 @@ public enum ErrorCode {
     ALREADY_EXISTS(HttpStatus.CONFLICT, "S5", "이미 존재하는 엔티티입니다."),
 
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C1", "존재하지 않는 댓글입니다."),
-    COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C2", "본인 댓글만 수정/삭제할 수 있습니다.");
+    COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C2", "본인 댓글만 수정/삭제할 수 있습니다."),
+
+    ACHIEVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "A1", "존재하지 않는 도전과제입니다."),
+    USER_ACHIEVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "A2", "사용자 도전과제 진행 정보를 찾을 수 없습니다."),
+    ACHIEVEMENT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "A3", "이미 완료된 도전과제입니다."),
+    ACHIEVEMENT_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "A4", "완료되지 않은 도전과제입니다."),
+    REWARD_ALREADY_CLAIMED(HttpStatus.BAD_REQUEST, "A5", "이미 보상을 받은 도전과제입니다."),
+
+    USER_CURRENCY_NOT_FOUND(HttpStatus.NOT_FOUND, "M1", "사용자 재화 정보를 찾을 수 없습니다."),
+    INSUFFICIENT_CURRENCY(HttpStatus.BAD_REQUEST, "M2", "재화가 부족합니다."),
+
+    TITLE_NOT_FOUND(HttpStatus.NOT_FOUND, "T1", "존재하지 않는 칭호입니다."),
+    TITLE_ALREADY_EXISTS(HttpStatus.CONFLICT, "T2", "이미 존재하는 칭호명입니다."),
+    TITLE_NOT_OWNED(HttpStatus.FORBIDDEN, "T3", "보유하지 않은 칭호입니다."),
+    TITLE_ALREADY_OWNED(HttpStatus.BAD_REQUEST, "T4", "이미 보유한 칭호입니다."),
+    TITLE_ALREADY_EQUIPPED(HttpStatus.BAD_REQUEST, "T5", "이미 장착한 칭호입니다."),
+    TITLE_NOT_EQUIPPED(HttpStatus.BAD_REQUEST, "T6", "장착되지 않은 칭호입니다.");
 
     private final HttpStatus status;
     private final String code;
