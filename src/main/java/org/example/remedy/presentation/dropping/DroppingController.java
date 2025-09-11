@@ -7,10 +7,13 @@ import org.example.remedy.presentation.dropping.dto.response.DroppingFindRespons
 import org.example.remedy.presentation.dropping.dto.response.DroppingSearchListResponse;
 import org.example.remedy.application.dropping.DroppingService;
 import org.example.remedy.global.security.auth.AuthDetails;
+import org.example.remedy.presentation.dropping.dto.response.DroppingSearchResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/droppings")
@@ -46,5 +49,11 @@ public class DroppingController {
             @AuthenticationPrincipal AuthDetails authDetails) {
         droppingService.deleteDropping(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/my-drop")
+    public ResponseEntity<List<DroppingSearchResponse>> getMyDroppings(@AuthenticationPrincipal AuthDetails authDetails) {
+        List<DroppingSearchResponse> responses = droppingService.getUserDroppings(authDetails.getUserId());
+        return ResponseEntity.ok(responses);
     }
 }
