@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/likes")
@@ -43,5 +45,6 @@ public class LikeController {
         long count = likeService.getLikeCountByDropping(droppingId);
         return ResponseEntity.ok(new LikeCountResponse(count));
     }
+
 }
 

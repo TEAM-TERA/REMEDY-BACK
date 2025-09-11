@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.DroppingServiceImpl;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchResponse;
+import org.example.remedy.application.like.port.in.LikeService;
+import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.application.user.dto.response.UserProfileImageResponse;
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
@@ -23,6 +25,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final DroppingServiceImpl droppingService;
+    private final LikeService likeService;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
@@ -50,5 +53,14 @@ public class UserController {
     public ResponseEntity<List<DroppingSearchResponse>> getMyDroppings(@AuthenticationPrincipal AuthDetails authDetails) {
         List<DroppingSearchResponse> responses = droppingService.getUserDroppings(authDetails.getUserId());
         return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/my-like")
+    public ResponseEntity<List<String>> getLikedDropping(
+            @AuthenticationPrincipal AuthDetails authDetails) {
+
+        User user = authDetails.getUser();
+        List<String> droppingId = likeService.getLikedDroppingsByUser(user);
+        return ResponseEntity.ok(droppingId);
     }
 }

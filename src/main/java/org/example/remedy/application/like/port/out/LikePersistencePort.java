@@ -3,6 +3,8 @@ package org.example.remedy.application.like.port.out;
 import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface LikePersistencePort {
@@ -12,4 +14,5 @@ public interface LikePersistencePort {
     long countByDroppingId(String droppingId);
     void save(Like like);
     void delete(Like like);
+    List<Like> findByUser(User user);
 }

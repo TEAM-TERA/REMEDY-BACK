@@ -13,6 +13,7 @@ import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,5 +59,12 @@ public class LikeServiceImpl implements LikeService {
         }
 
         return likePersistencePort.countByDroppingId(droppingId);
+    }
+
+    @Override
+    public List<String> getLikedDroppingsByUser(User user) {
+        return likePersistencePort.findByUser(user).stream()
+                .map(Like::getDroppingId)
+                .toList();
     }
 }
