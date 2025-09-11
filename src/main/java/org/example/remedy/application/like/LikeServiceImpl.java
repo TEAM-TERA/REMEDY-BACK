@@ -28,7 +28,7 @@ public class LikeServiceImpl implements LikeService {
     public boolean toggleLike(User user, String droppingId) {
 
         if (!droppingRepository.existsById(droppingId)) {
-            throw new DroppingNotFoundException();
+            throw DroppingNotFoundException.EXCEPTION;
         }
 
         Optional<Like> existingLike = likePersistencePort.findByUserAndDroppingId(user, droppingId);
@@ -56,7 +56,7 @@ public class LikeServiceImpl implements LikeService {
     public long getLikeCountByDropping(String droppingId) {
 
         if (!droppingRepository.existsById(droppingId)) {
-            throw new DroppingNotFoundException();
+            throw DroppingNotFoundException.EXCEPTION;
         }
 
         return likePersistencePort.countByDroppingId(droppingId);

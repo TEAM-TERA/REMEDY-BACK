@@ -30,7 +30,7 @@ public class DroppingRepositoryCustom implements CreateDropping, FindActiveDropp
         if (results.getMappedResults().isEmpty()){
             mongoTemplate.insert(dropping);
         } else {
-            throw new DroppingAlreadyExistsException();
+            throw DroppingAlreadyExistsException.EXCEPTION;
         }
     }
 
