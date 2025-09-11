@@ -6,6 +6,7 @@ import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -37,5 +38,10 @@ public class JpaLikeAdapter implements LikePersistencePort {
     @Override
     public void delete(Like like) {
         likeRepository.delete(like);
+    }
+
+    @Override
+    public List<Like> findByUser(User user) {
+        return likeRepository.findByUser(user);
     }
 }

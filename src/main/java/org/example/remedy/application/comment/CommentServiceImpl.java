@@ -7,8 +7,9 @@ import org.example.remedy.application.comment.exception.CommentNotFoundException
 import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
+import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.domain.comment.Comment;
-import org.example.remedy.domain.dropping.DroppingRepository;
+import org.example.remedy.infrastructure.persistence.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.comment.dto.request.CommentUpdateRequest;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,13 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentPersistencePort commentPersistencePort;
-    private final DroppingRepository droppingRepository;
+    private final DroppingPersistencePort droppingPersistencePort;
 
     @Transactional
     @Override
     public void createComment(String content, User user, String droppingId) {
 
-        if (!droppingRepository.existsById(droppingId)) {
+        if (!droppingPersistencePort.existsById(droppingId)) {
             throw DroppingNotFoundException.EXCEPTION;
         }
 
@@ -41,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
 
         List<Comment> comments = commentPersistencePort.findAllByDroppingIdDesc(droppingId);
 
-        if (comments.isEmpty() && !droppingRepository.existsById(droppingId)) {
+        if (comments.isEmpty() && !droppingPersistencePort.existsById(droppingId)) {
             throw DroppingNotFoundException.EXCEPTION;
         }
 
@@ -84,7 +85,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public long countByDroppingId(String droppingId) {
 
-        if (!droppingRepository.existsById(droppingId)) {
+        if (!droppingPersistencePort.existsById(droppingId)) {
             throw DroppingNotFoundException.EXCEPTION;
         }
 

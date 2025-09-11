@@ -1,5 +1,6 @@
-package org.example.remedy.domain.dropping;
+package org.example.remedy.infrastructure.persistence.dropping;
 
+import org.example.remedy.domain.dropping.Dropping;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

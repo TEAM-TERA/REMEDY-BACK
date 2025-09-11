@@ -1,7 +1,10 @@
-package org.example.remedy.domain.dropping;
+package org.example.remedy.infrastructure.persistence.dropping;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.exception.DroppingAlreadyExistsException;
+import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
+import org.example.remedy.domain.dropping.Dropping;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
@@ -15,13 +18,15 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
-public class DroppingRepositoryCustom implements CreateDropping, FindActiveDroppings {
+public class MongoDroppingAdapter implements DroppingPersistencePort {
+
+    private final DroppingRepository repository;
     private final MongoTemplate mongoTemplate;
 
-    @Override
     public void createDropping(Dropping dropping) {
         AggregationResults<Dropping> results = findDroppingsByAroundRadius(
                 dropping.getLocation().getX(),
@@ -38,6 +43,36 @@ public class DroppingRepositoryCustom implements CreateDropping, FindActiveDropp
     public List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude) {
         AggregationResults<Dropping> results = findDroppingsByAroundRadius(longitude, latitude, 0.1);
         return results.getMappedResults();
+    }
+
+    @Override
+    public Optional<Dropping> findById(String id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public List<Dropping> findByUserId(Long userId, Sort sort) {
+        return repository.findByUserId(userId, sort);
+    }
+
+    @Override
+    public List<Dropping> findExpiredAndNotDeletedDroppings(LocalDateTime now) {
+        return repository.findExpiredAndNotDeletedDroppings(now);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public void saveAll(List<Dropping> droppings) {
+        repository.saveAll(droppings);
+    }
+
+    @Override
+    public boolean existsById(String id) {
+        return repository.existsById(id);
     }
 
     private AggregationResults<Dropping> findDroppingsByAroundRadius(double longitude, double latitude, double distance) {
