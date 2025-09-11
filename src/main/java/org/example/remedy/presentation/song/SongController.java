@@ -5,6 +5,7 @@ import org.example.remedy.application.song.SongServiceImpl;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
+import org.example.remedy.application.song.port.in.SongService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import java.io.IOException;
 @RequestMapping("/songs")
 @RequiredArgsConstructor
 public class SongController {
-    private final SongServiceImpl songService;
+    private final SongService songService;
 
     /**
      * 모든 곡 목록 조회
