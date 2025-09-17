@@ -11,4 +11,6 @@ public interface RunningPersistencePort {
 
     List<Running> findByUser(User user);
 
+    boolean existsByUserAndSongId(User user, String songId);
+
 }

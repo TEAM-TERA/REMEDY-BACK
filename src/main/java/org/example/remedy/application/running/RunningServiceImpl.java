@@ -3,6 +3,8 @@ package org.example.remedy.application.running;
 import lombok.RequiredArgsConstructor;
 
 import org.example.remedy.application.running.dto.response.RunningResponse;
+import org.example.remedy.application.running.exception.RunningAlreadyExistsException;
+import org.example.remedy.application.running.exception.RunningNotFoundException;
 import org.example.remedy.application.running.port.in.RunningService;
 import org.example.remedy.application.running.port.out.RunningPersistencePort;
 import org.example.remedy.domain.running.Running;
@@ -21,6 +23,11 @@ public class RunningServiceImpl implements RunningService {
     @Override
     public void save(User user, RunningRequest request) {
 
+        if (runningPersistencePort.existsByUserAndSongId(user, request.songId())) {
+            throw RunningAlreadyExistsException.EXCEPTION;
+        }
+
+
         Running running = Running.builder()
                 .user(user)
                 .distanceKm(request.distanceKm())
@@ -36,6 +43,11 @@ public class RunningServiceImpl implements RunningService {
     @Override
     public List<RunningResponse> getRunningRecords(User user) {
         List<Running> runs = runningPersistencePort.findByUser(user);
+
+        if (runs.isEmpty()) {
+            throw RunningNotFoundException.EXCEPTION;
+        }
+
         return runs.stream()
                 .map(RunningResponse::from)
                 .toList();

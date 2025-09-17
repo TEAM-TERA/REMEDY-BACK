@@ -23,4 +23,10 @@ public class JpaRunningAdapter implements RunningPersistencePort {
     public List<Running> findByUser(User user) {
         return runningRepository.findByUser(user);
     }
+
+    @Override
+    public boolean existsByUserAndSongId(User user, String songId) {
+        return runningRepository.existsByUserAndSongId(user, songId);
+    }
+
 }

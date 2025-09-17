@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface RunningRepository extends JpaRepository<Running, Long> {
     List<Running> findByUser(User user);
+
+    boolean existsByUserAndSongId(User user, String songId);
 }
