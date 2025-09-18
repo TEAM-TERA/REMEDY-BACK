@@ -20,9 +20,8 @@ public class RunningController {
 
     private final RunningService runningService;
 
-
     @PostMapping("/record")
-    public ResponseEntity<Void> saveRecord(
+    public ResponseEntity<Void> createRecord(
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody RunningRequest request) {
 
