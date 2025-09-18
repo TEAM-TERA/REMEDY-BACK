@@ -1,7 +1,7 @@
 package org.example.remedy.presentation.song;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.application.song.SongServiceImpl;
+
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;

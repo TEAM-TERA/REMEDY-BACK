@@ -6,8 +6,6 @@ import org.example.remedy.application.dropping.exception.DroppingNotFoundExcepti
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.application.like.port.out.LikePersistencePort;
-import org.example.remedy.application.user.port.out.UserPersistencePort;
-import org.example.remedy.infrastructure.persistence.dropping.DroppingRepository;
 import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Service;

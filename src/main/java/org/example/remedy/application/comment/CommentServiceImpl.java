@@ -9,7 +9,6 @@ import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.domain.comment.Comment;
-import org.example.remedy.infrastructure.persistence.dropping.DroppingRepository;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.comment.dto.request.CommentUpdateRequest;
 import org.springframework.stereotype.Service;

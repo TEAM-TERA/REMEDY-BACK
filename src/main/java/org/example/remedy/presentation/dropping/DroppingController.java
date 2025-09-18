@@ -6,7 +6,6 @@ import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
-import org.example.remedy.application.dropping.DroppingServiceImpl;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
