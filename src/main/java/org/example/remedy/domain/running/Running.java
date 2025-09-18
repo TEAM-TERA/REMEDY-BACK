@@ -1,6 +1,8 @@
 package org.example.remedy.domain.running;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import org.example.remedy.domain.user.User;
 
@@ -23,9 +25,11 @@ public class Running {
     private User user;
 
     @Column(nullable = false)
+    @PositiveOrZero
     private double distanceKm;
 
     @Column(nullable = false)
+    @Positive
     private int durationSec;
 
     private String songId;
