@@ -1,11 +1,13 @@
 package org.example.remedy.domain.like;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.example.remedy.domain.user.User;
 
 
 @Entity
 @Table(name = "likes")
+@Getter
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

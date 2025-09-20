@@ -1,4 +1,4 @@
-package org.example.remedy.presentation.dropping.dto.response;
+package org.example.remedy.application.dropping.dto.response;
 
 import org.example.remedy.domain.dropping.Dropping;
 

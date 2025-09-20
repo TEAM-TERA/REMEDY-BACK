@@ -14,7 +14,9 @@ public class UserMapper {
     public static UserProfileResponse toUserProfileResponse(User user) {
         return new UserProfileResponse(
                 user.getUsername(),
-                user.getProfileImage()
+                user.getProfileImage(),
+                user.isGender(),
+                user.getBirthDate()
         );
     }
 }
