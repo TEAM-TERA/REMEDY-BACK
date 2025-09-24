@@ -41,6 +41,26 @@ minio:
   secret-key: ${MINIO_SECRET_KEY}
   default-bucket: ${DEFAULT_BUCKET}
 
+youtube:
+  api:
+    key: ${YOUTUBE_API_KEY}
+
+spotify:
+  client:
+    id: ${SPOTIFY_CLIENT_ID}
+    secret: ${SPOTIFY_CLIENT_SECRET}
+
+app:
+  download:
+    directory: ${DOWNLOAD_DIRECTORY}
+
+  hls:
+    directory: ${HLS_DIRECTORY}
+    segment-duration: ${HLS_SEGMENT_DURATION}
+  album:
+    images:
+      directory: ${ALBUM_IMAGES_DIRECTORY}
+
 logging:
   level:
     web: info

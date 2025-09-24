@@ -8,4 +8,5 @@ public interface SongPersistencePort {
     Optional<Song> findById(String id);
     Iterable<Song> findAll();
     Optional<Song> findByTitle(String title);
+    Song save(Song song);
 }

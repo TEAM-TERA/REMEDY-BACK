@@ -1,16 +1,20 @@
 package org.example.remedy.presentation.song;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
+import org.example.remedy.application.song.SongBatchProcessingService;
+import org.example.remedy.application.song.SongServiceImpl;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
-import org.example.remedy.application.song.port.in.SongService;
+import org.example.remedy.presentation.song.dto.request.SongBatchProcessRequest;
+import org.example.remedy.presentation.song.dto.response.SongBatchProcessResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 관리자용 API 컨트롤러
@@ -20,7 +24,8 @@ import java.io.IOException;
 @RequestMapping("/songs")
 @RequiredArgsConstructor
 public class SongController {
-    private final SongService songService;
+    private final SongServiceImpl songService;
+    private final SongBatchProcessingService songBatchProcessingService;
 
     /**
      * 모든 곡 목록 조회
@@ -56,5 +61,21 @@ public class SongController {
     @GetMapping("/{title}/stream")
     public ResponseEntity<Resource> streamMp3(@PathVariable String title) throws IOException {
         return songService.streamSong(title);
+    }
+
+    /**
+     * 노래 일괄 처리 API
+     * POST /api/v1/songs/batch-process
+     * 노래 제목 리스트를 받아서 YouTube 다운로드, Spotify 앨범 이미지, HLS 변환 후 저장
+     */
+    @PostMapping("/batch-process")
+    public ResponseEntity<SongBatchProcessResponse> processSongBatch(
+            @Valid @RequestBody SongBatchProcessRequest request) {
+
+        List<SongBatchProcessingService.SongProcessingResult> results =
+            songBatchProcessingService.processSongBatch(request.getSongTitles());
+
+        SongBatchProcessResponse response = SongBatchProcessResponse.from(results);
+        return ResponseEntity.ok(response);
     }
 }
