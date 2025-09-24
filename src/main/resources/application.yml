@@ -2,10 +2,6 @@ spring:
   application:
     name: Remedy
 
-  web:
-    resources:
-      static-locations: classpath:/static/,file:./songs/music/
-
   jpa:
     hibernate:
       ddl-auto: update
