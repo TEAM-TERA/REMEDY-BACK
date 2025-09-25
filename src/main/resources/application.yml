@@ -16,6 +16,8 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_DB_URI}
+      auto-index-creation: true
+      
     redis:
       url: ${REDIS_URL}
 
