@@ -49,7 +49,7 @@ public class SpotifyImageService {
 
     public SpotifyAlbumImageResult searchAndDownloadAlbumImage(String songTitle, String artist) {
         try {
-            ensureValidToken();
+            ensureValidTokenInternal();
 
             String query = buildSearchQuery(songTitle, artist);
             SpotifyTrackInfo trackInfo = searchTrackInfo(query);
@@ -79,10 +79,14 @@ public class SpotifyImageService {
         }
     }
 
-    private void ensureValidToken() throws IOException, ParseException {
+    public void ensureValidToken() throws IOException, ParseException {
         if (accessToken == null || System.currentTimeMillis() >= tokenExpiryTime) {
             refreshAccessToken();
         }
+    }
+
+    private void ensureValidTokenInternal() throws IOException, ParseException {
+        ensureValidToken();
     }
 
     private void refreshAccessToken() throws IOException, ParseException {
