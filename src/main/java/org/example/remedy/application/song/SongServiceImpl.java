@@ -11,6 +11,7 @@ import org.example.remedy.infrastructure.persistence.song.SongCustomRepository;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +37,10 @@ public class SongServiceImpl implements SongService {
     private final HLSService hlsService;
     private final SongCustomRepository songCustomRepository;  // 검색 로직 위임
     private final SongPersistencePort songPersistencePort;
+
+    @Value("${app.hls.directory}")
+    private String hlsBasePath;
+
 
     /**
      * ID로 곡 조회
@@ -63,40 +68,68 @@ public class SongServiceImpl implements SongService {
         return SongListResponse.newInstanceBySongs(songs);
     }
 
+    /**
+     * 기존 스트리밍 방식 (제목으로 검색)
+     */
     public ResponseEntity<Resource> streamSong(String title) throws IOException {
-        // 1. 곡 정보 조회
         Song song = songPersistencePort.findByTitle(title)
-                .orElseThrow(()-> SongNotFoundException.EXCEPTION);
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
 
-        // 2. MP3 파일 경로 구성 (안전한 파일명 사용)
-        String safeFileName = song.getTitle()
-                .replaceAll("[^a-zA-Z0-9가-힣\\s]", "_")  // 특수문자 제거
-                .trim();
-        String mp3FilePath = "songs/music/" + safeFileName + ".mp3";
-        Path filePath = Paths.get(mp3FilePath);
+        // HLS 플레이리스트 파일로 리다이렉트
+        return streamHLS(song.getId());
+    }
 
-        // 3. 파일 존재 확인
-        if (!Files.exists(filePath)) {
-            log.error("MP3 파일을 찾을 수 없습니다: {}", mp3FilePath);
-            throw SongNotFoundException.EXCEPTION;
+    /**
+     * HLS 스트리밍 (플레이리스트 파일 제공)
+     */
+    public ResponseEntity<Resource> streamHLS(String songId) throws IOException {
+        Song song = songPersistencePort.findById(songId)
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
+
+        // HLS 플레이리스트 파일 경로 구성
+        Path playlistPath = Paths.get(hlsBasePath, songId, "playlist.m3u8");
+
+        if (!Files.exists(playlistPath)) {
+            throw new IllegalArgumentException("HLS 플레이리스트 파일을 찾을 수 없습니다: " + songId);
         }
 
-        // 4. 파일 리소스 생성
-        Resource resource = new UrlResource(filePath.toUri());
+        Resource resource = new UrlResource(playlistPath.toUri());
 
-        // 5. 파일 크기 계산
-        long fileSize = Files.size(filePath);
-
-        // 6. HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "audio/mpeg");
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + song.getTitle() + ".mp3\"");
-        headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize));
-        headers.add(HttpHeaders.ACCEPT_RANGES, "bytes");  // Range 요청 지원
-        headers.add(HttpHeaders.CACHE_CONTROL, "public, max-age=3600");  // 캐시 허용
-        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.apple.mpegurl");
+        headers.add(HttpHeaders.CACHE_CONTROL, "max-age=3600");
 
-        // 7. ResponseEntity 반환
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
+
+    /**
+     * HLS 세그먼트 파일 제공
+     */
+    public ResponseEntity<Resource> getHLSSegment(String songId, String segmentName) throws IOException {
+        // 곡 존재 확인
+        Song song = songPersistencePort.findById(songId)
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
+
+        // 보안을 위해 파일명 검증
+        if (!segmentName.matches("segment\\d+\\.ts")) {
+            throw new IllegalArgumentException("유효하지 않은 세그먼트 파일명: " + segmentName);
+        }
+
+        // HLS 세그먼트 파일 경로 구성
+        Path segmentPath = Paths.get(hlsBasePath, songId, segmentName);
+
+        if (!Files.exists(segmentPath)) {
+            throw new IllegalArgumentException("HLS 세그먼트 파일을 찾을 수 없습니다: " + segmentName);
+        }
+
+        Resource resource = new UrlResource(segmentPath.toUri());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "video/mp2t");
+        headers.add(HttpHeaders.CACHE_CONTROL, "max-age=86400"); // 세그먼트는 더 긴 캐시
+
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(resource);

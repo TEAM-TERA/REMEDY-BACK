@@ -44,7 +44,7 @@ public class SongController {
      */
     @GetMapping("/search")
     public ResponseEntity<SongSearchListResponse> searchSongs(@RequestParam String query) {
-        SongSearchListResponse response = songService.searchSongs(query);
+    SongSearchListResponse response = songService.searchSongs(query);
         return ResponseEntity.ok(response);
     }
 
@@ -58,9 +58,24 @@ public class SongController {
         return ResponseEntity.ok(song);
     }
 
-    @GetMapping("/{title}/stream")
-    public ResponseEntity<Resource> streamMp3(@PathVariable String title) throws IOException {
-        return songService.streamSong(title);
+    /**
+     * HLS 스트리밍 (플레이리스트 제공)
+     * GET /api/v1/songs/{songId}/stream
+     */
+    @GetMapping("/{songId}/stream")
+    public ResponseEntity<Resource> streamHLS(@PathVariable String songId) throws IOException {
+        return songService.streamHLS(songId);
+    }
+
+    /**
+     * HLS 세그먼트 파일 제공
+     * GET /api/v1/songs/{songId}/segments/{segmentName}
+     */
+    @GetMapping("/{songId}/segments/{segmentName}")
+    public ResponseEntity<Resource> getHLSSegment(
+            @PathVariable String songId,
+            @PathVariable String segmentName) throws IOException {
+        return songService.getHLSSegment(songId, segmentName);
     }
 
     /**
