@@ -15,6 +15,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +36,6 @@ public class SongBatchProcessingService {
 
     public List<SongProcessingResult> processSongBatch(List<String> songTitles) {
         logger.info("노래 일괄 처리 시작: {} 곡", songTitles.size());
-        long startTime = System.currentTimeMillis();
 
         // Spotify 토큰을 미리 확보 (배치 처리 시작 시 한 번만)
         try {
@@ -53,17 +54,82 @@ public class SongBatchProcessingService {
                         }))
                 .toList();
 
-        // 모든 작업이 완료될 때까지 대기 (non-blocking)
+        // 타임아웃을 설정하여 무한 대기 방지 (최대 10분)
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(
                 futures.toArray(new CompletableFuture[0])
         );
 
-        // 결과 수집 (모든 작업 완료 후)
-        List<SongProcessingResult> results = allFutures
-                .thenApply(v -> futures.stream()
-                        .map(CompletableFuture::join)
-                        .collect(Collectors.toList()))
-                .join();
+        List<SongProcessingResult> results = new ArrayList<>();
+        try {
+            // 진행 상황을 주기적으로 체크하면서 대기
+            long waitStart = System.currentTimeMillis();
+            while (!allFutures.isDone()) {
+                try {
+                    allFutures.get(30, TimeUnit.SECONDS); // 30초마다 체크
+                    break; // 완료되면 루프 종료
+                } catch (TimeoutException te) {
+                    // 진행 상황 로깅
+                    long completedCount = futures.stream()
+                            .mapToLong(f -> f.isDone() ? 1 : 0)
+                            .sum();
+                    long elapsed = System.currentTimeMillis() - waitStart;
+                    logger.info("배치 처리 진행 상황: {}/{} 곡 완료, 경과시간: {}ms",
+                            completedCount, futures.size(), elapsed);
+
+                    // 전체 10분 타임아웃 체크
+                    if (elapsed > 600_000) { // 10분
+                        throw new TimeoutException("전체 배치 처리 10분 타임아웃");
+                    }
+                }
+            }
+
+            // 모든 작업 완료 후 결과 수집
+            results = futures.stream()
+                    .map(future -> {
+                        try {
+                            return future.get(1, TimeUnit.SECONDS); // 이미 완료된 상태이므로 짧은 타임아웃
+                        } catch (Exception e) {
+                            logger.error("완료된 작업 결과 수집 실패", e);
+                            return SongProcessingResult.failure("알 수 없음", e.getMessage());
+                        }
+                    })
+                    .collect(Collectors.toList());
+
+        } catch (TimeoutException e) {
+            logger.error("배치 처리 타임아웃 발생 - 부분 결과 반환");
+            // 타임아웃 발생 시 완료된 작업들의 결과만 수집
+            results = futures.stream()
+                    .map(future -> {
+                        if (future.isDone()) {
+                            try {
+                                return future.get(100, TimeUnit.MILLISECONDS);
+                            } catch (Exception ex) {
+                                logger.warn("완료된 작업 결과 가져오기 실패", ex);
+                                return SongProcessingResult.failure("타임아웃", "작업 타임아웃");
+                            }
+                        } else {
+                            future.cancel(true); // 미완료 작업 취소
+                            return SongProcessingResult.failure("타임아웃", "작업이 시간 내에 완료되지 않음");
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("배치 처리 중 예외 발생", e);
+            // 예외 발생 시에도 가능한 결과들 수집
+            results = futures.stream()
+                    .map(future -> {
+                        if (future.isDone() && !future.isCancelled()) {
+                            try {
+                                return future.get(100, TimeUnit.MILLISECONDS);
+                            } catch (Exception ex) {
+                                return SongProcessingResult.failure("오류", ex.getMessage());
+                            }
+                        } else {
+                            return SongProcessingResult.failure("처리 실패", "배치 처리 중 오류 발생");
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
 
         long endTime = System.currentTimeMillis();
         logger.info("노래 일괄 처리 완료: {} 곡 처리, 소요시간: {}ms",
@@ -96,14 +162,14 @@ public class SongBatchProcessingService {
                     CompletableFuture.supplyAsync(() ->
                             youTubeDownloadService.searchAndDownload(songTitle + " audio"), ioExecutorService);
 
-            // 두 작업이 모두 완료되면 결합
+            // 두 작업이 모두 완료되면 결합 (타임아웃 5분)
             CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(spotifyFuture, youtubeFuture);
 
-            // 결과 대기 및 처리
-            combinedFuture.join();
+            // 타임아웃을 설정하여 개별 작업도 무한 대기 방지
+            combinedFuture.get(5, TimeUnit.MINUTES);
 
-            SpotifyImageService.SpotifyAlbumImageResult spotifyResult = spotifyFuture.join();
-            YouTubeDownloadService.YouTubeSearchResult youtubeResult = youtubeFuture.join();
+            SpotifyImageService.SpotifyAlbumImageResult spotifyResult = spotifyFuture.get(10, TimeUnit.SECONDS);
+            YouTubeDownloadService.YouTubeSearchResult youtubeResult = youtubeFuture.get(10, TimeUnit.SECONDS);
 
             // Spotify에서 찾은 정보를 우선 사용, 없으면 원본 제목 사용
             String finalTitle = spotifyResult.isFound() ? spotifyResult.getTrackName() : songTitle;
@@ -118,7 +184,7 @@ public class SongBatchProcessingService {
                 }
             }, cpuBoundPool);
 
-            String hlsPath = hlsFuture.join();
+            String hlsPath = hlsFuture.get(5, TimeUnit.MINUTES); // HLS 변환도 타임아웃 설정
 
             // 4. Song 엔티티 생성 및 저장
             Song song = Song.builder()
