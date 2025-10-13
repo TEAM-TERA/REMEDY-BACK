@@ -132,8 +132,8 @@ public class SongBatchProcessingService {
         }
 
         long endTime = System.currentTimeMillis();
-        logger.info("노래 일괄 처리 완료: {} 곡 처리, 소요시간: {}ms",
-                results.size(), endTime - startTime);
+        /*logger.info("노래 일괄 처리 완료: {} 곡 처리, 소요시간: {}ms",
+                results.size(), endTime - startTime);*/
 
         return results;
     }
