@@ -27,4 +27,9 @@ public class ElasticsearchSongAdapter implements SongPersistencePort {
     public Optional<Song> findByTitle(String title) {
         return songRepository.findByTitle(title);
     }
+
+    @Override
+    public Song save(Song song) {
+        return songRepository.save(song);
+    }
 }

@@ -16,4 +16,8 @@ public interface SongService {
     SongListResponse getAllSongs();
 
     ResponseEntity<Resource> streamSong(String title) throws IOException;
+
+    ResponseEntity<Resource> streamHLS(String songId) throws IOException;
+
+    ResponseEntity<Resource> getHLSSegment(String songId, String segmentName) throws IOException;
 }

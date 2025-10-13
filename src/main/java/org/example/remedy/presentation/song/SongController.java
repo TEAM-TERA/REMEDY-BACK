@@ -1,16 +1,20 @@
 package org.example.remedy.presentation.song;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
+import org.example.remedy.application.song.SongBatchProcessingService;
+import org.example.remedy.application.song.SongServiceImpl;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
-import org.example.remedy.application.song.port.in.SongService;
+import org.example.remedy.presentation.song.dto.request.SongBatchProcessRequest;
+import org.example.remedy.presentation.song.dto.response.SongBatchProcessResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 관리자용 API 컨트롤러
@@ -20,7 +24,8 @@ import java.io.IOException;
 @RequestMapping("/songs")
 @RequiredArgsConstructor
 public class SongController {
-    private final SongService songService;
+    private final SongServiceImpl songService;
+    private final SongBatchProcessingService songBatchProcessingService;
 
     /**
      * 모든 곡 목록 조회
@@ -39,7 +44,7 @@ public class SongController {
      */
     @GetMapping("/search")
     public ResponseEntity<SongSearchListResponse> searchSongs(@RequestParam String query) {
-        SongSearchListResponse response = songService.searchSongs(query);
+    SongSearchListResponse response = songService.searchSongs(query);
         return ResponseEntity.ok(response);
     }
 
@@ -53,8 +58,39 @@ public class SongController {
         return ResponseEntity.ok(song);
     }
 
-    @GetMapping("/{title}/stream")
-    public ResponseEntity<Resource> streamMp3(@PathVariable String title) throws IOException {
-        return songService.streamSong(title);
+    /**
+     * HLS 스트리밍 (플레이리스트 제공)
+     * GET /api/v1/songs/{songId}/stream
+     */
+    @GetMapping("/{songId}/stream")
+    public ResponseEntity<Resource> streamHLS(@PathVariable String songId) throws IOException {
+        return songService.streamHLS(songId);
+    }
+
+    /**
+     * HLS 세그먼트 파일 제공
+     * GET /api/v1/songs/{songId}/segments/{segmentName}
+     */
+    @GetMapping("/{songId}/segments/{segmentName}")
+    public ResponseEntity<Resource> getHLSSegment(
+            @PathVariable String songId,
+            @PathVariable String segmentName) throws IOException {
+        return songService.getHLSSegment(songId, segmentName);
+    }
+
+    /**
+     * 노래 일괄 처리 API
+     * POST /api/v1/songs/batch-process
+     * 노래 제목 리스트를 받아서 YouTube 다운로드, Spotify 앨범 이미지, HLS 변환 후 저장
+     */
+    @PostMapping("/batch-process")
+    public ResponseEntity<SongBatchProcessResponse> processSongBatch(
+            @Valid @RequestBody SongBatchProcessRequest request) {
+
+        List<SongBatchProcessingService.SongProcessingResult> results =
+            songBatchProcessingService.processSongBatch(request.getSongTitles());
+
+        SongBatchProcessResponse response = SongBatchProcessResponse.from(results);
+        return ResponseEntity.ok(response);
     }
 }

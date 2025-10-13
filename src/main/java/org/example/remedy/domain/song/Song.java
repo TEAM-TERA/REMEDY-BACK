@@ -1,5 +1,6 @@
 package org.example.remedy.domain.song;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -15,14 +16,27 @@ public class Song {
     private String id;
 
     @Field(type = FieldType.Text, analyzer = "nori")
-    private String title;        // YouTube 영상 제목
+    private String title;        // 노래 제목
 
     @Field(type = FieldType.Text, analyzer = "nori")
-    private String artist;       // YouTube 채널명/아티스트
+    private String artist;       // 아티스트
 
     @Field(type = FieldType.Integer)
     private int duration;    // 재생 시간 (초)
 
     @Field(type = FieldType.Keyword)
     private String hlsPath;      // HLS 플레이리스트 경로
+
+    @Field(type = FieldType.Keyword)
+    private String albumImagePath;  // 앨범 이미지 경로
+
+    @Builder
+    public Song(String id, String title, String artist, int duration, String hlsPath, String albumImagePath) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.duration = duration;
+        this.hlsPath = hlsPath;
+        this.albumImagePath = albumImagePath;
+    }
 }

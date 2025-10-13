@@ -2,10 +2,6 @@ spring:
   application:
     name: Remedy
 
-  web:
-    resources:
-      static-locations: classpath:/static/,file:./songs/music/
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,6 +16,8 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_DB_URI}
+      auto-index-creation: true
+      
     redis:
       url: ${REDIS_URL}
 
@@ -44,6 +42,26 @@ minio:
   access-key: ${MINIO_ACCESS_KEY}
   secret-key: ${MINIO_SECRET_KEY}
   default-bucket: ${DEFAULT_BUCKET}
+
+youtube:
+  api:
+    key: ${YOUTUBE_API_KEY}
+
+spotify:
+  client:
+    id: ${SPOTIFY_CLIENT_ID}
+    secret: ${SPOTIFY_CLIENT_SECRET}
+
+app:
+  download:
+    directory: ${DOWNLOAD_DIRECTORY}
+
+  hls:
+    directory: ${HLS_DIRECTORY}
+    segment-duration: ${HLS_SEGMENT_DURATION}
+  album:
+    images:
+      directory: ${ALBUM_IMAGES_DIRECTORY}
 
 logging:
   level:
