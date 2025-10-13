@@ -57,6 +57,13 @@ public class YouTubeDownloadService {
             }
 
             Video videoDetails = getVideoDetails(videoId);
+
+            if (isOfficialOrVevo(videoDetails)) {
+                logger.warn("저작권 콘텐츠로 판단되어 스킵됨: {}", videoDetails.getSnippet().getTitle());
+                throw new RuntimeException("저작권 콘텐츠로 판단되어 다운로드하지 않습니다: "
+                        + videoDetails.getSnippet().getTitle());
+            }
+
             String downloadPath = downloadAudio(videoId, songTitle);
 
             return YouTubeSearchResult.builder()
@@ -76,7 +83,7 @@ public class YouTubeDownloadService {
     private String searchVideoByTitle(String title) throws IOException {
         YouTube.Search.List search = youTube.search().list(List.of("id", "snippet"));
         search.setKey(youtubeApiKey);
-        search.setQ(title + " audio OR lyrics OR official music video");
+        search.setQ(title);
         search.setType(List.of("video"));
         search.setMaxResults(1L);
         search.setOrder("relevance");
@@ -104,6 +111,23 @@ public class YouTubeDownloadService {
         }
 
         return videos.getFirst();
+    }
+
+    private boolean isOfficialOrVevo(Video video) {
+        if (video == null || video.getSnippet() == null) return false;
+        String channel = video.getSnippet().getChannelTitle().toLowerCase();
+
+        String[] blockedKeywords = {
+                "vevo", "official", "music", "entertainment", "records", "label", "bighit", "hybe"
+        };
+
+        for (String keyword : blockedKeywords) {
+            if (channel.contains(keyword)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private String downloadAudio(String videoId, String songTitle) throws IOException, InterruptedException {
