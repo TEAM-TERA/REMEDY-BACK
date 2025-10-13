@@ -76,7 +76,7 @@ public class YouTubeDownloadService {
     private String searchVideoByTitle(String title) throws IOException {
         YouTube.Search.List search = youTube.search().list(List.of("id", "snippet"));
         search.setKey(youtubeApiKey);
-        search.setQ(title + " audio");
+        search.setQ(title + " audio OR lyrics OR official music video");
         search.setType(List.of("video"));
         search.setMaxResults(1L);
         search.setOrder("relevance");
