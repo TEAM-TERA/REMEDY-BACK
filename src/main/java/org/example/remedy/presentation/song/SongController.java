@@ -90,4 +90,14 @@ public class SongController {
         SongBatchDownloadResponse response = SongBatchDownloadResponse.from(results);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 특정 곡 삭제
+     * DELETE /api/v1/songs/{id}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSong(@PathVariable String id) {
+        songService.deleteSong(id);
+        return ResponseEntity.noContent().build();
+    }
 }

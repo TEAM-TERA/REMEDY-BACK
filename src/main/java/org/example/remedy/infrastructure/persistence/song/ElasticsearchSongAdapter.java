@@ -37,4 +37,9 @@ public class ElasticsearchSongAdapter implements SongPersistencePort {
     public Song save(Song song) {
         return songRepository.save(song);
     }
+
+    @Override
+    public void deleteById(String id) {
+        songRepository.deleteById(id);
+    }
 }

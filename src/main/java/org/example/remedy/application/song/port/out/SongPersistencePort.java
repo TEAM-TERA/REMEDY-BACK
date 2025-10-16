@@ -10,4 +10,5 @@ public interface SongPersistencePort {
     Optional<Song> findByTitle(String title);
     Optional<Song> findByTitleAndArtist(String title, String artist);
     Song save(Song song);
+    void deleteById(String id);
 }
