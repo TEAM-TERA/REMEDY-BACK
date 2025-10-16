@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface SongRepository extends ElasticsearchRepository<Song, String> {
     List<Song> findByTitleContainingOrArtistContaining(String title, String artist);
     Optional<Song> findByTitle(String title);
+    Optional<Song> findByTitleAndArtist(String title, String artist);
 }
