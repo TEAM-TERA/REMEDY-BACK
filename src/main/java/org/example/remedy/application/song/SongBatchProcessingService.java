@@ -65,24 +65,24 @@ public class SongBatchProcessingService {
 
             // 2단계: 중복 체크 - 제목과 아티스트로 검색
             Optional<Song> existingSong = songPersistencePort.findByTitleAndArtist(finalTitle, finalArtist);
+            String songId;
 
             if (existingSong.isPresent()) {
-                Song existing = existingSong.get();
-                log.info("중복 노래 발견 (스킵): {} by {} (ID: {}), 소요시간: {}ms",
-                        existing.getTitle(), existing.getArtist(), existing.getId(),
-                        System.currentTimeMillis() - songStart);
-
-                return SongDownloadResponse.success(existing.getId(), existing.getTitle(),
-                        existing.getArtist(), existing.getHlsPath(), existing.getAlbumImagePath());
+                // 중복 노래가 있으면 기존 ID 사용 (덮어쓰기)
+                songId = existingSong.get().getId();
+                log.info("중복 노래 발견 (덮어쓰기 진행): {} by {} (ID: {})",
+                        finalTitle, finalArtist, songId);
+            } else {
+                // 새로운 노래면 새 ID 생성
+                songId = UUID.randomUUID().toString();
             }
 
-            // 3단계: YouTube 다운로드 (중복이 아닌 경우에만)
+            // 3단계: YouTube 다운로드
             String searchQuery = finalTitle + (finalArtist.isEmpty() ? "" : " " + finalArtist) + " audio";
             YouTubeDownloadService.YouTubeSearchResult youtube =
                     youTubeDownloadService.searchAndDownload(searchQuery);
 
             // 4단계: HLS 변환
-            String songId = UUID.randomUUID().toString();
             String hlsPath = hlsService.convertToHLS(youtube.getDownloadPath(), songId);
 
             // 5단계: DB 저장
