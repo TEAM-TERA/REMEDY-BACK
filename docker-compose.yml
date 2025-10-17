@@ -38,10 +38,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_URL=${POSTGRES_URL}
 
-      - MINIO_URL=${MINIO_URL}
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - DEFAULT_BUCKET=${DEFAULT_BUCKET}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
       # MongoDB 설정
       - MONGO_DB_URI=${MONGO_DB_URI}
@@ -107,6 +107,4 @@ volumes:
   postgresql_data:
     driver: local
   redis_data:
-    driver: local
-  minio_data:
     driver: local
