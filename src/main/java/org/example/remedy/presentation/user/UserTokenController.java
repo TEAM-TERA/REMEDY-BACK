@@ -1,8 +1,10 @@
 package org.example.remedy.presentation.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.user.port.in.UserTokenService;
 import org.example.remedy.global.security.auth.AuthDetails;
+import org.example.remedy.presentation.user.dto.request.FcmTokenRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +21,8 @@ public class UserTokenController {
 
     @PostMapping("/fcm-token")
     public ResponseEntity<Void> registerToken(@AuthenticationPrincipal AuthDetails authDetails,
-                                              @RequestBody String token) {
-        userTokenService.saveToken(authDetails.getUserId(), token);
+                                              @Valid @RequestBody FcmTokenRequest fcmTokenRequest) {
+        userTokenService.saveToken(authDetails.getUserId(), fcmTokenRequest.token());
         return ResponseEntity.ok().build();
     }
 }
