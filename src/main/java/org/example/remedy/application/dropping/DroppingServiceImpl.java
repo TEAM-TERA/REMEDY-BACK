@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
+import org.example.remedy.application.notification.event.DroppingCreatedEvent;
 import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.global.event.GlobalEventPublisher;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class DroppingServiceImpl implements DroppingService {
 
     private final DroppingPersistencePort droppingPersistencePort;
+    private final GlobalEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -33,6 +36,8 @@ public class DroppingServiceImpl implements DroppingService {
         Dropping dropping = Dropping.getInstance(authDetails.getUserId(), request);
         System.out.println(authDetails.getUserId());
         droppingPersistencePort.createDropping(dropping);
+
+        eventPublisher.publish(new DroppingCreatedEvent(authDetails.getUserId(), dropping.getSongId()));
     }
 
     @Override
