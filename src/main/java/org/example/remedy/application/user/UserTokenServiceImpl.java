@@ -19,7 +19,12 @@ public class UserTokenServiceImpl implements UserTokenService {
         User user = userPersistencePort.findByUserId(userId)
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        return user.getFcmToken();
+        String fcmToken = user.getFcmToken();
+        if (fcmToken == null || fcmToken.isEmpty()) {
+            return null;
+        }
+        
+        return fcmToken;
     }
 
     @Override
