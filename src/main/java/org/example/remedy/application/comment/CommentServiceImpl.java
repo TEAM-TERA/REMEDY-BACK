@@ -8,9 +8,12 @@ import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
+import org.example.remedy.application.notification.event.CommentCreatedEvent;
 import org.example.remedy.domain.comment.Comment;
+import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.comment.dto.request.CommentUpdateRequest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,17 +25,32 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentPersistencePort commentPersistencePort;
     private final DroppingPersistencePort droppingPersistencePort;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
     public void createComment(String content, User user, String droppingId) {
 
-        if (!droppingPersistencePort.existsById(droppingId)) {
-            throw DroppingNotFoundException.EXCEPTION;
-        }
+        Dropping dropping = droppingPersistencePort.findById(droppingId)
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
         Comment comment = new Comment(content, user, droppingId);
         commentPersistencePort.save(comment);
+
+        publishCommentCreatedEvent(user, dropping, droppingId, content);
+    }
+
+    private void publishCommentCreatedEvent(User commenter, Dropping dropping, 
+                                           String droppingId, String content) {
+        CommentCreatedEvent event = CommentCreatedEvent.builder()
+                .commenterUserId(commenter.getUserId())
+                .commenterUsername(commenter.getUsername())
+                .droppingOwnerUserId(dropping.getUserId())
+                .droppingId(droppingId)
+                .commentContent(content)
+                .build();
+        
+        eventPublisher.publishEvent(event);
     }
 
     @Transactional(readOnly = true)
@@ -57,9 +75,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentPersistencePort.findById(commentId)
                 .orElseThrow(()-> CommentNotFoundException.EXCEPTION);
 
-        if (!comment.getUser().getUserId().equals(userId)) {
-            throw CommentAccessDeniedException.EXCEPTION;
-        }
+        validateCommentOwnership(userId, comment);
 
         comment.updateContent(request.content());
 
@@ -73,11 +89,15 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentPersistencePort.findById(commentId)
                 .orElseThrow(()->CommentNotFoundException.EXCEPTION);
 
+        validateCommentOwnership(userId, comment);
+
+        commentPersistencePort.delete(comment);
+    }
+
+    private void validateCommentOwnership(Long userId, Comment comment) {
         if (!comment.getUser().getUserId().equals(userId)) {
             throw CommentAccessDeniedException.EXCEPTION;
         }
-
-        commentPersistencePort.delete(comment);
     }
 
     @Transactional(readOnly = true)

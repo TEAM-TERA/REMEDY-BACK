@@ -37,7 +37,16 @@ public class DroppingServiceImpl implements DroppingService {
         System.out.println(authDetails.getUserId());
         droppingPersistencePort.createDropping(dropping);
 
-        eventPublisher.publish(new DroppingCreatedEvent(authDetails.getUserId(), dropping.getSongId()));
+        publishDroppingCreatedEvent(authDetails.getUserId(), dropping.getSongId());
+    }
+
+    private void publishDroppingCreatedEvent(Long userId, String songId) {
+        DroppingCreatedEvent event = DroppingCreatedEvent.builder()
+                .userId(userId)
+                .songId(songId)
+                .build();
+        
+        eventPublisher.publish(event);
     }
 
     @Override

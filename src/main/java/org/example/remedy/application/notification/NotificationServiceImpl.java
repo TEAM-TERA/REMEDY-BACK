@@ -28,6 +28,28 @@ public class NotificationServiceImpl implements NotificationService {
         notificationPushPort.push(notification, fcmToken);
     }
 
+    @Override
+    public void sendLikeNotification(Long userId, String likerUsername, String droppingId) {
+        
+        String fcmToken = userTokenService.findTokenByUserId(userId);
+        validateFcmToken(fcmToken, userId);
+
+        Notification notification = Notification.ofLike(userId, likerUsername, droppingId);
+
+        notificationPushPort.push(notification, fcmToken);
+    }
+
+    @Override
+    public void sendCommentNotification(Long userId, String commenterUsername, String commentContent) {
+        
+        String fcmToken = userTokenService.findTokenByUserId(userId);
+        validateFcmToken(fcmToken, userId);
+
+        Notification notification = Notification.ofComment(userId, commenterUsername, commentContent);
+
+        notificationPushPort.push(notification, fcmToken);
+    }
+
     private void validateFcmToken(String fcmToken, Long userId) {
         if (fcmToken == null || fcmToken.isEmpty()) {
             log.warn("FCM 토큰이 없어 알림을 전송할 수 없습니다 - userId={}", userId);
