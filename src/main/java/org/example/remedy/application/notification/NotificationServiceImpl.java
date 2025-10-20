@@ -2,6 +2,7 @@ package org.example.remedy.application.notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.application.notification.exception.FcmTokenNotFoundException;
 import org.example.remedy.application.notification.port.in.NotificationService;
 import org.example.remedy.application.notification.port.out.NotificationPushPort;
 import org.example.remedy.application.user.port.in.UserTokenService;
@@ -20,12 +21,17 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendDropNotification(Long userId, String songId) {
 
         String fcmToken = userTokenService.findTokenByUserId(userId);
-        if (fcmToken == null || fcmToken.isEmpty()) {
-            log.warn("FCM 토큰이 없어 알림을 전송하지 않습니다 - userId={}", userId);
-            return;
-        }
+        validateFcmToken(fcmToken, userId);
 
         Notification notification = Notification.ofDrop(userId, songId);
-        notificationPushPort.push(notification);
+
+        notificationPushPort.push(notification, fcmToken);
+    }
+
+    private void validateFcmToken(String fcmToken, Long userId) {
+        if (fcmToken == null || fcmToken.isEmpty()) {
+            log.warn("FCM 토큰이 없어 알림을 전송할 수 없습니다 - userId={}", userId);
+            throw FcmTokenNotFoundException.EXCEPTION;
+        }
     }
 }
