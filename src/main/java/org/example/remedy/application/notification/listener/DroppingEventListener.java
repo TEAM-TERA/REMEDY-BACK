@@ -11,6 +11,8 @@ import org.example.remedy.application.notification.port.in.NotificationService;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Component
@@ -20,7 +22,7 @@ public class DroppingEventListener {
     private final NotificationService notificationService;
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDroppingCreated(DroppingCreatedEvent event) {
         try {
             log.info("드랍 생성 알림 전송 시작 - userId={}, songId={}", event.userId(), event.songId());
@@ -39,7 +41,7 @@ public class DroppingEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onLikeCreated(LikeCreatedEvent event) {
         try {
 
@@ -71,7 +73,7 @@ public class DroppingEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onCommentCreated(CommentCreatedEvent event) {
         try {
 
