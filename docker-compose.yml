@@ -21,17 +21,27 @@ services:
         bin/elasticsearch-plugin list | grep -q analysis-nori || bin/elasticsearch-plugin install analysis-nori;
         /usr/local/bin/docker-entrypoint.sh eswrapper
       "
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   spring-boot:
     build: .
     container_name: spring-boot
     env_file:
       - .env
-    depends_on:
-      - mongodb
-      - elasticsearch
-      - postgresql
-      - redis
+    depends_on: # ✅ 여기 부분 완전히 고쳐야 함
+      mongodb:
+        condition: service_started
+      postgresql:
+        condition: service_started
+      redis:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}

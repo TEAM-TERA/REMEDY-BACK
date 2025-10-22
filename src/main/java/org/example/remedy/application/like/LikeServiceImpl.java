@@ -6,8 +6,11 @@ import org.example.remedy.application.dropping.exception.DroppingNotFoundExcepti
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.application.like.port.out.LikePersistencePort;
+import org.example.remedy.application.notification.event.LikeCreatedEvent;
+import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +22,14 @@ import java.util.Optional;
 public class LikeServiceImpl implements LikeService {
     private final LikePersistencePort likePersistencePort;
     private final DroppingPersistencePort droppingPersistencePort;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
     public boolean toggleLike(User user, String droppingId) {
 
-        if (!droppingPersistencePort.existsById(droppingId)) {
-            throw DroppingNotFoundException.EXCEPTION;
-        }
+        Dropping dropping = droppingPersistencePort.findById(droppingId)
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
         Optional<Like> existingLike = likePersistencePort.findByUserAndDroppingId(user, droppingId);
 
@@ -36,9 +39,23 @@ public class LikeServiceImpl implements LikeService {
         } else {
             Like like = new Like(user, droppingId);
             likePersistencePort.save(like);
+            
+            publishLikeCreatedEvent(user, dropping, droppingId);
+            
             return true;
         }
 
+    }
+
+    private void publishLikeCreatedEvent(User liker, Dropping dropping, String droppingId) {
+        LikeCreatedEvent event = LikeCreatedEvent.builder()
+                .likerUserId(liker.getUserId())
+                .likerUsername(liker.getUsername())
+                .droppingOwnerUserId(dropping.getUserId())
+                .droppingId(droppingId)
+                .build();
+        
+        eventPublisher.publishEvent(event);
     }
 
     @Override

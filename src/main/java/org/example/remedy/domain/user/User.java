@@ -38,6 +38,9 @@ public class User {
     @Column(nullable = false)
     private boolean gender; // true : 남성, false : 여성
 
+    @Column
+    private String fcmToken;
+
     public User(String username, String password, String email, LocalDate birthDate, boolean gender) {
         this.username = username;
         this.password = password;
@@ -66,5 +69,9 @@ public class User {
 
     public void updateProfileImage(String imageUrl) {
         this.profileImage = imageUrl;
+    }
+
+    public void updateFcmToken(String token) {
+        this.fcmToken = token;
     }
 }
