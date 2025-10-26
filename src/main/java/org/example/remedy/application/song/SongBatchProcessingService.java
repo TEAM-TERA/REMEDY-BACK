@@ -193,7 +193,7 @@ public class SongBatchProcessingService {
                     .artist(finalArtist)
                     .duration(youtubeResult.getDuration())
                     .hlsPath(hlsPath)
-                    .albumImagePath(spotifyResult.isFound() ? spotifyResult.getLocalPath() : null)
+                    .albumImagePath(spotifyResult.isFound() ? spotifyResult.getS3Url() : null)
                     .build();
 
             Song savedSong = songPersistencePort.save(song);

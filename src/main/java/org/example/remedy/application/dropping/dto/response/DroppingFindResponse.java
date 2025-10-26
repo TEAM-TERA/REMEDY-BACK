@@ -9,16 +9,18 @@ public record DroppingFindResponse(
         Long userId,
         String content,
         LocalDateTime expiryDate,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String albumImageUrl
 ) {
-    public static DroppingFindResponse newInstance(Dropping dropping) {
+    public static DroppingFindResponse newInstance(Dropping dropping, String albumImageUrl) {
         return new DroppingFindResponse(
                 dropping.getDroppingId(),
                 dropping.getSongId(),
                 dropping.getUserId(),
                 dropping.getContent(),
                 dropping.getExpiryDate(),
-                dropping.getCreatedAt()
+                dropping.getCreatedAt(),
+                albumImageUrl
         );
     }
 }

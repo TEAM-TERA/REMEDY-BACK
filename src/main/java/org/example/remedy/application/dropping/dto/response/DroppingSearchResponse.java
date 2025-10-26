@@ -8,16 +8,18 @@ public record DroppingSearchResponse(
         String songId,
         Double latitude,
         Double longitude,
-        String address
+        String address,
+        String albumImageUrl
 ) {
-    public static DroppingSearchResponse create(Dropping dropping) {
+    public static DroppingSearchResponse create(Dropping dropping, String albumImageUrl) {
         return new DroppingSearchResponse(
                 dropping.getDroppingId(),
                 dropping.getUserId(),
                 dropping.getSongId(),
                 dropping.getLatitude(),
                 dropping.getLongitude(),
-                dropping.getAddress()
+                dropping.getAddress(),
+                albumImageUrl
         );
     }
 }

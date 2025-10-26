@@ -64,9 +64,6 @@ app:
   hls:
     directory: ${HLS_DIRECTORY}
     segment-duration: ${HLS_SEGMENT_DURATION}
-  album:
-    images:
-      directory: ${ALBUM_IMAGES_DIRECTORY}
 
 logging:
   level:

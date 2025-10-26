@@ -4,12 +4,14 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 
+@Slf4j
 @Configuration
 public class FirebaseConfig {
 
@@ -17,15 +19,25 @@ public class FirebaseConfig {
     private String firebaseConfigPath;
 
     @PostConstruct
-    public void init() throws IOException {
-        if (FirebaseApp.getApps().isEmpty()) {
-            ClassPathResource resource = new ClassPathResource(firebaseConfigPath);
+    public void init() {
+        try {
+            if (FirebaseApp.getApps().isEmpty()) {
+                ClassPathResource resource = new ClassPathResource(firebaseConfigPath);
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(resource.getInputStream()))
-                    .build();
+                if (!resource.exists()) {
+                    log.warn("Firebase 설정 파일을 찾을 수 없습니다: {}. Firebase 기능이 비활성화됩니다.", firebaseConfigPath);
+                    return;
+                }
 
-            FirebaseApp.initializeApp(options);
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(resource.getInputStream()))
+                        .build();
+
+                FirebaseApp.initializeApp(options);
+                log.info("Firebase 초기화 완료");
+            }
+        } catch (IOException e) {
+            log.error("Firebase 초기화 실패: {}. Firebase 기능이 비활성화됩니다.", e.getMessage());
         }
     }
 }
