@@ -193,6 +193,7 @@ public class SongBatchProcessingService {
                     .artist(finalArtist)
                     .duration(youtubeResult.getDuration())
                     .hlsPath(hlsPath)
+                    .mp3Path(youtubeResult.getS3Url())
                     .albumImagePath(spotifyResult.isFound() ? spotifyResult.getS3Url() : null)
                     .build();
 
