@@ -134,4 +134,17 @@ public class SongServiceImpl implements SongService {
                 .headers(headers)
                 .body(resource);
     }
+
+    /**
+     * ID로 곡 삭제
+     */
+    public void deleteSong(String id) {
+        // 곡 존재 확인
+        songPersistencePort.findById(id)
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
+
+        // DB에서 삭제
+        songPersistencePort.deleteById(id);
+        log.info("노래 삭제 완료: ID={}", id);
+    }
 }

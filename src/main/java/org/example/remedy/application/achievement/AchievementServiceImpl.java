@@ -3,6 +3,7 @@ package org.example.remedy.application.achievement;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.achievement.dto.response.AchievementListResponse;
 import org.example.remedy.application.achievement.dto.response.AchievementResponse;
+import org.example.remedy.application.achievement.dto.response.PagedUserAchievementListResponse;
 import org.example.remedy.application.achievement.dto.response.UserAchievementListResponse;
 import org.example.remedy.application.achievement.dto.response.UserAchievementResponse;
 import org.example.remedy.application.achievement.exception.AchievementNotCompletedException;
@@ -43,29 +44,31 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     /**
-     * 모든 도전과제 조회
-     * 관리자용 - 비활성화된 도전과제도 포함하여 반환
-     * 
-     * @return 전체 도전과제 목록
+     * 활성화된 도전과제를 사용자의 진행 상황과 함께 조회
+     * 활성화된 모든 도전과제와 각 도전과제에 대한 사용자의 진행 상황을 반환
+     * 사용자가 아직 시작하지 않은 도전과제도 포함됨 (진행도 0으로 표시)
+     *
+     * @param user 사용자 정보
+     * @return 활성화된 도전과제 목록 및 사용자 진행 상황
      */
     @Override
     @Transactional(readOnly = true)
-    public AchievementListResponse getAllAchievements() {
-        List<Achievement> achievements = achievementPersistencePort.findAll();
-        return AchievementListResponse.from(achievements);
-    }
+    public UserAchievementListResponse getActiveAchievementsWithUserProgress(User user) {
+        // 활성화된 모든 도전과제 조회
+        List<Achievement> activeAchievements = achievementPersistencePort.findByIsActiveTrue();
 
-    /**
-     * 활성 도전과제 조회
-     * 일반 사용자용 - 활성화된 도전과제만 반환
-     * 
-     * @return 활성 도전과제 목록
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public AchievementListResponse getActiveAchievements() {
-        List<Achievement> achievements = achievementPersistencePort.findByIsActiveTrue();
-        return AchievementListResponse.from(achievements);
+        // 각 활성화된 도전과제에 대해 사용자의 진행 상황을 조회하거나 기본값 생성
+        List<UserAchievementResponse> responses = activeAchievements.stream()
+                .map(achievement -> {
+                    UserAchievement userAchievement = achievementPersistencePort
+                            .findByUserIdAndAchievementId(user.getUserId(), achievement.getAchievementId())
+                            .orElse(UserAchievement.create(user.getUserId(), achievement.getAchievementId()));
+
+                    return UserAchievementResponse.from(userAchievement, achievement);
+                })
+                .toList();
+
+        return UserAchievementListResponse.from(responses);
     }
 
     /**
@@ -128,29 +131,6 @@ public class AchievementServiceImpl implements AchievementService {
         achievementPersistencePort.save(achievement);
     }
 
-    /**
-     * 사용자 도전과제 목록 조회
-     * 사용자의 도전과제 진행 상황 및 통계 정보를 제공
-     * 
-     * @param user 사용자 정보
-     * @return 사용자 도전과제 목록 및 통계 정보
-     * @throws AchievementNotFoundException 도전과제가 존재하지 않는 경우
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public UserAchievementListResponse getUserAchievements(User user) {
-        List<UserAchievement> userAchievements = achievementPersistencePort.findByUserId(user.getUserId());
-        
-        List<UserAchievementResponse> responses = userAchievements.stream()
-                .map(ua -> {
-                    Achievement achievement = achievementPersistencePort.findById(ua.getAchievementId())
-                            .orElseThrow(() -> AchievementNotFoundException.INSTANCE);
-                    return UserAchievementResponse.from(ua, achievement);
-                })
-                .toList();
-        
-        return UserAchievementListResponse.from(responses);
-    }
 
     /**
      * 도전과제 보상 수령
@@ -190,9 +170,39 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     /**
+     * 활성화된 도전과제를 기간별로 페이징하여 사용자의 진행 상황과 함께 조회
+     *
+     * @param user 사용자 정보
+     * @param period 도전과제 기간 (null이면 전체 조회)
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 크기
+     * @return 페이징된 활성화된 도전과제 목록 및 사용자 진행 상황
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PagedUserAchievementListResponse getActiveAchievementsWithUserProgressPaged(User user, AchievementPeriod period, int page, int size) {
+        // 활성화된 도전과제를 기간별로 페이징 조회
+        List<Achievement> activeAchievements = achievementPersistencePort.findByIsActiveTrueAndPeriod(period, page, size);
+        long totalCount = achievementPersistencePort.countByIsActiveTrueAndPeriod(period);
+
+        // 각 활성화된 도전과제에 대해 사용자의 진행 상황을 조회하거나 기본값 생성
+        List<UserAchievementResponse> responses = activeAchievements.stream()
+                .map(achievement -> {
+                    UserAchievement userAchievement = achievementPersistencePort
+                            .findByUserIdAndAchievementId(user.getUserId(), achievement.getAchievementId())
+                            .orElse(UserAchievement.create(user.getUserId(), achievement.getAchievementId()));
+
+                    return UserAchievementResponse.from(userAchievement, achievement);
+                })
+                .toList();
+
+        return PagedUserAchievementListResponse.of(responses, totalCount, page, size);
+    }
+
+    /**
      * 사용자 도전과제 진행 상황 업데이트
      * 특정 타입의 도전과제에 대한 사용자의 진행 상황을 업데이트
-     * 
+     *
      * @param userId 사용자 ID
      * @param type 도전과제 타입
      * @param progress 진행 상황 값
@@ -201,11 +211,11 @@ public class AchievementServiceImpl implements AchievementService {
     @Transactional
     public void updateUserProgress(Long userId, AchievementType type, Integer progress) {
         List<Achievement> activeAchievements = achievementPersistencePort.findByTypeAndIsActiveTrue(type);
-        
+
         for (Achievement achievement : activeAchievements) {
             UserAchievement userAchievement = achievementPersistencePort.findByUserIdAndAchievementId(userId, achievement.getAchievementId())
                     .orElse(UserAchievement.create(userId, achievement.getAchievementId()));
-            
+
             userAchievement.updateProgress(progress, achievement.getTargetValue());
             achievementPersistencePort.save(userAchievement);
         }

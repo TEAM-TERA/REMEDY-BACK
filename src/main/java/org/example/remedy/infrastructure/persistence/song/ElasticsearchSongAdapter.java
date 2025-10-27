@@ -29,7 +29,17 @@ public class ElasticsearchSongAdapter implements SongPersistencePort {
     }
 
     @Override
+    public Optional<Song> findByTitleAndArtist(String title, String artist) {
+        return songRepository.findByTitleAndArtist(title, artist);
+    }
+
+    @Override
     public Song save(Song song) {
         return songRepository.save(song);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        songRepository.deleteById(id);
     }
 }

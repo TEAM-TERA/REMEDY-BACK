@@ -20,4 +20,6 @@ public interface SongService {
     ResponseEntity<Resource> streamHLS(String songId) throws IOException;
 
     ResponseEntity<Resource> getHLSSegment(String songId, String segmentName) throws IOException;
+
+    void deleteSong(String id);
 }

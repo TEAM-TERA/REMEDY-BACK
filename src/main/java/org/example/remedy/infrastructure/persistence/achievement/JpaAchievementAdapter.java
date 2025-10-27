@@ -3,8 +3,12 @@ package org.example.remedy.infrastructure.persistence.achievement;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.achievement.port.out.AchievementPersistencePort;
 import org.example.remedy.domain.achievement.Achievement;
+import org.example.remedy.domain.achievement.AchievementPeriod;
 import org.example.remedy.domain.achievement.AchievementType;
 import org.example.remedy.domain.achievement.UserAchievement;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -69,5 +73,28 @@ public class JpaAchievementAdapter implements AchievementPersistencePort {
     @Override
     public List<UserAchievement> findByUserIdAndType(Long userId, AchievementType type) {
         return userAchievementRepository.findByUserIdAndType(userId, type.name());
+    }
+
+    @Override
+    public List<Achievement> findByIsActiveTrueAndPeriod(AchievementPeriod period, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Achievement> achievementPage;
+
+        if (period == null) {
+            achievementPage = achievementRepository.findByIsActiveTrue(pageable);
+        } else {
+            achievementPage = achievementRepository.findByIsActiveTrueAndPeriod(period, pageable);
+        }
+
+        return achievementPage.getContent();
+    }
+
+    @Override
+    public long countByIsActiveTrueAndPeriod(AchievementPeriod period) {
+        if (period == null) {
+            return achievementRepository.countByIsActiveTrue();
+        } else {
+            return achievementRepository.countByIsActiveTrueAndPeriod(period);
+        }
     }
 }
