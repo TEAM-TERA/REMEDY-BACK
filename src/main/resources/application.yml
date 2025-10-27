@@ -37,15 +37,20 @@ jwt:
   header: ${JWT_HEADER}
   secret-key: ${JWT_SECRET_KEY}
 
-minio:
-  minio-url: ${MINIO_URL}
-  access-key: ${MINIO_ACCESS_KEY}
-  secret-key: ${MINIO_SECRET_KEY}
-  default-bucket: ${DEFAULT_BUCKET}
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_S3_REGION}
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
 
 youtube:
   api:
     key: ${YOUTUBE_API_KEY}
+
+firebase:
+  config:
+    path: ${FIREBASE_CONFIG_PATH}
 
 spotify:
   client:

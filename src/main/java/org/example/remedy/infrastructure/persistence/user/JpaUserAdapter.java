@@ -28,4 +28,8 @@ public class JpaUserAdapter implements UserPersistencePort {
         return userRepository.existsUserByEmail(email);
     }
 
+    @Override
+    public Optional<User> findByUserId(Long userId) {
+        return userRepository.findByUserId(userId);
+    }
 }

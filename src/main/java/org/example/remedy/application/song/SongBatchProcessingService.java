@@ -47,8 +47,6 @@ public class SongBatchProcessingService {
             }
         }
 
-        log.info("노래 일괄 처리 완료: {}곡, 소요시간: {}ms",
-                results.size(), System.currentTimeMillis() - start);
         return results;
     }
 

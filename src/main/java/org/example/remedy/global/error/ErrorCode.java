@@ -42,7 +42,14 @@ public enum ErrorCode {
     TITLE_NOT_OWNED(HttpStatus.FORBIDDEN, "T3", "보유하지 않은 칭호입니다."),
     TITLE_ALREADY_OWNED(HttpStatus.BAD_REQUEST, "T4", "이미 보유한 칭호입니다."),
     TITLE_ALREADY_EQUIPPED(HttpStatus.BAD_REQUEST, "T5", "이미 장착한 칭호입니다."),
-    TITLE_NOT_EQUIPPED(HttpStatus.BAD_REQUEST, "T6", "장착되지 않은 칭호입니다.");
+    TITLE_NOT_EQUIPPED(HttpStatus.BAD_REQUEST, "T6", "장착되지 않은 칭호입니다."),
+
+    RUNNING_ALREADY_EXISTS(HttpStatus.CONFLICT, "R1", "이미 해당 노래로 러닝 기록이 존재합니다."),
+    RUNNING_NOT_FOUND(HttpStatus.NOT_FOUND, "R2", "러닝 기록을 찾을 수 없습니다."),
+
+    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "N1", "FCM 토큰을 찾을 수 없습니다."),
+    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "N2", "알림 전송에 실패했습니다.");
+
 
     private final HttpStatus status;
     private final String code;
