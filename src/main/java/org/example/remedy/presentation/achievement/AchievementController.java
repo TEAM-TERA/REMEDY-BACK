@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.achievement.dto.response.AchievementListResponse;
 import org.example.remedy.application.achievement.dto.response.AchievementResponse;
+import org.example.remedy.application.achievement.dto.response.PagedUserAchievementListResponse;
 import org.example.remedy.application.achievement.dto.response.UserAchievementListResponse;
 import org.example.remedy.application.achievement.dto.response.UserAchievementResponse;
 import org.example.remedy.application.achievement.port.in.AchievementService;
+import org.example.remedy.domain.achievement.AchievementPeriod;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.example.remedy.presentation.achievement.dto.request.AchievementCreateRequest;
 import org.example.remedy.presentation.achievement.dto.request.AchievementUpdateRequest;
@@ -40,15 +42,38 @@ public class AchievementController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<AchievementListResponse> getAllAchievements() {
-        AchievementListResponse response = achievementService.getAllAchievements();
+    /**
+     * 현재 활성화된 도전과제 조회 (사용자의 진행 상황 포함)
+     * 유저 인증 필요
+     *
+     * @deprecated 페이징 처리된 API를 사용하세요
+     */
+    @Deprecated
+    @GetMapping("/all")
+    public ResponseEntity<UserAchievementListResponse> getActiveAchievementsWithProgress(
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        UserAchievementListResponse response = achievementService.getActiveAchievementsWithUserProgress(authDetails.getUser());
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<AchievementListResponse> getActiveAchievements() {
-        AchievementListResponse response = achievementService.getActiveAchievements();
+    /**
+     * 활성화된 도전과제 조회 (기간별 필터링 및 페이징 처리)
+     * 쿼리 파라미터로 일일/상시 구분 및 페이징 정보를 받습니다.
+     *
+     * @param period 도전과제 기간 (DAILY, PERMANENT, null이면 전체 조회)
+     * @param page 페이지 번호 (기본값: 0)
+     * @param size 페이지 크기 (기본값: 10)
+     * @param authDetails 인증된 사용자 정보
+     * @return 페이징된 도전과제 목록 및 사용자 진행 상황
+     */
+    @GetMapping
+    public ResponseEntity<PagedUserAchievementListResponse> getActiveAchievementsWithProgressPaged(
+            @RequestParam(required = false) AchievementPeriod period,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        PagedUserAchievementListResponse response = achievementService.getActiveAchievementsWithUserProgressPaged(
+                authDetails.getUser(), period, page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -83,12 +108,6 @@ public class AchievementController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/my")
-    public ResponseEntity<UserAchievementListResponse> getUserAchievements(
-            @AuthenticationPrincipal AuthDetails authDetails) {
-        UserAchievementListResponse response = achievementService.getUserAchievements(authDetails.getUser());
-        return ResponseEntity.ok(response);
-    }
 
     @PostMapping("/{achievementId}/claim")
     public ResponseEntity<UserAchievementResponse> claimReward(
