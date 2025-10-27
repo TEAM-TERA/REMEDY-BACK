@@ -36,9 +36,6 @@ public class YouTubeDownloadService {
     @Value("${youtube.api.key}")
     private String youtubeApiKey;
 
-    @Value("${app.download.directory}")
-    private String downloadDirectory;
-
     private final YouTube youTube;
 
     public YouTubeDownloadService(S3StorageAdapter s3StorageAdapter) {
@@ -117,7 +114,9 @@ public class YouTubeDownloadService {
     }
 
     private String downloadAudio(String videoId, String songTitle) throws IOException, InterruptedException {
-        Path downloadPath = Paths.get(downloadDirectory);
+        // 시스템 임시 디렉토리 사용
+        String tempDir = System.getProperty("java.io.tmpdir");
+        Path downloadPath = Paths.get(tempDir, "remedy-youtube");
         Files.createDirectories(downloadPath);
 
         String sanitizedTitle = sanitizeFileName(songTitle);

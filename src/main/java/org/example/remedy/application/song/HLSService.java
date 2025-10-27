@@ -27,9 +27,6 @@ public class HLSService {
 
     private final S3StorageAdapter s3StorageAdapter;
 
-    @Value("${app.hls.directory:./songs/hls}")
-    private String hlsDirectory;
-
     @Value("${app.hls.segment-duration:10}")
     private int segmentDuration;
 
@@ -49,8 +46,9 @@ public class HLSService {
             throw new RuntimeException("입력 MP3 파일을 찾을 수 없습니다: " + mp3FilePath);
         }
 
-        // HLS 출력 디렉토리 생성
-        Path hlsPath = Paths.get(hlsDirectory, songId);
+        // 시스템 임시 디렉토리 사용
+        String tempDir = System.getProperty("java.io.tmpdir");
+        Path hlsPath = Paths.get(tempDir, "remedy-hls", songId);
         Files.createDirectories(hlsPath);
 
         String playlistPath = hlsPath.resolve("playlist.m3u8").toString();
