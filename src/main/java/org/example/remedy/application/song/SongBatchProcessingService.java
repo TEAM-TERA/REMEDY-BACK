@@ -186,6 +186,18 @@ public class SongBatchProcessingService {
 
             String hlsPath = hlsFuture.get(5, TimeUnit.MINUTES); // HLS 변환도 타임아웃 설정
 
+            // 3-1. HLS 변환 및 S3 업로드 완료 후 로컬 MP3 파일 삭제
+            try {
+                java.io.File localMp3 = new java.io.File(youtubeResult.getDownloadPath());
+                if (localMp3.exists() && localMp3.delete()) {
+                    logger.info("로컬 MP3 파일 삭제 완료: {}", youtubeResult.getDownloadPath());
+                } else {
+                    logger.warn("로컬 MP3 파일 삭제 실패 또는 파일 없음: {}", youtubeResult.getDownloadPath());
+                }
+            } catch (Exception e) {
+                logger.warn("로컬 MP3 파일 삭제 중 예외 발생: {}", youtubeResult.getDownloadPath(), e);
+            }
+
             // 4. Song 엔티티 생성 및 저장
             Song song = Song.builder()
                     .id(songId)
