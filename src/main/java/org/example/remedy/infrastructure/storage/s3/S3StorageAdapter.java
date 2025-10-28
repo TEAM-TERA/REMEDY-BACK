@@ -24,6 +24,16 @@ public class S3StorageAdapter implements StoragePort {
     public String uploadFile(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+            s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(s3Properties.getBucket())
+                            .key(fileName)
+                            .contentType(file.getContentType())
+                            .build(),
+                    RequestBody.fromInputStream(inputStream, file.getSize())
+            );
+
             return createImageUrl(fileName);
         } catch (Exception e) {
             throw new RuntimeException("파일 업로드에 실패했습니다.", e);
