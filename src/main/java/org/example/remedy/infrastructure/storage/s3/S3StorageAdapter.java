@@ -48,18 +48,10 @@ public class S3StorageAdapter implements StoragePort {
     }
 
     private String createImageUrl(String fileName) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(s3Properties.getBucket())
-                .key(fileName)
-                .build();
-
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
-                .getObjectRequest(getObjectRequest)
-                .build();
-
-        URL url = s3Presigner.presignGetObject(presignRequest).url();
-        return url.toString();
+        return String.format("https://%s.s3.%s.amazonaws.com/%s",
+            s3Properties.getBucket(),
+            s3Properties.getRegion(),
+            fileName);
     }
 
     public String uploadFile(InputStream inputStream, String fileName, String contentType, long contentLength) {
