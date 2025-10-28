@@ -15,6 +15,7 @@ import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.remedy.application.storage.port.out.StoragePort;
 import org.example.remedy.infrastructure.storage.s3.S3StorageAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class SpotifyImageService {
 
     private static final Logger logger = LoggerFactory.getLogger(SpotifyImageService.class);
 
-    private final S3StorageAdapter s3StorageAdapter;
+    private final StoragePort storagePort;
 
     @Value("${spotify.client.id}")
     private String clientId;
@@ -327,7 +328,7 @@ public class SpotifyImageService {
                         String contentType = response.getEntity().getContentType();
                         
                         // S3에 업로드
-                        String s3Url = s3StorageAdapter.uploadFile(
+                        String s3Url = storagePort.uploadFile(
                                 inputStream, 
                                 "album-images/" + UUID.randomUUID() + "_" + sanitizedFileName,
                                 contentType != null ? contentType : "image/jpeg",

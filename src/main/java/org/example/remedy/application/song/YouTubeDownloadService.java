@@ -7,6 +7,7 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+import org.example.remedy.application.storage.port.out.StoragePort;
 import org.example.remedy.infrastructure.storage.s3.S3StorageAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class YouTubeDownloadService {
 
     private static final Logger logger = LoggerFactory.getLogger(YouTubeDownloadService.class);
 
-    private final S3StorageAdapter s3StorageAdapter;
+    private final StoragePort storagePort;
 
     @Value("${youtube.api.key}")
     private String youtubeApiKey;
@@ -39,7 +40,7 @@ public class YouTubeDownloadService {
     private final YouTube youTube;
 
     public YouTubeDownloadService(S3StorageAdapter s3StorageAdapter) {
-        this.s3StorageAdapter = s3StorageAdapter;
+        this.storagePort = s3StorageAdapter;
         try {
             this.youTube = new YouTube.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
@@ -182,7 +183,7 @@ public class YouTubeDownloadService {
         String s3Key = "songs/" + UUID.randomUUID() + "_" + sanitizedFileName;
 
         try (FileInputStream inputStream = new FileInputStream(mp3File)) {
-            String s3Url = s3StorageAdapter.uploadFile(
+            String s3Url = storagePort.uploadFile(
                     inputStream,
                     s3Key,
                     "audio/mpeg",

@@ -1,6 +1,7 @@
 package org.example.remedy.application.song;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.application.storage.port.out.StoragePort;
 import org.example.remedy.infrastructure.storage.s3.S3StorageAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class HLSService {
 
     private static final Logger logger = LoggerFactory.getLogger(HLSService.class);
 
-    private final S3StorageAdapter s3StorageAdapter;
+    private final StoragePort storagePort;
 
     @Value("${app.hls.segment-duration:10}")
     private int segmentDuration;
@@ -120,7 +121,7 @@ public class HLSService {
             try (FileInputStream inputStream = new FileInputStream(file)) {
                 String contentType = fileName.endsWith(".m3u8") ? "application/vnd.apple.mpegurl" : "video/MP2T";
 
-                String s3Url = s3StorageAdapter.uploadFile(
+                String s3Url = storagePort.uploadFile(
                         inputStream,
                         s3Key,
                         contentType,
