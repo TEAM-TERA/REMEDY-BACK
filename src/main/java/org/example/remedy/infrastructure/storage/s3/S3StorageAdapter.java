@@ -1,6 +1,8 @@
 package org.example.remedy.infrastructure.storage.s3;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.application.storage.exception.FileUploadFailedException;
 import org.example.remedy.global.config.properties.S3Properties;
 import org.example.remedy.application.storage.port.out.StoragePort;
 import org.springframework.stereotype.Component;
@@ -12,6 +14,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.InputStream;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3StorageAdapter implements StoragePort {
@@ -26,7 +29,8 @@ public class S3StorageAdapter implements StoragePort {
             uploadToS3(inputStream, fileName, file.getContentType(), file.getSize());
             return createImageUrl(fileName);
         } catch (Exception e) {
-            throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+            log.error("S3 파일 업로드 실패: {}", file.getOriginalFilename(), e);
+            throw FileUploadFailedException.EXCEPTION;
         }
     }
 
@@ -35,7 +39,8 @@ public class S3StorageAdapter implements StoragePort {
             uploadToS3(inputStream, fileName, contentType, contentLength);
             return createImageUrl(fileName);
         } catch (Exception e) {
-            throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+            log.error("S3 파일 업로드 실패: {}", fileName, e);
+            throw FileUploadFailedException.EXCEPTION;
         }
     }
 
