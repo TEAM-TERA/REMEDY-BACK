@@ -6,9 +6,11 @@ public record SongResponse(
         String id,
         String title,
         String artist,
-        int duration
+        int duration,
+        String mp3Path,
+        String albumImagePath
 ) {
     public static SongResponse newInstance(Song song) {
-        return new SongResponse(song.getId(), song.getTitle(), song.getArtist(), song.getDuration());
+        return new SongResponse(song.getId(), song.getTitle(), song.getArtist(), song.getDuration(), song.getMp3Path(), song.getAlbumImagePath());
     }
 }

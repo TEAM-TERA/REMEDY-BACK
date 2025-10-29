@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.notification.event.DroppingCreatedEvent;
+import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.domain.song.Song;
 import org.example.remedy.global.event.GlobalEventPublisher;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class DroppingServiceImpl implements DroppingService {
 
     private final DroppingPersistencePort droppingPersistencePort;
+    private final SongPersistencePort songPersistencePort;
     private final GlobalEventPublisher eventPublisher;
 
     @Override
@@ -55,7 +58,10 @@ public class DroppingServiceImpl implements DroppingService {
                 .findActiveDroppingsWithinRadius(longitude, latitude);
 
         List<DroppingSearchResponse> droppings = allDroppings.stream()
-                .map(DroppingSearchResponse::create)
+                .map(dropping -> {
+                    String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
+                    return DroppingSearchResponse.create(dropping, albumImageUrl);
+                })
                 .toList();
 
         return DroppingSearchListResponse.newInstance(droppings);
@@ -66,7 +72,8 @@ public class DroppingServiceImpl implements DroppingService {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         
-        return DroppingFindResponse.newInstance(dropping);
+        String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
+        return DroppingFindResponse.newInstance(dropping, albumImageUrl);
     }
 
     @Override
@@ -75,7 +82,10 @@ public class DroppingServiceImpl implements DroppingService {
         List<Dropping> droppings = droppingPersistencePort.findByUserId(userId, sort);
         
         return droppings.stream()
-                .map(DroppingSearchResponse::create)
+                .map(dropping -> {
+                    String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
+                    return DroppingSearchResponse.create(dropping, albumImageUrl);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -100,5 +110,11 @@ public class DroppingServiceImpl implements DroppingService {
         droppingPersistencePort.saveAll(expiredDroppings);
 
         log.info("만료된 Dropping {}개 자동 soft delete 완료", expiredDroppings.size());
+    }
+
+    private String getAlbumImageUrl(String songId) {
+        return songPersistencePort.findById(songId)
+                .map(Song::getAlbumImagePath)
+                .orElse(null);
     }
 }

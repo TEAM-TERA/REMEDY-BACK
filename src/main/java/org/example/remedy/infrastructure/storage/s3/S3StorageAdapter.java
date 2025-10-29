@@ -1,6 +1,8 @@
 package org.example.remedy.infrastructure.storage.s3;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.application.storage.exception.FileUploadFailedException;
 import org.example.remedy.global.config.properties.S3Properties;
 import org.example.remedy.application.storage.port.out.StoragePort;
 import org.springframework.stereotype.Component;
@@ -8,58 +10,54 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.time.Duration;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3StorageAdapter implements StoragePort {
 
     private final S3Client s3Client;
-    private final S3Presigner s3Presigner;
     private final S3Properties s3Properties;
 
     @Override
     public String uploadFile(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            putFile(file, fileName, inputStream);
+            uploadToS3(inputStream, fileName, file.getContentType(), file.getSize());
             return createImageUrl(fileName);
         } catch (Exception e) {
-            throw new RuntimeException("파일 업로드에 실패했습니다.", e);
+            log.error("S3 파일 업로드 실패: {}", file.getOriginalFilename(), e);
+            throw FileUploadFailedException.EXCEPTION;
         }
     }
 
-    private void putFile(MultipartFile file, String fileName, InputStream inputStream) throws IOException {
+    public String uploadFile(InputStream inputStream, String fileName, String contentType, long contentLength) {
+        try {
+            uploadToS3(inputStream, fileName, contentType, contentLength);
+            return createImageUrl(fileName);
+        } catch (Exception e) {
+            log.error("S3 파일 업로드 실패: {}", fileName, e);
+            throw FileUploadFailedException.EXCEPTION;
+        }
+    }
+
+    private void uploadToS3(InputStream inputStream, String fileName, String contentType, long contentLength) {
         s3Client.putObject(
                 PutObjectRequest.builder()
                         .bucket(s3Properties.getBucket())
                         .key(fileName)
-                        .contentType(file.getContentType())
+                        .contentType(contentType)
                         .build(),
-                RequestBody.fromInputStream(inputStream, file.getSize())
+                RequestBody.fromInputStream(inputStream, contentLength)
         );
     }
 
     private String createImageUrl(String fileName) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(s3Properties.getBucket())
-                .key(fileName)
-                .build();
-
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))
-                .getObjectRequest(getObjectRequest)
-                .build();
-
-        URL url = s3Presigner.presignGetObject(presignRequest).url();
-        return url.toString();
+        return s3Client.utilities()
+                .getUrl(b -> b.bucket(s3Properties.getBucket()).key(fileName))
+                .toExternalForm();
     }
 }
