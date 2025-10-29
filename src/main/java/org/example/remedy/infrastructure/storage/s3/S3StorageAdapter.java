@@ -56,9 +56,8 @@ public class S3StorageAdapter implements StoragePort {
     }
 
     private String createImageUrl(String fileName) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s",
-            s3Properties.getBucket(),
-            s3Properties.getRegion(),
-            fileName);
+        return s3Client.utilities()
+                .getUrl(b -> b.bucket(s3Properties.getBucket()).key(fileName))
+                .toExternalForm();
     }
 }
