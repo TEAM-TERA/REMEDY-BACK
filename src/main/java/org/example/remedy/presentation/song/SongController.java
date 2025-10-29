@@ -4,11 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.song.SongBatchProcessingService;
 import org.example.remedy.application.song.SongServiceImpl;
-import org.example.remedy.application.song.dto.response.SongListResponse;
-import org.example.remedy.application.song.dto.response.SongResponse;
-import org.example.remedy.application.song.dto.response.SongSearchListResponse;
-import org.example.remedy.presentation.song.dto.request.SongBatchProcessRequest;
-import org.example.remedy.presentation.song.dto.response.SongBatchProcessResponse;
+import org.example.remedy.application.song.dto.response.*;
+import org.example.remedy.presentation.song.dto.request.SongBatchDownloadRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,13 +81,23 @@ public class SongController {
      * 노래 제목 리스트를 받아서 YouTube 다운로드, Spotify 앨범 이미지, HLS 변환 후 저장
      */
     @PostMapping("/batch-process")
-    public ResponseEntity<SongBatchProcessResponse> processSongBatch(
-            @Valid @RequestBody SongBatchProcessRequest request) {
+    public ResponseEntity<SongBatchDownloadResponse> processSongBatch(
+            @Valid @RequestBody SongBatchDownloadRequest request) {
 
-        List<SongBatchProcessingService.SongProcessingResult> results =
+        List<SongDownloadResponse> results =
             songBatchProcessingService.processSongBatch(request.getSongTitles());
 
-        SongBatchProcessResponse response = SongBatchProcessResponse.from(results);
+        SongBatchDownloadResponse response = SongBatchDownloadResponse.from(results);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 특정 곡 삭제
+     * DELETE /api/v1/songs/{id}
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSong(@PathVariable String id) {
+        songService.deleteSong(id);
+        return ResponseEntity.noContent().build();
     }
 }
