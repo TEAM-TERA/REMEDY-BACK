@@ -48,10 +48,6 @@ youtube:
   api:
     key: ${YOUTUBE_API_KEY}
 
-firebase:
-  config:
-    path: ${FIREBASE_CONFIG_PATH}
-
 spotify:
   client:
     id: ${SPOTIFY_CLIENT_ID}
