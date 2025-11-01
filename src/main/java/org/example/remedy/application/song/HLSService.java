@@ -32,13 +32,25 @@ public class HLSService {
     private int segmentDuration;
 
     /**
-     * MP3 파일을 HLS 형식으로 변환
+     * MP3 파일을 HLS 형식으로 변환하고 S3에 업로드 (기존 방식)
      *
      * @param mp3FilePath 입력 MP3 파일 경로
      * @param songId 곡 고유 ID (디렉토리명으로 사용)
-     * @return HLS 플레이리스트 파일 경로
+     * @return HLS 플레이리스트 S3 URL
      */
     public String convertToHLS(String mp3FilePath, String songId) throws IOException, InterruptedException {
+        String localHlsDir = convertToHLSLocal(mp3FilePath, songId);
+        return uploadHLSFilesToS3(new File(localHlsDir), songId);
+    }
+
+    /**
+     * MP3 파일을 HLS 형식으로 변환 (로컬만, S3 업로드 없음)
+     *
+     * @param mp3FilePath 입력 MP3 파일 경로
+     * @param songId 곡 고유 ID (디렉토리명으로 사용)
+     * @return 로컬 HLS 디렉토리 경로
+     */
+    public String convertToHLSLocal(String mp3FilePath, String songId) throws IOException, InterruptedException {
         logger.info("HLS 변환 시작: {} -> {}", mp3FilePath, songId);
 
         // 입력 파일 존재 확인
@@ -90,13 +102,8 @@ public class HLSService {
             throw new RuntimeException("HLS 플레이리스트 파일이 생성되지 않았습니다: " + playlistPath);
         }
 
-        logger.info("HLS 변환 완료, S3 업로드 시작: {}", songId);
-
-        // HLS 파일들을 S3에 업로드
-        String s3BaseUrl = uploadHLSFilesToS3(hlsPath.toFile(), songId);
-
-        logger.info("HLS S3 업로드 완료: {}", s3BaseUrl);
-        return s3BaseUrl;
+        logger.info("HLS 로컬 변환 완료: {}", hlsPath.toAbsolutePath());
+        return hlsPath.toAbsolutePath().toString();
     }
 
     /**
@@ -105,7 +112,7 @@ public class HLSService {
      * @param songId 곡 ID
      * @return S3 플레이리스트 URL
      */
-    private String uploadHLSFilesToS3(File hlsDir, String songId) throws IOException {
+    public String uploadHLSFilesToS3(File hlsDir, String songId) throws IOException {
         File[] files = hlsDir.listFiles();
         if (files == null || files.length == 0) {
             throw new RuntimeException("HLS 파일을 찾을 수 없습니다: " + hlsDir.getAbsolutePath());

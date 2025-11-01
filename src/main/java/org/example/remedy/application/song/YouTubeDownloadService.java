@@ -14,22 +14,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class YouTubeDownloadService {
-
     private static final Logger logger = LoggerFactory.getLogger(YouTubeDownloadService.class);
 
     private final StoragePort storagePort;
@@ -53,32 +50,19 @@ public class YouTubeDownloadService {
         }
     }
 
-    public YouTubeSearchResult searchAndDownload(String songTitle) {
-        try {
-            String videoId = searchVideoByTitle(songTitle);
-            if (videoId == null) {
-                throw new RuntimeException("노래를 찾을 수 없습니다: " + songTitle);
-            }
+    public YouTubeSearchResult searchAndDownload(String songTitle) throws IOException, InterruptedException {
+        String videoId = searchVideoByTitle(songTitle);
 
-            Video videoDetails = getVideoDetails(videoId);
-            String downloadPath = downloadAudio(videoId, songTitle);
+        Video videoDetails = getVideoDetails(videoId);
+        String downloadPath = downloadAudio(videoId, songTitle);
 
-            // MP3 파일을 S3에 업로드
-            String s3Url = uploadToS3(downloadPath, songTitle);
-
-            return YouTubeSearchResult.builder()
-                    .videoId(videoId)
-                    .title(videoDetails.getSnippet().getTitle())
-                    .channelTitle(videoDetails.getSnippet().getChannelTitle())
-                    .duration(parseDuration(videoDetails.getContentDetails().getDuration()))
-                    .downloadPath(downloadPath)
-                    .s3Url(s3Url)
-                    .build();
-
-        } catch (Exception e) {
-            logger.error("YouTube 다운로드 실패: {}", songTitle, e);
-            throw new RuntimeException("YouTube 다운로드 실패: " + songTitle, e);
-        }
+        return YouTubeSearchResult.builder()
+                .videoId(videoId)
+                .title(videoDetails.getSnippet().getTitle())
+                .channelTitle(videoDetails.getSnippet().getChannelTitle())
+                .duration(parseDuration(videoDetails.getContentDetails().getDuration()))
+                .downloadPath(downloadPath)
+                .build();
     }
 
     private String searchVideoByTitle(String title) throws IOException {
@@ -93,7 +77,7 @@ public class YouTubeDownloadService {
         List<SearchResult> searchResults = searchResponse.getItems();
 
         if (searchResults.isEmpty()) {
-            return null;
+            throw new RuntimeException("노래를 찾을 수 없습니다. 제목 : " + title);
         }
 
         return searchResults.getFirst().getId().getVideoId();
@@ -115,19 +99,14 @@ public class YouTubeDownloadService {
     }
 
     private String downloadAudio(String videoId, String songTitle) throws IOException, InterruptedException {
-        // 시스템 임시 디렉토리 사용
-        String tempDir = System.getProperty("java.io.tmpdir");
-        Path downloadPath = Paths.get(tempDir, "remedy-youtube");
+        Path downloadPath = Paths.get("./songs");
         Files.createDirectories(downloadPath);
 
-        String sanitizedTitle = sanitizeFileName(songTitle);
-        String outputPath = downloadPath.resolve(sanitizedTitle + ".%(ext)s").toString();
-        String cookiePath = "/cookies.txt";
-        String finalPath = downloadPath.resolve(sanitizedTitle + ".mp3").toString();
+        String outputPath = downloadPath.resolve(songTitle + ".%(ext)s").toString();
+        String finalPath = downloadPath.resolve(songTitle + ".mp3").toString();
 
-        ProcessBuilder pb = new ProcessBuilder(
+        ProcessBuilder processBuilder = new ProcessBuilder(
                 "yt-dlp",
-                "--cookies", cookiePath,
                 "--extract-audio",
                 "--audio-format", "mp3",
                 "--audio-quality", "192K",
@@ -136,44 +115,41 @@ public class YouTubeDownloadService {
                 "https://www.youtube.com/watch?v=" + videoId
         );
 
-        pb.redirectErrorStream(true);
-        Process process = pb.start();
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                logger.info("yt-dlp: {}", line);
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            executor.submit(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        logger.info("yt-dlp: {}", line);
+                    }
+                } catch (IOException e) {
+                    logger.error("yt-dlp 로그 읽기 실패", e);
+                }
+            });
+
+            boolean finished = process.waitFor(60, TimeUnit.SECONDS);
+            executor.shutdown();
+
+            if (!finished) {
+                process.destroyForcibly();
+                throw new RuntimeException("다운로드 타임아웃: " + songTitle);
             }
+
+            if (process.exitValue() != 0) {
+                throw new RuntimeException("다운로드 실패: " + songTitle);
+            }
+
+            return finalPath;
         }
-
-        boolean finished = process.waitFor(600, TimeUnit.SECONDS);
-        if (!finished) {
-            process.destroyForcibly();
-            throw new RuntimeException("다운로드 타임아웃: " + songTitle);
-        }
-
-        if (process.exitValue() != 0) {
-            throw new RuntimeException("다운로드 실패: " + songTitle);
-        }
-
-        File downloadedFile = new File(finalPath);
-        if (!downloadedFile.exists()) {
-            throw new RuntimeException("다운로드된 파일을 찾을 수 없습니다: " + finalPath);
-        }
-
-        return finalPath;
-    }
-
-    private String sanitizeFileName(String fileName) {
-        return fileName.replaceAll("[^a-zA-Z0-9가-힣\\s\\-_]", "")
-                .replaceAll("\\s+", "_")
-                .substring(0, Math.min(fileName.length(), 100));
     }
 
     /**
      * MP3 파일을 S3에 업로드
      */
-    private String uploadToS3(String mp3FilePath, String songTitle) throws IOException {
+    public String uploadToS3(String mp3FilePath, String songId) throws IOException {
         logger.info("S3 업로드 시작: {}", mp3FilePath);
 
         File mp3File = new File(mp3FilePath);
@@ -181,8 +157,7 @@ public class YouTubeDownloadService {
             throw new RuntimeException("MP3 파일을 찾을 수 없습니다: " + mp3FilePath);
         }
 
-        String sanitizedFileName = sanitizeFileName(songTitle) + ".mp3";
-        String s3Key = "songs/" + UUID.randomUUID() + "_" + sanitizedFileName;
+        String s3Key = "songs/" + songId + ".mp3";
 
         try (FileInputStream inputStream = new FileInputStream(mp3File)) {
             String s3Url = storagePort.uploadFile(
