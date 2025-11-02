@@ -31,17 +31,8 @@ public class HLSService {
     @Value("${app.hls.segment-duration:10}")
     private int segmentDuration;
 
-    /**
-     * MP3 파일을 HLS 형식으로 변환하고 S3에 업로드 (기존 방식)
-     *
-     * @param mp3FilePath 입력 MP3 파일 경로
-     * @param songId 곡 고유 ID (디렉토리명으로 사용)
-     * @return HLS 플레이리스트 S3 URL
-     */
-    public String convertToHLS(String mp3FilePath, String songId) throws IOException, InterruptedException {
-        String localHlsDir = convertToHLSLocal(mp3FilePath, songId);
-        return uploadHLSFilesToS3(new File(localHlsDir), songId);
-    }
+    @Value("${app.hls.directory:./hls}")
+    private String hlsDirectory;
 
     /**
      * MP3 파일을 HLS 형식으로 변환 (로컬만, S3 업로드 없음)
@@ -59,9 +50,8 @@ public class HLSService {
             throw new RuntimeException("입력 MP3 파일을 찾을 수 없습니다: " + mp3FilePath);
         }
 
-        // 시스템 임시 디렉토리 사용
-        String tempDir = System.getProperty("java.io.tmpdir");
-        Path hlsPath = Paths.get(tempDir, "remedy-hls", songId);
+        // 설정된 HLS 디렉토리 사용
+        Path hlsPath = Paths.get(hlsDirectory, songId);
         Files.createDirectories(hlsPath);
 
         String playlistPath = hlsPath.resolve("playlist.m3u8").toString();

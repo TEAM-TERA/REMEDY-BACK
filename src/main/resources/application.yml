@@ -55,7 +55,8 @@ spotify:
 
 app:
   hls:
-    segment-duration: ${HLS_SEGMENT_DURATION}
+    segment-duration: ${HLS_SEGMENT_DURATION:10}
+    directory: ${HLS_DIRECTORY:./hls}
 
 logging:
   level:
