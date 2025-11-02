@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
-import org.example.remedy.application.notification.event.DroppingCreatedEvent;
+import org.example.remedy.application.dropping.event.DroppingCreatedEvent;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.global.event.GlobalEventPublisher;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
@@ -45,8 +45,9 @@ public class DroppingServiceImpl implements DroppingService {
                 .userId(userId)
                 .songId(songId)
                 .build();
-        
-        eventPublisher.publish(event);
+
+        // SSE를 통해 해당 사용자에게 Dropping 생성 이벤트 발송
+        eventPublisher.publish(userId, "dropping-created", event);
     }
 
     @Override

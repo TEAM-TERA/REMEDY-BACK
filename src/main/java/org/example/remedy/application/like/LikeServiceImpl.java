@@ -6,11 +6,11 @@ import org.example.remedy.application.dropping.exception.DroppingNotFoundExcepti
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.application.like.port.out.LikePersistencePort;
-import org.example.remedy.application.notification.event.LikeCreatedEvent;
+import org.example.remedy.application.like.event.LikeCreatedEvent;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
-import org.springframework.context.ApplicationEventPublisher;
+import org.example.remedy.global.event.GlobalEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class LikeServiceImpl implements LikeService {
     private final LikePersistencePort likePersistencePort;
     private final DroppingPersistencePort droppingPersistencePort;
-    private final ApplicationEventPublisher eventPublisher;
+    private final GlobalEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -48,14 +48,20 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private void publishLikeCreatedEvent(User liker, Dropping dropping, String droppingId) {
+        // 자기 자신의 Dropping에 좋아요를 누른 경우 알림을 보내지 않음
+        if (liker.getUserId().equals(dropping.getUserId())) {
+            return;
+        }
+
         LikeCreatedEvent event = LikeCreatedEvent.builder()
                 .likerUserId(liker.getUserId())
                 .likerUsername(liker.getUsername())
                 .droppingOwnerUserId(dropping.getUserId())
                 .droppingId(droppingId)
                 .build();
-        
-        eventPublisher.publishEvent(event);
+
+        // SSE를 통해 Dropping 소유자에게 좋아요 알림 발송
+        eventPublisher.publish(dropping.getUserId(), "like-created", event);
     }
 
     @Override
