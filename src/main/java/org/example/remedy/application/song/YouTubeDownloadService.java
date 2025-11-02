@@ -122,10 +122,12 @@ public class YouTubeDownloadService {
 
         String sanitizedTitle = sanitizeFileName(songTitle);
         String outputPath = downloadPath.resolve(sanitizedTitle + ".%(ext)s").toString();
+        String cookiePath = "/cookies.txt";
         String finalPath = downloadPath.resolve(sanitizedTitle + ".mp3").toString();
 
         ProcessBuilder pb = new ProcessBuilder(
                 "yt-dlp",
+                "--cookies", cookiePath,
                 "--extract-audio",
                 "--audio-format", "mp3",
                 "--audio-quality", "192K",

@@ -25,7 +25,6 @@ public class SongBatchProcessingService {
 
     public List<SongDownloadResponse> processSongBatch(List<String> songTitles) {
         log.info("노래 일괄 처리 시작: {}곡 (순차 처리)", songTitles.size());
-        long start = System.currentTimeMillis();
 
         // Spotify 토큰 사전 확보
         try {

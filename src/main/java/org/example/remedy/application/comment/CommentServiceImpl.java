@@ -8,12 +8,12 @@ import org.example.remedy.application.comment.port.in.CommentService;
 import org.example.remedy.application.comment.port.out.CommentPersistencePort;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
-import org.example.remedy.application.notification.event.CommentCreatedEvent;
+import org.example.remedy.application.comment.event.CommentCreatedEvent;
 import org.example.remedy.domain.comment.Comment;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.comment.dto.request.CommentUpdateRequest;
-import org.springframework.context.ApplicationEventPublisher;
+import org.example.remedy.global.event.GlobalEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +25,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentPersistencePort commentPersistencePort;
     private final DroppingPersistencePort droppingPersistencePort;
-    private final ApplicationEventPublisher eventPublisher;
+    private final GlobalEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -40,8 +40,13 @@ public class CommentServiceImpl implements CommentService {
         publishCommentCreatedEvent(user, dropping, droppingId, content);
     }
 
-    private void publishCommentCreatedEvent(User commenter, Dropping dropping, 
+    private void publishCommentCreatedEvent(User commenter, Dropping dropping,
                                            String droppingId, String content) {
+        // 자기 자신의 Dropping에 댓글을 작성한 경우 알림을 보내지 않음
+        if (commenter.getUserId().equals(dropping.getUserId())) {
+            return;
+        }
+
         CommentCreatedEvent event = CommentCreatedEvent.builder()
                 .commenterUserId(commenter.getUserId())
                 .commenterUsername(commenter.getUsername())
@@ -49,8 +54,9 @@ public class CommentServiceImpl implements CommentService {
                 .droppingId(droppingId)
                 .commentContent(content)
                 .build();
-        
-        eventPublisher.publishEvent(event);
+
+        // SSE를 통해 Dropping 소유자에게 댓글 알림 발송
+        eventPublisher.publish(dropping.getUserId(), "comment-created", event);
     }
 
     @Transactional(readOnly = true)

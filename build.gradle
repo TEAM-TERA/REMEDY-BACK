@@ -83,10 +83,6 @@ dependencies {
 
 	// SPOTIFY API
 	implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.4.1'
-
-	// FCM
-	implementation 'com.google.firebase:firebase-admin:9.3.0'
-
 }
 
 tasks.named('test') {
