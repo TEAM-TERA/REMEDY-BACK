@@ -7,6 +7,8 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+import org.example.remedy.application.storage.port.out.StoragePort;
+import org.example.remedy.infrastructure.storage.s3.S3StorageAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -21,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,15 +32,15 @@ public class YouTubeDownloadService {
 
     private static final Logger logger = LoggerFactory.getLogger(YouTubeDownloadService.class);
 
+    private final StoragePort storagePort;
+
     @Value("${youtube.api.key}")
     private String youtubeApiKey;
 
-    @Value("${app.download.directory}")
-    private String downloadDirectory;
-
     private final YouTube youTube;
 
-    public YouTubeDownloadService() {
+    public YouTubeDownloadService(S3StorageAdapter s3StorageAdapter) {
+        this.storagePort = s3StorageAdapter;
         try {
             this.youTube = new YouTube.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
@@ -59,12 +63,16 @@ public class YouTubeDownloadService {
             Video videoDetails = getVideoDetails(videoId);
             String downloadPath = downloadAudio(videoId, songTitle);
 
+            // MP3 파일을 S3에 업로드
+            String s3Url = uploadToS3(downloadPath, songTitle);
+
             return YouTubeSearchResult.builder()
                     .videoId(videoId)
                     .title(videoDetails.getSnippet().getTitle())
                     .channelTitle(videoDetails.getSnippet().getChannelTitle())
                     .duration(parseDuration(videoDetails.getContentDetails().getDuration()))
                     .downloadPath(downloadPath)
+                    .s3Url(s3Url)
                     .build();
 
         } catch (Exception e) {
@@ -107,7 +115,9 @@ public class YouTubeDownloadService {
     }
 
     private String downloadAudio(String videoId, String songTitle) throws IOException, InterruptedException {
-        Path downloadPath = Paths.get(downloadDirectory);
+        // 시스템 임시 디렉토리 사용
+        String tempDir = System.getProperty("java.io.tmpdir");
+        Path downloadPath = Paths.get(tempDir, "remedy-youtube");
         Files.createDirectories(downloadPath);
 
         String sanitizedTitle = sanitizeFileName(songTitle);
@@ -160,6 +170,33 @@ public class YouTubeDownloadService {
                 .substring(0, Math.min(fileName.length(), 100));
     }
 
+    /**
+     * MP3 파일을 S3에 업로드
+     */
+    private String uploadToS3(String mp3FilePath, String songTitle) throws IOException {
+        logger.info("S3 업로드 시작: {}", mp3FilePath);
+
+        File mp3File = new File(mp3FilePath);
+        if (!mp3File.exists()) {
+            throw new RuntimeException("MP3 파일을 찾을 수 없습니다: " + mp3FilePath);
+        }
+
+        String sanitizedFileName = sanitizeFileName(songTitle) + ".mp3";
+        String s3Key = "songs/" + UUID.randomUUID() + "_" + sanitizedFileName;
+
+        try (FileInputStream inputStream = new FileInputStream(mp3File)) {
+            String s3Url = storagePort.uploadFile(
+                    inputStream,
+                    s3Key,
+                    "audio/mpeg",
+                    mp3File.length()
+            );
+
+            logger.info("S3 업로드 완료: {}", s3Url);
+            return s3Url;
+        }
+    }
+
     private int parseDuration(String isoDuration) {
         if (isoDuration == null || !isoDuration.startsWith("PT")) {
             return 0;
@@ -194,6 +231,7 @@ public class YouTubeDownloadService {
         private String channelTitle;
         private int duration;
         private String downloadPath;
+        private String s3Url;
 
         public static YouTubeSearchResultBuilder builder() {
             return new YouTubeSearchResultBuilder();
@@ -205,6 +243,7 @@ public class YouTubeDownloadService {
             private String channelTitle;
             private int duration;
             private String downloadPath;
+            private String s3Url;
 
             public YouTubeSearchResultBuilder videoId(String videoId) {
                 this.videoId = videoId;
@@ -231,6 +270,11 @@ public class YouTubeDownloadService {
                 return this;
             }
 
+            public YouTubeSearchResultBuilder s3Url(String s3Url) {
+                this.s3Url = s3Url;
+                return this;
+            }
+
             public YouTubeSearchResult build() {
                 YouTubeSearchResult result = new YouTubeSearchResult();
                 result.videoId = this.videoId;
@@ -238,6 +282,7 @@ public class YouTubeDownloadService {
                 result.channelTitle = this.channelTitle;
                 result.duration = this.duration;
                 result.downloadPath = this.downloadPath;
+                result.s3Url = this.s3Url;
                 return result;
             }
         }
@@ -247,5 +292,6 @@ public class YouTubeDownloadService {
         public String getChannelTitle() { return channelTitle; }
         public int getDuration() { return duration; }
         public String getDownloadPath() { return downloadPath; }
+        public String getS3Url() { return s3Url; }
     }
 }

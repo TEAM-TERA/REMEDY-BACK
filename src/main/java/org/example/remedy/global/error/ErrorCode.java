@@ -48,7 +48,9 @@ public enum ErrorCode {
     RUNNING_NOT_FOUND(HttpStatus.NOT_FOUND, "R2", "러닝 기록을 찾을 수 없습니다."),
 
     FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "N1", "FCM 토큰을 찾을 수 없습니다."),
-    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "N2", "알림 전송에 실패했습니다.");
+    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "N2", "알림 전송에 실패했습니다."),
+
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "F1", "파일 업로드에 실패했습니다.");
 
 
     private final HttpStatus status;

@@ -1,11 +1,15 @@
 package org.example.remedy.application.song;
 
+import lombok.RequiredArgsConstructor;
+import org.example.remedy.application.storage.port.out.StoragePort;
+import org.example.remedy.infrastructure.storage.s3.S3StorageAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,15 +18,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * HLS (HTTP Live Streaming) 변환 서비스
- * MP3 파일을 HLS 형식으로 변환
+ * MP3 파일을 HLS 형식으로 변환하고 S3에 업로드
  */
 @Service
+@RequiredArgsConstructor
 public class HLSService {
 
     private static final Logger logger = LoggerFactory.getLogger(HLSService.class);
 
-    @Value("${app.hls.directory:./songs/hls}")
-    private String hlsDirectory;
+    private final StoragePort storagePort;
 
     @Value("${app.hls.segment-duration:10}")
     private int segmentDuration;
@@ -43,8 +47,9 @@ public class HLSService {
             throw new RuntimeException("입력 MP3 파일을 찾을 수 없습니다: " + mp3FilePath);
         }
 
-        // HLS 출력 디렉토리 생성
-        Path hlsPath = Paths.get(hlsDirectory, songId);
+        // 시스템 임시 디렉토리 사용
+        String tempDir = System.getProperty("java.io.tmpdir");
+        Path hlsPath = Paths.get(tempDir, "remedy-hls", songId);
         Files.createDirectories(hlsPath);
 
         String playlistPath = hlsPath.resolve("playlist.m3u8").toString();
@@ -85,10 +90,81 @@ public class HLSService {
             throw new RuntimeException("HLS 플레이리스트 파일이 생성되지 않았습니다: " + playlistPath);
         }
 
-        // 상대 경로로 반환 (웹 서버용)
-        String relativePath = "/hls/" + songId + "/playlist.m3u8";
+        logger.info("HLS 변환 완료, S3 업로드 시작: {}", songId);
 
-        logger.info("HLS 변환 완료: {}", relativePath);
-        return relativePath;
+        // HLS 파일들을 S3에 업로드
+        String s3BaseUrl = uploadHLSFilesToS3(hlsPath.toFile(), songId);
+
+        logger.info("HLS S3 업로드 완료: {}", s3BaseUrl);
+        return s3BaseUrl;
+    }
+
+    /**
+     * HLS 파일들을 S3에 업로드
+     * @param hlsDir HLS 파일들이 있는 로컬 디렉토리
+     * @param songId 곡 ID
+     * @return S3 플레이리스트 URL
+     */
+    private String uploadHLSFilesToS3(File hlsDir, String songId) throws IOException {
+        File[] files = hlsDir.listFiles();
+        if (files == null || files.length == 0) {
+            throw new RuntimeException("HLS 파일을 찾을 수 없습니다: " + hlsDir.getAbsolutePath());
+        }
+
+        String playlistS3Url = null;
+
+        // 모든 파일 업로드 (playlist.m3u8 + segment*.ts)
+        for (File file : files) {
+            String fileName = file.getName();
+            String s3Key = "hls/" + songId + "/" + fileName;
+
+            try (FileInputStream inputStream = new FileInputStream(file)) {
+                String contentType = fileName.endsWith(".m3u8") ? "application/vnd.apple.mpegurl" : "video/MP2T";
+
+                String s3Url = storagePort.uploadFile(
+                        inputStream,
+                        s3Key,
+                        contentType,
+                        file.length()
+                );
+
+                logger.info("HLS 파일 S3 업로드: {} -> {}", fileName, s3Url);
+
+                // playlist.m3u8 URL 저장
+                if (fileName.equals("playlist.m3u8")) {
+                    playlistS3Url = s3Url;
+                }
+            }
+        }
+
+        if (playlistS3Url == null) {
+            throw new RuntimeException("playlist.m3u8 파일 업로드 실패");
+        }
+
+        // 업로드 완료 후 로컬 파일 삭제
+        deleteLocalHLSFiles(hlsDir);
+
+        return playlistS3Url;
+    }
+
+    /**
+     * 로컬 HLS 파일들 삭제
+     */
+    private void deleteLocalHLSFiles(File hlsDir) {
+        try {
+            File[] files = hlsDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.delete()) {
+                        logger.debug("로컬 HLS 파일 삭제: {}", file.getName());
+                    }
+                }
+            }
+            if (hlsDir.delete()) {
+                logger.info("로컬 HLS 디렉토리 삭제: {}", hlsDir.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            logger.warn("로컬 HLS 파일 삭제 실패: {}", hlsDir.getAbsolutePath(), e);
+        }
     }
 }

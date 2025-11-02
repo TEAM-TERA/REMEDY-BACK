@@ -1,5 +1,6 @@
 package org.example.remedy.application.song;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -14,6 +15,8 @@ import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.remedy.application.storage.port.out.StoragePort;
+import org.example.remedy.infrastructure.storage.s3.S3StorageAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,27 +26,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class SpotifyImageService {
 
     private static final Logger logger = LoggerFactory.getLogger(SpotifyImageService.class);
+
+    private final StoragePort storagePort;
 
     @Value("${spotify.client.id}")
     private String clientId;
 
     @Value("${spotify.client.secret}")
     private String clientSecret;
-
-    @Value("${app.album.images.directory:./songs/album-images}")
-    private String albumImagesDirectory;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private String accessToken;
@@ -87,33 +87,33 @@ public class SpotifyImageService {
                         .build();
             }
 
-            // 이미지 다운로드 (재시도 로직 포함)
-            String imagePath = null;
+            // 이미지 다운로드 후 S3에 업로드 (재시도 로직 포함)
+            String s3Url = null;
             try {
-                imagePath = downloadImage(trackInfo.getAlbumImageUrl(), trackInfo.getTrackName(), trackInfo.getArtistName());
+                s3Url = downloadAndUploadImageToS3(trackInfo.getAlbumImageUrl(), trackInfo.getTrackName(), trackInfo.getArtistName());
             } catch (Exception e) {
-                logger.warn("Spotify 이미지 다운로드 실패: {} - {}, 메타데이터만 반환",
+                logger.warn("이미지 S3 업로드 실패: {} - {}, 메타데이터만 반환",
                            trackInfo.getTrackName(), trackInfo.getArtistName(), e);
-                // 이미지 다운로드 실패해도 트랙 정보는 반환
+                // 이미지 업로드 실패해도 트랙 정보는 반환
                 return SpotifyAlbumImageResult.builder()
                         .found(true)
                         .trackName(trackInfo.getTrackName())
                         .artistName(trackInfo.getArtistName())
                         .imageUrl(trackInfo.getAlbumImageUrl())
-                        .localPath(null) // 이미지 경로는 null
+                        .s3Url(null) // S3 URL은 null
                         .build();
             }
 
             long endTime = System.currentTimeMillis();
-            logger.info("Spotify 검색 완료: {} -> {} by {}, 소요시간: {}ms",
-                       songTitle, trackInfo.getTrackName(), trackInfo.getArtistName(), endTime - startTime);
+            logger.info("Spotify 검색 및 S3 업로드 완료: {} -> {} by {}, S3 URL: {}, 소요시간: {}ms",
+                       songTitle, trackInfo.getTrackName(), trackInfo.getArtistName(), s3Url, endTime - startTime);
 
             return SpotifyAlbumImageResult.builder()
                     .found(true)
                     .trackName(trackInfo.getTrackName())
                     .artistName(trackInfo.getArtistName())
                     .imageUrl(trackInfo.getAlbumImageUrl())
-                    .localPath(imagePath)
+                    .s3Url(s3Url)
                     .build();
 
         } catch (Exception e) {
@@ -296,12 +296,11 @@ public class SpotifyImageService {
         return null; // 예외 대신 null 반환하여 전체 배치 중단 방지
     }
 
-    private String downloadImage(String imageUrl, String songTitle, String artist) throws IOException {
-        Path albumImagesPath = Paths.get(albumImagesDirectory);
-        Files.createDirectories(albumImagesPath);
-
+    /**
+     * 이미지를 다운로드하여 S3에 업로드
+     */
+    private String downloadAndUploadImageToS3(String imageUrl, String songTitle, String artist) throws IOException {
         String sanitizedFileName = sanitizeFileName(songTitle + "_" + artist) + ".jpg";
-        Path imagePath = albumImagesPath.resolve(sanitizedFileName);
 
         int maxRetries = 2;
         IOException lastException = null;
@@ -325,15 +324,25 @@ public class SpotifyImageService {
                     }
 
                     try (InputStream inputStream = response.getEntity().getContent()) {
-                        Files.copy(inputStream, imagePath, StandardCopyOption.REPLACE_EXISTING);
-                        logger.info("앨범 이미지 다운로드 완료 (시도 {}/{}): {}", retry + 1, maxRetries, imagePath);
-                        return imagePath.toString();
+                        long contentLength = response.getEntity().getContentLength();
+                        String contentType = response.getEntity().getContentType();
+                        
+                        // S3에 업로드
+                        String s3Url = storagePort.uploadFile(
+                                inputStream, 
+                                "album-images/" + UUID.randomUUID() + "_" + sanitizedFileName,
+                                contentType != null ? contentType : "image/jpeg",
+                                contentLength
+                        );
+                        
+                        logger.info("앨범 이미지 S3 업로드 완료 (시도 {}/{}): {}", retry + 1, maxRetries, s3Url);
+                        return s3Url;
                     }
                 }
 
             } catch (IOException e) {
                 lastException = e;
-                logger.warn("이미지 다운로드 시도 실패 ({}/{}): {} for {}",
+                logger.warn("이미지 다운로드/업로드 시도 실패 ({}/{}): {} for {}",
                         retry + 1, maxRetries, e.getMessage(), imageUrl);
 
                 if (retry < maxRetries - 1) {
@@ -341,14 +350,14 @@ public class SpotifyImageService {
                         Thread.sleep((retry + 1) * 500); // 0.5초, 1초 대기
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
-                        throw new IOException("이미지 다운로드 중 인터럽트 발생", ie);
+                        throw new IOException("이미지 처리 중 인터럽트 발생", ie);
                     }
                 }
             }
         }
 
         // 모든 재시도 실패
-        throw new IOException("이미지 다운로드 최대 재시도 실패: " + imageUrl, lastException);
+        throw new IOException("이미지 다운로드/S3 업로드 최대 재시도 실패: " + imageUrl, lastException);
     }
 
     private String sanitizeFileName(String fileName) {
@@ -405,7 +414,7 @@ public class SpotifyImageService {
         private String trackName;
         private String artistName;
         private String imageUrl;
-        private String localPath;
+        private String s3Url;
 
         public static SpotifyAlbumImageResultBuilder builder() {
             return new SpotifyAlbumImageResultBuilder();
@@ -416,7 +425,7 @@ public class SpotifyImageService {
             private String trackName;
             private String artistName;
             private String imageUrl;
-            private String localPath;
+            private String s3Url;
 
             public SpotifyAlbumImageResultBuilder found(boolean found) {
                 this.found = found;
@@ -438,8 +447,8 @@ public class SpotifyImageService {
                 return this;
             }
 
-            public SpotifyAlbumImageResultBuilder localPath(String localPath) {
-                this.localPath = localPath;
+            public SpotifyAlbumImageResultBuilder s3Url(String s3Url) {
+                this.s3Url = s3Url;
                 return this;
             }
 
@@ -449,7 +458,7 @@ public class SpotifyImageService {
                 result.trackName = this.trackName;
                 result.artistName = this.artistName;
                 result.imageUrl = this.imageUrl;
-                result.localPath = this.localPath;
+                result.s3Url = this.s3Url;
                 return result;
             }
         }
@@ -458,6 +467,6 @@ public class SpotifyImageService {
         public String getTrackName() { return trackName; }
         public String getArtistName() { return artistName; }
         public String getImageUrl() { return imageUrl; }
-        public String getLocalPath() { return localPath; }
+        public String getS3Url() { return s3Url; }
     }
 }

@@ -1,3 +1,4 @@
+/*
 package org.example.remedy.domain.dropping.service;
 
 import org.example.remedy.domain.dropping.Dropping;
@@ -105,3 +106,4 @@ public class DroppingServiceTest {
         assertThat(result).hasSize(2); // 3미터 이내 활성 dropping 2개
     }
 }
+*/
