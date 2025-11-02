@@ -10,6 +10,7 @@ import org.example.remedy.presentation.song.dto.request.SongBatchDownloadRequest
 import org.example.remedy.presentation.song.dto.request.SongDownloadRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +26,9 @@ public class SongBatchProcessingService {
 
     private final SpotifyImageService spotifyImageService;
     private final SongDownloadOrchestrator downloadOrchestrator;
-    private final HLSBatchConverter hlsConverter;
-    private final S3BatchUploader s3Uploader;
+    private final HLSService hlsService;
+    private final YouTubeDownloadService youTubeDownloadService;
     private final SongPersistencePort songPersistencePort;
-    private final LocalFileCleanupService cleanupService;
 
     public List<SongDownloadResponse> processSongBatch(SongBatchDownloadRequest request) {
         long batchStart = System.currentTimeMillis();
@@ -38,10 +38,8 @@ public class SongBatchProcessingService {
         ensureSpotifyToken();
         List<SongProcessingResult> results = downloadAllSongs(request.songDownloadRequests());
 
-        hlsConverter.convertAll(results);
-        s3Uploader.uploadAll(results);
+        processAllSongs(results);
         List<SongDownloadResponse> responses = saveAllToDatabase(results);
-        cleanupService.cleanupAll(results);
 
         logBatchCompletion(totalCount, batchStart);
         return responses;
@@ -67,8 +65,70 @@ public class SongBatchProcessingService {
         return results;
     }
 
+    private void processAllSongs(List<SongProcessingResult> results) {
+        log.info("--- 2단계: HLS 변환 및 S3 업로드 시작 ---");
+
+        for (SongProcessingResult result : results) {
+            if (!result.isSuccess()) {
+                continue;
+            }
+
+            processSingleSong(result);
+        }
+    }
+
+    private void processSingleSong(SongProcessingResult result) {
+        try {
+            // HLS 변환
+            String hlsDir = hlsService.convertToHLSLocal(
+                    result.getMp3LocalPath(),
+                    result.getSongId()
+            );
+            log.info("HLS 변환 완료: {} (ID: {})", result.getTitle(), result.getSongId());
+
+            // MP3 S3 업로드
+            String mp3S3Url = youTubeDownloadService.uploadToS3(
+                    result.getMp3LocalPath(),
+                    result.getSongId()
+            );
+            result.setMp3S3Url(mp3S3Url);
+            log.info("MP3 S3 업로드 완료: {}", mp3S3Url);
+
+            // HLS S3 업로드
+            String hlsS3Url = hlsService.uploadHLSFilesToS3(
+                    new File(hlsDir),
+                    result.getSongId()
+            );
+            result.setHlsS3Url(hlsS3Url);
+            log.info("HLS S3 업로드 완료: {}", hlsS3Url);
+
+            // 로컬 MP3 파일 정리
+            cleanupLocalMp3(result.getMp3LocalPath());
+
+        } catch (Exception e) {
+            log.error("곡 처리 실패: {} by {}", result.getTitle(), result.getArtist(), e);
+            result.setSuccess(false);
+            result.setErrorMessage("곡 처리 실패: " + e.getMessage());
+        }
+    }
+
+    private void cleanupLocalMp3(String mp3LocalPath) {
+        if (mp3LocalPath == null) {
+            return;
+        }
+
+        try {
+            File mp3File = new File(mp3LocalPath);
+            if (mp3File.exists() && mp3File.delete()) {
+                log.debug("로컬 MP3 파일 삭제: {}", mp3LocalPath);
+            }
+        } catch (Exception e) {
+            log.warn("로컬 MP3 파일 삭제 실패: {}", mp3LocalPath, e);
+        }
+    }
+
     private List<SongDownloadResponse> saveAllToDatabase(List<SongProcessingResult> results) {
-        log.info("--- 4단계: DB 저장 시작 ---");
+        log.info("--- 3단계: DB 저장 시작 ---");
 
         List<SongDownloadResponse> responses = new ArrayList<>();
         for (SongProcessingResult result : results) {
