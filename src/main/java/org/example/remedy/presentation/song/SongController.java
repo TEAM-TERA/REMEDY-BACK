@@ -85,7 +85,7 @@ public class SongController {
             @Valid @RequestBody SongBatchDownloadRequest request) {
 
         List<SongDownloadResponse> results =
-            songBatchProcessingService.processSongBatch(request.getSongTitles());
+            songBatchProcessingService.processSongBatch(request);
 
         SongBatchDownloadResponse response = SongBatchDownloadResponse.from(results);
         return ResponseEntity.ok(response);

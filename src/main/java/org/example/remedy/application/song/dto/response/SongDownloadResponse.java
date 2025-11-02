@@ -33,6 +33,18 @@ public record SongDownloadResponse(
         );
     }
 
+    public static SongDownloadResponse failure(String title, String artist, String errorMessage) {
+        return new SongDownloadResponse(
+                false,
+                null,   // songId
+                title,
+                artist,
+                null,   // hlsPath
+                null,   // albumImagePath
+                errorMessage
+        );
+    }
+
     public static boolean isSuccess(SongDownloadResponse songDownloadResponse) {
         return songDownloadResponse.success;
     }

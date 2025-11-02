@@ -2,110 +2,138 @@ package org.example.remedy.application.song;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.application.song.dto.SongProcessingResult;
 import org.example.remedy.application.song.dto.response.SongDownloadResponse;
 import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.domain.song.Song;
+import org.example.remedy.presentation.song.dto.request.SongBatchDownloadRequest;
+import org.example.remedy.presentation.song.dto.request.SongDownloadRequest;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
+/**
+ * 곡 배치 처리 파사드 서비스
+ * - 각 단계별 서비스를 조합하여 배치 처리 흐름 제어
+ * - SOLID 원칙 준수: 단일 책임 원칙, 의존성 역전 원칙
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SongBatchProcessingService {
 
-    private final YouTubeDownloadService youTubeDownloadService;
     private final SpotifyImageService spotifyImageService;
-    private final HLSService hlsService;
+    private final SongDownloadOrchestrator downloadOrchestrator;
+    private final HLSBatchConverter hlsConverter;
+    private final S3BatchUploader s3Uploader;
     private final SongPersistencePort songPersistencePort;
+    private final LocalFileCleanupService cleanupService;
 
-    public List<SongDownloadResponse> processSongBatch(List<String> songTitles) {
-        log.info("노래 일괄 처리 시작: {}곡 (순차 처리)", songTitles.size());
+    public List<SongDownloadResponse> processSongBatch(SongBatchDownloadRequest request) {
+        long batchStart = System.currentTimeMillis();
+        int totalCount = request.songDownloadRequests().size();
+        log.info("=== 노래 배치 처리 시작: {}곡 ===", totalCount);
 
-        // Spotify 토큰 사전 확보
+        ensureSpotifyToken();
+        List<SongProcessingResult> results = downloadAllSongs(request.songDownloadRequests());
+
+        hlsConverter.convertAll(results);
+        s3Uploader.uploadAll(results);
+        List<SongDownloadResponse> responses = saveAllToDatabase(results);
+        cleanupService.cleanupAll(results);
+
+        logBatchCompletion(totalCount, batchStart);
+        return responses;
+    }
+
+    private void ensureSpotifyToken() {
         try {
             spotifyImageService.ensureValidToken();
         } catch (Exception e) {
             log.warn("Spotify 토큰 확보 실패: {}", e.getMessage());
         }
+    }
 
-        List<SongDownloadResponse> results = new ArrayList<>();
+    private List<SongProcessingResult> downloadAllSongs(List<SongDownloadRequest> requests) {
+        log.info("--- 1단계: 메타데이터 조회 및 YouTube 다운로드 시작 ---");
 
-        // 순차 처리
-        for (String songTitle : songTitles) {
-            try {
-                SongDownloadResponse response = processSingleSong(songTitle);
-                results.add(response);
-            } catch (Exception e) {
-                log.error("노래 처리 실패: {}", songTitle, e);
-                results.add(SongDownloadResponse.failure(songTitle, e.getMessage()));
-            }
+        List<SongProcessingResult> results = new ArrayList<>();
+        for (SongDownloadRequest request : requests) {
+            SongProcessingResult result = downloadOrchestrator.downloadSong(request);
+            results.add(result);
         }
 
         return results;
     }
 
-    private SongDownloadResponse processSingleSong(String songTitle) {
-        long songStart = System.currentTimeMillis();
+    private List<SongDownloadResponse> saveAllToDatabase(List<SongProcessingResult> results) {
+        log.info("--- 4단계: DB 저장 시작 ---");
+
+        List<SongDownloadResponse> responses = new ArrayList<>();
+        for (SongProcessingResult result : results) {
+            SongDownloadResponse response = saveSingleSong(result);
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    private SongDownloadResponse saveSingleSong(SongProcessingResult result) {
+        if (!result.isSuccess()) {
+            return createFailureResponse(result);
+        }
 
         try {
-            // 1단계: Spotify에서 정확한 곡 정보 조회
-            SpotifyImageService.SpotifyAlbumImageResult spotify =
-                    spotifyImageService.searchAndDownloadAlbumImage(songTitle, "");
-
-            String finalTitle = spotify.isFound() ? spotify.getTrackName() : songTitle;
-            String finalArtist = spotify.isFound() ? spotify.getArtistName() : "";
-
-            // 2단계: 중복 체크 - 제목과 아티스트로 검색
-            Optional<Song> existingSong = songPersistencePort.findByTitleAndArtist(finalTitle, finalArtist);
-            String songId;
-
-            if (existingSong.isPresent()) {
-                // 중복 노래가 있으면 기존 ID 사용 (덮어쓰기)
-                songId = existingSong.get().getId();
-                log.info("중복 노래 발견 (덮어쓰기 진행): {} by {} (ID: {})",
-                        finalTitle, finalArtist, songId);
-            } else {
-                // 새로운 노래면 새 ID 생성
-                songId = UUID.randomUUID().toString();
-            }
-
-            // 3단계: YouTube 다운로드
-            String searchQuery = finalTitle + (finalArtist.isEmpty() ? "" : " " + finalArtist) + " audio";
-            YouTubeDownloadService.YouTubeSearchResult youtube =
-                    youTubeDownloadService.searchAndDownload(searchQuery);
-
-            // 4단계: HLS 변환
-            String hlsPath = hlsService.convertToHLS(youtube.getDownloadPath(), songId);
-
-            // 5단계: DB 저장
-            Song song = Song.builder()
-                    .id(songId)
-                    .title(finalTitle)
-                    .artist(finalArtist)
-                    .duration(youtube.getDuration())
-                    .hlsPath(hlsPath)
-                    .mp3Path(youtube.getS3Url())
-                    .albumImagePath(spotify.isFound() ? spotify.getS3Url() : null)
-                    .build();
-
+            Song song = buildSongEntity(result);
             Song saved = songPersistencePort.save(song);
 
-            log.info("노래 처리 완료: {} by {} (ID: {}), 소요시간: {}ms",
-                    saved.getTitle(), saved.getArtist(), saved.getId(),
-                    System.currentTimeMillis() - songStart);
+            log.info("DB 저장 완료: {} by {} (ID: {})",
+                    saved.getTitle(), saved.getArtist(), saved.getId());
 
-            return SongDownloadResponse.success(saved.getId(), saved.getTitle(),
-                    saved.getArtist(), saved.getHlsPath(), saved.getAlbumImagePath());
-
+            return createSuccessResponse(saved);
         } catch (Exception e) {
-            log.error("노래 처리 실패: {}, 소요시간: {}ms", songTitle,
-                    System.currentTimeMillis() - songStart, e);
-            return SongDownloadResponse.failure(songTitle, e.getMessage());
+            log.error("DB 저장 실패: {} by {}", result.getTitle(), result.getArtist(), e);
+            return SongDownloadResponse.failure(
+                    result.getTitle(),
+                    result.getArtist(),
+                    "DB 저장 실패: " + e.getMessage()
+            );
         }
+    }
+
+    private Song buildSongEntity(SongProcessingResult result) {
+        return Song.builder()
+                .id(result.getSongId())
+                .title(result.getTitle())
+                .artist(result.getArtist())
+                .duration(result.getDuration())
+                .hlsPath(result.getHlsS3Url())
+                .mp3Path(result.getMp3S3Url())
+                .albumImagePath(result.getAlbumImageS3Url())
+                .build();
+    }
+
+    private SongDownloadResponse createSuccessResponse(Song song) {
+        return SongDownloadResponse.success(
+                song.getId(),
+                song.getTitle(),
+                song.getArtist(),
+                song.getHlsPath(),
+                song.getAlbumImagePath()
+        );
+    }
+
+    private SongDownloadResponse createFailureResponse(SongProcessingResult result) {
+        return SongDownloadResponse.failure(
+                result.getTitle(),
+                result.getArtist(),
+                result.getErrorMessage()
+        );
+    }
+
+    private void logBatchCompletion(int totalCount, long batchStart) {
+        long totalTime = System.currentTimeMillis() - batchStart;
+        log.info("=== 배치 처리 완료: 총 {}곡, 소요시간: {}ms ===", totalCount, totalTime);
     }
 }
