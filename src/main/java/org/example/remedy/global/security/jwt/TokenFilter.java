@@ -20,13 +20,13 @@ public class TokenFilter extends OncePerRequestFilter {
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/auth/login",
-            "/auth/register",
-            "/auth/refresh",
-            "/droppings/*",
-            "/songs/search",
-            "/songs/*/stream",
-            "/health"
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/auth/refresh",
+            "/api/v1/droppings/*",
+            "/api/v1/songs/search",
+            "/api/v1/songs/*/stream",
+            "/api/v1/health"
     );
 
     @Override
