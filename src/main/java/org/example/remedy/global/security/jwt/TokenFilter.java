@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -16,21 +17,22 @@ import java.util.List;
 public class TokenFilter extends OncePerRequestFilter {
 
     private final TokenProvider jwtTokenProvider;
+    private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/api/v1/auth/login",
-            "/api/v1/auth/register",
-            "/api/v1/auth/refresh",
-            "/api/v1/droppings/{dropping-id}",
-            "/api/v1/songs/search",
-            "/api/v1/songs/*/stream",
-            "/api/v1/health"
+            "/auth/login",
+            "/auth/register",
+            "/auth/refresh",
+            "/droppings/*",
+            "/songs/search",
+            "/songs/*/stream",
+            "/health"
     );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return EXCLUDE_PATHS.stream().anyMatch(path::startsWith);
+        return EXCLUDE_PATHS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 
     @Override
