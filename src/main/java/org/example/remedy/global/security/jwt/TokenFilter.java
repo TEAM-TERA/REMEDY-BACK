@@ -23,7 +23,8 @@ public class TokenFilter extends OncePerRequestFilter {
             "/api/v1/auth/refresh",
             "/api/v1/droppings/{dropping-id}",
             "/api/v1/songs/search",
-            "/api/v1/songs/*/stream"
+            "/api/v1/songs/*/stream",
+            "/api/v1/health"
     );
 
     @Override
