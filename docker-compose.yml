@@ -67,7 +67,7 @@ services:
       - JWT_HEADER=${JWT_HEADER}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
-      - "8080:8080"
+      - "${APPLICATION_PORT}:8080"
     volumes:
       - ./songs:/app/songs
     networks:
