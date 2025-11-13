@@ -46,4 +46,4 @@ aws:
 
 logging:
   level:
-    root: info
+    web: info
