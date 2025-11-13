@@ -15,7 +15,7 @@ import java.util.List;
 public class UserWithdrawalScheduler {
     private final UserPersistencePort userPersistencePort;
 
-    @Scheduled(cron = "0 0 12 * * *")
+    @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
     @Transactional
     public void deleteExpiredWithdrawalUsers(){
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(90);
