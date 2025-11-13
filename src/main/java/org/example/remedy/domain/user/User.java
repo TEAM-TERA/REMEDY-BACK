@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.example.remedy.presentation.auth.dto.AuthRegisterRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -38,6 +39,13 @@ public class User {
     @Column(nullable = false)
     private boolean gender; // true : 남성, false : 여성
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    @Column
+    private LocalDateTime withdrawalDate;
+
     public User(String username, String password, String email, LocalDate birthDate, boolean gender) {
         this.username = username;
         this.password = password;
@@ -46,6 +54,7 @@ public class User {
         this.role = Role.ROLE_USER;
         this.birthDate = birthDate;
         this.gender = gender;
+        this.status = Status.JOIN;
     }
 
     public static User create(AuthRegisterRequest req, String password) {
@@ -67,4 +76,10 @@ public class User {
     public void updateProfileImage(String imageUrl) {
         this.profileImage = imageUrl;
     }
+
+    public void withdrawal(){
+        this.status = Status.WITHDRAWAL;
+        this.withdrawalDate = LocalDateTime.now();
+    }
+
 }

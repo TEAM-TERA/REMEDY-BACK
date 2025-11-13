@@ -63,4 +63,10 @@ public class UserController {
         List<String> droppingId = likeService.getLikedDroppingsByUser(user);
         return ResponseEntity.ok(droppingId);
     }
+
+    @PostMapping("/withdrawal")
+    public ResponseEntity<Void> withdrawal(@AuthenticationPrincipal AuthDetails authDetails) {
+        userService.withdrawUser(authDetails.getUser());
+        return ResponseEntity.ok().build();
+    }
 }

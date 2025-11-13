@@ -12,4 +12,6 @@ public interface UserService {
     void updateUserProfile(UserProfileUpdateRequest req, User user);
 
     UserProfileImageResponse updateUserProfileImage(MultipartFile image, User user);
+
+    void withdrawUser(User user);
 }

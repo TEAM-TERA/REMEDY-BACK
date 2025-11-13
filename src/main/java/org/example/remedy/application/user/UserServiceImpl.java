@@ -36,4 +36,10 @@ public class UserServiceImpl implements UserService {
         userPersistencePort.save(user);
         return UserMapper.toUserProfileImageResponse(user);
     }
+
+    @Transactional
+    public void withdrawUser(User user){
+        user.withdrawal();
+        userPersistencePort.save(user);
+    }
 }
