@@ -44,20 +44,6 @@ aws:
     access-key: ${AWS_ACCESS_KEY}
     secret-key: ${AWS_SECRET_KEY}
 
-youtube:
-  api:
-    key: ${YOUTUBE_API_KEY}
-
-spotify:
-  client:
-    id: ${SPOTIFY_CLIENT_ID}
-    secret: ${SPOTIFY_CLIENT_SECRET}
-
-app:
-  hls:
-    segment-duration: ${HLS_SEGMENT_DURATION:10}
-    directory: ${HLS_DIRECTORY:./hls}
-
 logging:
   level:
     web: info

@@ -3,10 +3,6 @@ package org.example.remedy.application.song.port.in;
 import org.example.remedy.application.song.dto.response.SongListResponse;
 import org.example.remedy.application.song.dto.response.SongResponse;
 import org.example.remedy.application.song.dto.response.SongSearchListResponse;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
-
-import java.io.IOException;
 
 public interface SongService {
     SongResponse getSongById(String id);
@@ -14,12 +10,6 @@ public interface SongService {
     SongSearchListResponse searchSongs(String query);
 
     SongListResponse getAllSongs();
-
-    ResponseEntity<Resource> streamSong(String title) throws IOException;
-
-    ResponseEntity<Resource> streamHLS(String songId) throws IOException;
-
-    ResponseEntity<Resource> getHLSSegment(String songId, String segmentName) throws IOException;
 
     void deleteSong(String id);
 }
