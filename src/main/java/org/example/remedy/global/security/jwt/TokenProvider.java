@@ -136,4 +136,8 @@ public class TokenProvider {
             throw InvalidJwtTokenException.EXCEPTION;
         }
     }
+
+    public void deleteRefreshToken(String email) {
+        redisTemplate.delete(REDIS_REFRESH_KEY_PREFIX + email);
+    }
 }
