@@ -5,10 +5,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.application.auth.port.in.AuthService;
+import org.example.remedy.domain.user.Status;
 import org.example.remedy.presentation.auth.dto.AuthLoginRequest;
 import org.example.remedy.presentation.auth.dto.AuthRegisterRequest;
 import org.example.remedy.application.auth.exception.InvalidPasswordException;
 import org.example.remedy.application.auth.exception.UserAlreadyExistsException;
+import org.example.remedy.application.user.exception.WithdrawnUserException;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.application.user.exception.UserNotFoundException;
 import org.example.remedy.application.user.port.out.UserPersistencePort;
@@ -45,6 +47,10 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(()-> UserNotFoundException.EXCEPTION);
+
+        if(user.getStatus() == Status.WITHDRAWAL){
+            throw WithdrawnUserException.EXCEPTION;
+        }
 
         if(!passwordEncoder.matches(req.password(), user.getPassword())) throw InvalidPasswordException.EXCEPTION;
 

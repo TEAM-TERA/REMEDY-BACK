@@ -5,6 +5,8 @@ import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.domain.user.User;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -32,4 +34,15 @@ public class JpaUserAdapter implements UserPersistencePort {
     public Optional<User> findByUserId(Long userId) {
         return userRepository.findByUserId(userId);
     }
+
+    @Override
+    public List<User> findUsersToDeletePermanently(LocalDateTime cutoffDate) {
+        return userRepository.findUsersToDeletePermanently(cutoffDate);
+    }
+
+    @Override
+    public void deleteAll(List<User> users) {
+        userRepository.deleteAll(users);
+    }
+
 }
