@@ -47,11 +47,9 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         //dropping
                         .requestMatchers(HttpMethod.GET, "/droppings").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/droppings").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/droppings/{song-id}").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/droppings/{song-id}").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/droppings/{song-id}").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/droppings/playing/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/droppings/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/droppings/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/songs/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/likes/**").hasAnyRole("USER", "ADMIN")
