@@ -43,7 +43,7 @@ public class User {
         this.password = password;
         this.profileImage = "https://mblogthumb-phinf.pstatic.net/MjAyMDExMDFfODMg/MDAxNjA0MjI4ODc1MDgz.gQ3xcHrLXaZyxcFAoEcdB7tJWuRs7fKgOxQwPvsTsrUg.0OBtKHq2r3smX5guFQtnT7EDwjzksz5Js0wCV4zjfpcg.JPEG.gambasg/%EC%9C%A0%ED%8A%9C%EB%B8%8C_%EA%B8%B0%EB%B3%B8%ED%94%84%EB%A1%9C%ED%95%84_%EB%B3%B4%EB%9D%BC.jpg?type=w400";
         this.email = email;
-        this.role = Role.ROLE_ADMIN;
+        this.role = Role.ROLE_USER;
         this.birthDate = birthDate;
         this.gender = gender;
     }
