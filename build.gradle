@@ -34,7 +34,6 @@ dependencies {
 	// POSTGRE
 	runtimeOnly 'org.postgresql:postgresql'
 
-
 	// SECURITY
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -74,15 +73,8 @@ dependencies {
 	// ELASTIC SEARCH
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
-	// YOUTUBE DATA API
-	implementation 'com.google.apis:google-api-services-youtube:v3-rev20241022-2.0.0'
-	implementation 'com.google.auth:google-auth-library-oauth2-http:1.30.0'
-
 	// HTTP CLIENT
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.1'
-
-	// SPOTIFY API
-	implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.4.1'
 }
 
 tasks.named('test') {
