@@ -18,6 +18,7 @@ public enum ErrorCode {
     DROPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "D2", "삭제되었거나 존재하지 않는 드랍입니다."),
     SONG_NOT_FOUND(HttpStatus.NOT_FOUND, "D3", "존재하지 않는 노래입니다."),
     METADATA_NOT_FOUND(HttpStatus.NOT_FOUND, "D4", "유튜브의 메타데이터가 존재하지 않습니다."),
+    INVALID_DROPPING_DELETE_REQUEST(HttpStatus.BAD_REQUEST, "D5", "다른 사용자가 생성한 드랍핑은 삭제할 수 없습니다."),
 
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "S1", "올바르지 않은 입력값입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "S2", "잘못된 HTTP 메서드를 호출했습니다."),

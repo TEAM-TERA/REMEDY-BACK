@@ -61,6 +61,12 @@ public class MongoDroppingAdapter implements DroppingPersistencePort {
     }
 
     @Override
+    public void softDelete(Dropping dropping) {
+        dropping.markAsDeleted();
+        repository.save(dropping);
+    }
+
+    @Override
     public void deleteById(String id) {
         repository.deleteById(id);
     }
