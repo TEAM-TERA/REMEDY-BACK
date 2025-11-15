@@ -2,6 +2,7 @@ package org.example.remedy.application.dropping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.application.dropping.exception.InvalidDroppingDeleteRequestException;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.dropping.event.DroppingCreatedEvent;
@@ -96,7 +97,11 @@ public class DroppingServiceImpl implements DroppingService {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
-        if (dropping.getUserId().equals(userId)) droppingPersistencePort.deleteById(droppingId);
+        if (!dropping.getUserId().equals(userId)) {
+            throw new InvalidDroppingDeleteRequestException();
+        }
+
+        droppingPersistencePort.softDelete(dropping);
     }
 
     @Override
