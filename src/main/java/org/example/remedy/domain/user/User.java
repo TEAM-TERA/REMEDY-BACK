@@ -82,4 +82,9 @@ public class User {
         this.withdrawalDate = LocalDateTime.now();
     }
 
+    public void reactivate(){
+        this.status = Status.JOIN;
+        this.withdrawalDate = null;
+    }
+
 }

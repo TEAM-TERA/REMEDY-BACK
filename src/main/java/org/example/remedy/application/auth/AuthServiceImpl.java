@@ -48,11 +48,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(()-> UserNotFoundException.EXCEPTION);
 
-        if(user.getStatus() == Status.WITHDRAWAL){
-            throw WithdrawnUserException.EXCEPTION;
-        }
-
         if(!passwordEncoder.matches(req.password(), user.getPassword())) throw InvalidPasswordException.EXCEPTION;
+
+        if(user.getStatus() == Status.WITHDRAWAL){
+            user.reactivate();
+            userPersistencePort.save(user);
+        }
 
         String accessToken = tokenProvider.createAccessToken(email);
         String refreshToken = tokenProvider.createRefreshToken(email);
