@@ -31,7 +31,7 @@ public class MongoDroppingAdapter implements DroppingPersistencePort {
         AggregationResults<Dropping> results = findDroppingsByAroundRadius(
                 dropping.getLocation().getX(),
                 dropping.getLocation().getY(),
-                0.005);
+                0.001);
         if (results.getMappedResults().isEmpty()){
             mongoTemplate.insert(dropping);
         } else {
