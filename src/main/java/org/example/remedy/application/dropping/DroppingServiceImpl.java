@@ -2,15 +2,19 @@ package org.example.remedy.application.dropping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.application.dropping.exception.InvalidDroppingDeleteRequestException;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.dropping.event.DroppingCreatedEvent;
 import org.example.remedy.application.song.port.out.SongPersistencePort;
+import org.example.remedy.application.user.exception.UserNotFoundException;
+import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.DroppingType;
 import org.example.remedy.domain.dropping.MusicDroppingPayload;
 import org.example.remedy.domain.dropping.VoteDroppingPayload;
 import org.example.remedy.domain.song.Song;
+import org.example.remedy.domain.user.User;
 import org.example.remedy.global.event.GlobalEventPublisher;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
 import org.example.remedy.presentation.dropping.dto.request.VoteDroppingCreateRequest;
@@ -40,6 +44,7 @@ public class DroppingServiceImpl implements DroppingService {
 
     private final DroppingPersistencePort droppingPersistencePort;
     private final SongPersistencePort songPersistencePort;
+    private final UserPersistencePort userPersistencePort;
     private final GlobalEventPublisher eventPublisher;
 
     @Override
@@ -92,9 +97,13 @@ public class DroppingServiceImpl implements DroppingService {
     public DroppingFindResponse getDropping(String droppingId) {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
-        
+
+        String username = userPersistencePort.findByUserId(dropping.getUserId())
+                .map(User::getUsername)
+                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+
         String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
-        return DroppingFindResponse.newInstance(dropping, albumImageUrl);
+        return DroppingFindResponse.newInstance(dropping, username, albumImageUrl);
     }
 
     @Override
@@ -112,7 +121,11 @@ public class DroppingServiceImpl implements DroppingService {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
-        if (dropping.getUserId().equals(userId)) droppingPersistencePort.deleteById(droppingId);
+        if (!dropping.getUserId().equals(userId)) {
+            throw new InvalidDroppingDeleteRequestException();
+        }
+
+        droppingPersistencePort.softDelete(dropping);
     }
 
     @Override

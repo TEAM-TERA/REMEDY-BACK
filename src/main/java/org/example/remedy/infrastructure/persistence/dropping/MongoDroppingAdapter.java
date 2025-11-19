@@ -31,7 +31,7 @@ public class MongoDroppingAdapter implements DroppingPersistencePort {
         AggregationResults<Dropping> results = findDroppingsByAroundRadius(
                 dropping.getLocation().getX(),
                 dropping.getLocation().getY(),
-                0.005);
+                0.001);
         if (results.getMappedResults().isEmpty()){
             mongoTemplate.insert(dropping);
         } else {
@@ -58,6 +58,12 @@ public class MongoDroppingAdapter implements DroppingPersistencePort {
     @Override
     public List<Dropping> findExpiredAndNotDeletedDroppings(LocalDateTime now) {
         return repository.findExpiredAndNotDeletedDroppings(now);
+    }
+
+    @Override
+    public void softDelete(Dropping dropping) {
+        dropping.markAsDeleted();
+        repository.save(dropping);
     }
 
     @Override

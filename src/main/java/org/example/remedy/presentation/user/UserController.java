@@ -1,5 +1,6 @@
 package org.example.remedy.presentation.user;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
@@ -11,6 +12,7 @@ import org.example.remedy.application.user.dto.response.UserProfileImageResponse
 import org.example.remedy.application.user.dto.response.UserProfileResponse;
 import org.example.remedy.application.user.port.in.UserService;
 import org.example.remedy.global.security.auth.AuthDetails;
+import org.example.remedy.global.security.util.CookieManager;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +28,7 @@ public class UserController {
     private final UserService userService;
     private final DroppingService droppingService;
     private final LikeService likeService;
+    private final CookieManager cookieManager;
 
     @GetMapping
     public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal AuthDetails authDetails) {
@@ -62,5 +65,12 @@ public class UserController {
         User user = authDetails.getUser();
         List<String> droppingId = likeService.getLikedDroppingsByUser(user);
         return ResponseEntity.ok(droppingId);
+    }
+
+    @PostMapping("/withdrawal")
+    public ResponseEntity<Void> withdrawal(
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        userService.withdrawUser(authDetails.getUser());
+        return ResponseEntity.ok().build();
     }
 }

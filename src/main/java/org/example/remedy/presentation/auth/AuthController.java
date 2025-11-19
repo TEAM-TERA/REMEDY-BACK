@@ -28,10 +28,4 @@ public class AuthController {
         authService.login(req, res);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<Void> refresh(@CookieValue(value = "refresh_token") Cookie cookie, HttpServletResponse res) {
-        authService.refresh(cookie, res);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 }
