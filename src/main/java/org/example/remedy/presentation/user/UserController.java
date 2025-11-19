@@ -69,11 +69,8 @@ public class UserController {
 
     @PostMapping("/withdrawal")
     public ResponseEntity<Void> withdrawal(
-            @AuthenticationPrincipal AuthDetails authDetails,
-            HttpServletResponse response) {
+            @AuthenticationPrincipal AuthDetails authDetails) {
         userService.withdrawUser(authDetails.getUser());
-        cookieManager.clearCookie(response);
-        cookieManager.clearAuthorizationHeader(response);
         return ResponseEntity.ok().build();
     }
 }
