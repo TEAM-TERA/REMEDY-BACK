@@ -1,10 +1,10 @@
 package org.example.remedy.presentation.user;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchResponse;
 import org.example.remedy.application.dropping.port.in.DroppingService;
+import org.example.remedy.application.like.dto.response.LikeDroppingResponse;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
@@ -59,12 +59,10 @@ public class UserController {
     }
 
     @GetMapping("/my-like")
-    public ResponseEntity<List<String>> getLikedDropping(
+    public ResponseEntity<List<LikeDroppingResponse>> getLikedDropping(
             @AuthenticationPrincipal AuthDetails authDetails) {
-
-        User user = authDetails.getUser();
-        List<String> droppingId = likeService.getLikedDroppingsByUser(user);
-        return ResponseEntity.ok(droppingId);
+        List<LikeDroppingResponse> likedDroppings = likeService.getLikeDroppingsDetailByUser(authDetails.getUser());
+        return ResponseEntity.ok(likedDroppings);
     }
 
     @PostMapping("/withdrawal")

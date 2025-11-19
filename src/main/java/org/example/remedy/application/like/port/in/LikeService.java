@@ -1,5 +1,6 @@
 package org.example.remedy.application.like.port.in;
 
+import org.example.remedy.application.like.dto.response.LikeDroppingResponse;
 import org.example.remedy.domain.user.User;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface LikeService {
 
     long getLikeCountByDropping(String droppingId);
 
-    List<String> getLikedDroppingsByUser(User user);
+    List<LikeDroppingResponse> getLikeDroppingsDetailByUser(User user);
 }

@@ -1,12 +1,15 @@
 package org.example.remedy.application.like;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
+import org.example.remedy.application.like.dto.response.LikeDroppingResponse;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.application.like.port.out.LikePersistencePort;
 import org.example.remedy.application.like.event.LikeCreatedEvent;
+import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
@@ -17,11 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
     private final LikePersistencePort likePersistencePort;
     private final DroppingPersistencePort droppingPersistencePort;
+    private final SongPersistencePort songPersistencePort;
     private final GlobalEventPublisher eventPublisher;
 
     @Override
@@ -83,9 +88,26 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public List<String> getLikedDroppingsByUser(User user) {
+    @Transactional(readOnly = true)
+    public List<LikeDroppingResponse> getLikeDroppingsDetailByUser(User user) {
         return likePersistencePort.findByUser(user).stream()
-                .map(Like::getDroppingId)
+                .map(like -> convertToLikeDroppingResponse(like.getDroppingId()))
+                .flatMap(Optional::stream)
                 .toList();
+    }
+
+    private Optional<LikeDroppingResponse> convertToLikeDroppingResponse(String droppingId) {
+        return droppingPersistencePort.findById(droppingId)
+                .filter(Dropping::isActive)
+                .filter(dropping -> dropping.getSongId() != null)
+                .flatMap(dropping -> songPersistencePort.findById(dropping.getSongId())
+                        .map(song -> new LikeDroppingResponse(
+                                droppingId,
+                                dropping.getSongId(),
+                                song.getTitle(),
+                                song.getAlbumImagePath(),
+                                dropping.getAddress()
+                        ))
+                );
     }
 }
