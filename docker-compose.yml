@@ -31,7 +31,6 @@ services:
 
       # JWT 설정
       - JWT_ACCESS_TIME=${JWT_ACCESS_TIME}
-      - JWT_REFRESH_TIME=${JWT_REFRESH_TIME}
       - JWT_PREFIX=${JWT_PREFIX}
       - JWT_HEADER=${JWT_HEADER}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
