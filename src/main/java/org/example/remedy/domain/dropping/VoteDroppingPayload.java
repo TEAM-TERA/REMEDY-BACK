@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.remedy.application.dropping.exception.InvalidVoteOptionException;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class VoteDroppingPayload implements Payload {
 
     public void addVote(Long userId, String optionText) {
         if (!optionVotes.containsKey(optionText)) {
-            throw new IllegalArgumentException("존재하지 않는 투표 옵션입니다");
+            throw InvalidVoteOptionException.EXCEPTION;
         }
 
         optionVotes.values().forEach(voters -> voters.remove(userId));

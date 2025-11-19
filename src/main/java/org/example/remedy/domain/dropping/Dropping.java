@@ -1,6 +1,7 @@
 package org.example.remedy.domain.dropping;
 
 import lombok.Getter;
+import org.example.remedy.application.dropping.exception.InvalidDroppingTypeException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
@@ -64,7 +65,7 @@ public class Dropping {
 
     private VoteDroppingPayload asVotePayload() {
         if (!(this.payload instanceof VoteDroppingPayload votePayload)) {
-            throw new IllegalStateException("투표 드롭핑이 아닙니다");
+            throw InvalidDroppingTypeException.EXCEPTION;
         }
         return votePayload;
     }
