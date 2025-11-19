@@ -43,6 +43,5 @@ public class UserServiceImpl implements UserService {
     public void withdrawUser(User user){
         user.withdrawal();
         userPersistencePort.save(user);
-        tokenProvider.deleteRefreshToken(user.getEmail());
     }
 }
