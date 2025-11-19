@@ -4,7 +4,7 @@ services:
     container_name: spring-boot
     env_file:
       - .env
-    depends_on: # ✅ 여기 부분 완전히 고쳐야 함
+    depends_on:
       mongodb:
         condition: service_started
       postgresql:
@@ -31,7 +31,6 @@ services:
 
       # JWT 설정
       - JWT_ACCESS_TIME=${JWT_ACCESS_TIME}
-      - JWT_REFRESH_TIME=${JWT_REFRESH_TIME}
       - JWT_PREFIX=${JWT_PREFIX}
       - JWT_HEADER=${JWT_HEADER}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
