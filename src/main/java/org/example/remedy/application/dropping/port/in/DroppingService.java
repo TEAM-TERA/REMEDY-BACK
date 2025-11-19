@@ -27,5 +27,7 @@ public interface DroppingService {
 
     void vote(String droppingId, Long userId, String optionText);
 
+    void cancelVote(String droppingId, Long userId);
+
     VoteDroppingResponse getVoteDropping(String droppingId, Long userId);
 }

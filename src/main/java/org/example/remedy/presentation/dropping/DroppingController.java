@@ -68,6 +68,14 @@ public class DroppingController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{dropping-id}/vote")
+    public ResponseEntity<Void> cancelVote(
+            @PathVariable(name = "dropping-id") String id,
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        droppingService.cancelVote(id, authDetails.getUserId());
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{dropping-id}/vote")
     public ResponseEntity<VoteDroppingResponse> getVoteDropping(
             @PathVariable(name = "dropping-id") String id,

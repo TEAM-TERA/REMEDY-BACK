@@ -31,4 +31,8 @@ public class VoteDroppingPayload implements Payload {
 
         optionVotes.get(optionText).add(userId);
     }
+
+    public void removeVote(Long userId) {
+        optionVotes.values().forEach(voters -> voters.remove(userId));
+    }
 }

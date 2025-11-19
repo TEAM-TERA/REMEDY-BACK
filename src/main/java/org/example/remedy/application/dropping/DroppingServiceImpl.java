@@ -205,6 +205,16 @@ public class DroppingServiceImpl implements DroppingService {
     }
 
     @Override
+    @Transactional
+    public void cancelVote(String droppingId, Long userId) {
+        Dropping dropping = droppingPersistencePort.findById(droppingId)
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
+
+        dropping.cancelVote(userId);
+        droppingPersistencePort.save(dropping);
+    }
+
+    @Override
     public VoteDroppingResponse getVoteDropping(String droppingId, Long userId) {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);

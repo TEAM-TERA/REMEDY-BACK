@@ -78,6 +78,10 @@ public class Dropping {
         asVotePayload().addVote(userId, optionText);
     }
 
+    public void cancelVote(Long userId) {
+        asVotePayload().removeVote(userId);
+    }
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiryDate);
     }
