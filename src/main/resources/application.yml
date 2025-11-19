@@ -17,7 +17,7 @@ spring:
     mongodb:
       uri: ${MONGO_DB_URI}
       auto-index-creation: true
-      
+
     redis:
       url: ${REDIS_URL}
 
@@ -32,7 +32,6 @@ server:
 
 jwt:
   access-time: ${JWT_ACCESS_TIME}
-  refresh-time: ${JWT_REFRESH_TIME}
   prefix: ${JWT_PREFIX}
   header: ${JWT_HEADER}
   secret-key: ${JWT_SECRET_KEY}
