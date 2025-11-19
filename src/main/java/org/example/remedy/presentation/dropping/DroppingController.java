@@ -4,8 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
+import org.example.remedy.presentation.dropping.dto.request.VoteDroppingCreateRequest;
+import org.example.remedy.presentation.dropping.dto.request.VoteRequest;
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
+import org.example.remedy.application.dropping.dto.response.VoteDroppingResponse;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +49,30 @@ public class DroppingController {
             @AuthenticationPrincipal AuthDetails authDetails) {
         droppingService.deleteDropping(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/vote")
+    public ResponseEntity<Void> createVoteDropping(
+            @AuthenticationPrincipal AuthDetails authDetails,
+            @Valid @RequestBody VoteDroppingCreateRequest request) {
+        droppingService.createVoteDropping(authDetails, request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/{dropping-id}/vote")
+    public ResponseEntity<Void> vote(
+            @PathVariable(name = "dropping-id") String id,
+            @AuthenticationPrincipal AuthDetails authDetails,
+            @Valid @RequestBody VoteRequest request) {
+        droppingService.vote(id, authDetails.getUserId(), request.optionText());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{dropping-id}/vote")
+    public ResponseEntity<VoteDroppingResponse> getVoteDropping(
+            @PathVariable(name = "dropping-id") String id,
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        VoteDroppingResponse response = droppingService.getVoteDropping(id, authDetails.getUserId());
+        return ResponseEntity.ok(response);
     }
 }

@@ -2,7 +2,7 @@ package org.example.remedy.presentation.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.application.dropping.dto.response.DroppingSearchResponse;
+import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.domain.user.User;
@@ -50,9 +50,9 @@ public class UserController {
     }
 
     @GetMapping("/my-drop")
-    public ResponseEntity<List<DroppingSearchResponse>> getMyDroppings(@AuthenticationPrincipal AuthDetails authDetails) {
-        List<DroppingSearchResponse> responses = droppingService.getUserDroppings(authDetails.getUserId());
-        return ResponseEntity.ok(responses);
+    public ResponseEntity<DroppingSearchListResponse> getMyDroppings(@AuthenticationPrincipal AuthDetails authDetails) {
+        DroppingSearchListResponse response = droppingService.getUserDroppings(authDetails.getUserId());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-like")

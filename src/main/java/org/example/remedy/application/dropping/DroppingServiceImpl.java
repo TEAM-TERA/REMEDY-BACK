@@ -7,12 +7,19 @@ import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.dropping.event.DroppingCreatedEvent;
 import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.domain.dropping.DroppingType;
+import org.example.remedy.domain.dropping.MusicDroppingPayload;
+import org.example.remedy.domain.dropping.VoteDroppingPayload;
 import org.example.remedy.domain.song.Song;
 import org.example.remedy.global.event.GlobalEventPublisher;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
+import org.example.remedy.presentation.dropping.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
+import org.example.remedy.application.dropping.dto.response.DroppingResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
-import org.example.remedy.application.dropping.dto.response.DroppingSearchResponse;
+import org.example.remedy.application.dropping.dto.response.MusicDroppingSearchResponse;
+import org.example.remedy.application.dropping.dto.response.VoteDroppingSearchResponse;
+import org.example.remedy.application.dropping.dto.response.VoteDroppingResponse;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.data.domain.Sort;
@@ -21,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,8 +45,25 @@ public class DroppingServiceImpl implements DroppingService {
     @Override
     @Transactional
     public void createDropping(AuthDetails authDetails, DroppingCreateRequest request) {
-        Dropping dropping = Dropping.getInstance(authDetails.getUserId(), request);
-        System.out.println(authDetails.getUserId());
+        LocalDateTime now = LocalDateTime.now();
+
+        MusicDroppingPayload payload = MusicDroppingPayload.builder()
+                .songId(request.songId())
+                .build();
+
+        Dropping dropping = new Dropping(
+                DroppingType.MUSIC,
+                payload,
+                authDetails.getUserId(),
+                request.content(),
+                request.latitude(),
+                request.longitude(),
+                request.address(),
+                now.plusDays(3),
+                now,
+                false
+        );
+
         droppingPersistencePort.createDropping(dropping);
 
         publishDroppingCreatedEvent(authDetails.getUserId(), dropping.getSongId());
@@ -58,14 +84,8 @@ public class DroppingServiceImpl implements DroppingService {
         List<Dropping> allDroppings = droppingPersistencePort
                 .findActiveDroppingsWithinRadius(longitude, latitude);
 
-        List<DroppingSearchResponse> droppings = allDroppings.stream()
-                .map(dropping -> {
-                    String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
-                    return DroppingSearchResponse.create(dropping, albumImageUrl);
-                })
-                .toList();
-
-        return DroppingSearchListResponse.newInstance(droppings);
+        List<DroppingResponse> droppings = convertToResponseList(allDroppings);
+        return DroppingSearchListResponse.of(droppings);
     }
 
     @Override
@@ -78,16 +98,12 @@ public class DroppingServiceImpl implements DroppingService {
     }
 
     @Override
-    public List<DroppingSearchResponse> getUserDroppings(Long userId) {
+    public DroppingSearchListResponse getUserDroppings(Long userId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        List<Dropping> droppings = droppingPersistencePort.findByUserId(userId, sort);
-        
-        return droppings.stream()
-                .map(dropping -> {
-                    String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
-                    return DroppingSearchResponse.create(dropping, albumImageUrl);
-                })
-                .collect(Collectors.toList());
+        List<Dropping> allDroppings = droppingPersistencePort.findByUserId(userId, sort);
+
+        List<DroppingResponse> droppings = convertToResponseList(allDroppings);
+        return DroppingSearchListResponse.of(droppings);
     }
 
     @Override
@@ -113,9 +129,73 @@ public class DroppingServiceImpl implements DroppingService {
         log.info("만료된 Dropping {}개 자동 soft delete 완료", expiredDroppings.size());
     }
 
+    private List<DroppingResponse> convertToResponseList(List<Dropping> droppings) {
+        return droppings.stream()
+                .map(dropping -> {
+                    String albumImageUrl = getAlbumImageUrl(dropping.getSongId());
+                    return switch (dropping.getDroppingType()) {
+                        case MUSIC -> MusicDroppingSearchResponse.from(dropping, albumImageUrl);
+                        case VOTE -> VoteDroppingSearchResponse.from(dropping, albumImageUrl);
+                    };
+                })
+                .collect(Collectors.toList());
+    }
+
     private String getAlbumImageUrl(String songId) {
         return songPersistencePort.findById(songId)
                 .map(Song::getAlbumImagePath)
                 .orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void createVoteDropping(AuthDetails authDetails, VoteDroppingCreateRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+
+        LinkedHashMap<String, List<Long>> optionVotes = new LinkedHashMap<>();
+        for (String option : request.options()) {
+            optionVotes.put(option, new ArrayList<>());
+        }
+
+        VoteDroppingPayload payload = VoteDroppingPayload.builder()
+                .topic(request.topic())
+                .songId(request.songId())
+                .optionVotes(optionVotes)
+                .build();
+
+        Dropping dropping = new Dropping(
+                DroppingType.VOTE,
+                payload,
+                authDetails.getUserId(),
+                request.content(),
+                request.latitude(),
+                request.longitude(),
+                request.address(),
+                now.plusDays(3),
+                now,
+                false
+        );
+
+        droppingPersistencePort.createDropping(dropping);
+
+        publishDroppingCreatedEvent(authDetails.getUserId(), dropping.getSongId());
+    }
+
+    @Override
+    @Transactional
+    public void vote(String droppingId, Long userId, String optionText) {
+        Dropping dropping = droppingPersistencePort.findById(droppingId)
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
+
+        dropping.vote(userId, optionText);
+        droppingPersistencePort.save(dropping);
+    }
+
+    @Override
+    public VoteDroppingResponse getVoteDropping(String droppingId, Long userId) {
+        Dropping dropping = droppingPersistencePort.findById(droppingId)
+                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
+
+        return VoteDroppingResponse.from(dropping, userId);
     }
 }
