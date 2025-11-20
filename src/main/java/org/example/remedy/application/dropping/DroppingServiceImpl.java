@@ -6,6 +6,7 @@ import org.example.remedy.application.dropping.exception.InvalidDroppingDeleteRe
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.application.dropping.port.out.DroppingPersistencePort;
 import org.example.remedy.application.dropping.event.DroppingCreatedEvent;
+import org.example.remedy.application.song.exception.SongNotFoundException;
 import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.application.user.exception.UserNotFoundException;
 import org.example.remedy.application.user.port.out.UserPersistencePort;
@@ -78,8 +79,6 @@ public class DroppingServiceImpl implements DroppingService {
                 .userId(userId)
                 .songId(songId)
                 .build();
-
-        // SSE를 통해 해당 사용자에게 Dropping 생성 이벤트 발송
         eventPublisher.publish(userId, "dropping-created", event);
     }
 
@@ -150,7 +149,7 @@ public class DroppingServiceImpl implements DroppingService {
     private DroppingResponse convertToResponse(Dropping dropping) {
         return switch (dropping.getDroppingType()) {
             case MUSIC -> createMusicResponse(dropping);
-            case VOTE -> VoteDroppingSearchResponse.from(dropping);
+            case VOTE -> createVoteResponse(dropping);
         };
     }
 
@@ -160,10 +159,12 @@ public class DroppingServiceImpl implements DroppingService {
         return MusicDroppingSearchResponse.from(dropping, albumImageUrl);
     }
 
+    private VoteDroppingSearchResponse createVoteResponse(Dropping dropping) {
+        return VoteDroppingSearchResponse.from(dropping);
+    }
+
     private String getAlbumImageUrl(String songId) {
-        return songPersistencePort.findById(songId)
-                .map(Song::getAlbumImagePath)
-                .orElse(null);
+        return findSongById(songId).getAlbumImagePath();
     }
 
     private MusicDroppingPayload getMusicPayload(Dropping dropping) {
@@ -179,6 +180,11 @@ public class DroppingServiceImpl implements DroppingService {
         return userPersistencePort.findByUserId(userId)
                 .map(User::getUsername)
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
+    }
+
+    private Song findSongById(String songId) {
+        return songPersistencePort.findById(songId)
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
     }
 
     @Override
@@ -235,7 +241,7 @@ public class DroppingServiceImpl implements DroppingService {
         return VoteDroppingResponse.from(
                 dropping,
                 userId,
-                songId -> songPersistencePort.findById(songId).orElse(null)
+                this::findSongById
         );
     }
 }
