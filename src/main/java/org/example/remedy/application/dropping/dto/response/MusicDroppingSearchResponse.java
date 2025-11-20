@@ -2,6 +2,7 @@ package org.example.remedy.application.dropping.dto.response;
 
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.DroppingType;
+import org.example.remedy.domain.dropping.MusicDroppingPayload;
 
 public record MusicDroppingSearchResponse(
         DroppingType type,
@@ -15,11 +16,13 @@ public record MusicDroppingSearchResponse(
 ) implements DroppingResponse {
 
     public static MusicDroppingSearchResponse from(Dropping dropping, String albumImageUrl) {
+        MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
+
         return new MusicDroppingSearchResponse(
                 DroppingType.MUSIC,
                 dropping.getDroppingId(),
                 dropping.getUserId(),
-                dropping.getSongId(),
+                payload.getSongId(),
                 dropping.getLatitude(),
                 dropping.getLongitude(),
                 dropping.getAddress(),

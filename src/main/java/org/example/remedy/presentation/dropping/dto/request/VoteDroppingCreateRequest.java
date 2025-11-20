@@ -9,9 +9,6 @@ public record VoteDroppingCreateRequest(
         @Size(max = 100, message = "투표 주제는 100자를 초과할 수 없습니다")
         String topic,
 
-        @NotBlank
-        String songId,
-
         @NotEmpty(message = "투표 선택지는 최소 2개 이상이어야 합니다")
         @Size(min = 2, max = 5, message = "투표 선택지는 2~5개여야 합니다")
         List<@NotBlank(message = "음악 ID는 빈 값일 수 없습니다") String> options,

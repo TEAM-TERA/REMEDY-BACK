@@ -13,10 +13,10 @@ public record DroppingFindResponse(
         LocalDateTime createdAt,
         String albumImageUrl
 ) {
-    public static DroppingFindResponse newInstance(Dropping dropping, String username, String albumImageUrl) {
+    public static DroppingFindResponse newInstance(Dropping dropping, String songId, String username, String albumImageUrl) {
         return new DroppingFindResponse(
                 dropping.getDroppingId(),
-                dropping.getSongId(),
+                songId,
                 dropping.getUserId(),
                 username,
                 dropping.getContent(),

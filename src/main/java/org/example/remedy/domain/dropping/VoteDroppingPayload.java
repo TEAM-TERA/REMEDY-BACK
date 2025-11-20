@@ -17,8 +17,6 @@ public class VoteDroppingPayload implements Payload {
 
     private String topic;
 
-    private String songId;
-
     @Builder.Default
     private LinkedHashMap<String, List<Long>> optionVotes = new LinkedHashMap<>();
 

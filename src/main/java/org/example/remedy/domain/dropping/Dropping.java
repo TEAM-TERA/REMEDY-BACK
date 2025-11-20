@@ -55,14 +55,6 @@ public class Dropping {
         this.location = new GeoJsonPoint(longitude, latitude);
     }
 
-    public String getSongId() {
-        return switch (payload) {
-            case MusicDroppingPayload musicPayload -> musicPayload.getSongId();
-            case VoteDroppingPayload votePayload -> votePayload.getSongId();
-            case null, default -> null;
-        };
-    }
-
     private VoteDroppingPayload asVotePayload() {
         if (!(this.payload instanceof VoteDroppingPayload votePayload)) {
             throw InvalidDroppingTypeException.EXCEPTION;

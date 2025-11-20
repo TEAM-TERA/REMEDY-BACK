@@ -10,5 +10,4 @@ public interface DroppingResponse {
     Double latitude();
     Double longitude();
     String address();
-    String albumImageUrl();
 }

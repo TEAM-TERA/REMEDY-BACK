@@ -12,14 +12,12 @@ public record VoteDroppingSearchResponse(
         Long userId,
         String topic,
         List<String> options,
-        String songId,
         Double latitude,
         Double longitude,
-        String address,
-        String albumImageUrl
+        String address
 ) implements DroppingResponse {
 
-    public static VoteDroppingSearchResponse from(Dropping dropping, String albumImageUrl) {
+    public static VoteDroppingSearchResponse from(Dropping dropping) {
         VoteDroppingPayload payload = dropping.getVotePayload();
 
         return new VoteDroppingSearchResponse(
@@ -28,11 +26,9 @@ public record VoteDroppingSearchResponse(
                 dropping.getUserId(),
                 payload.getTopic(),
                 List.copyOf(payload.getOptionVotes().keySet()),
-                dropping.getSongId(),
                 dropping.getLatitude(),
                 dropping.getLongitude(),
-                dropping.getAddress(),
-                albumImageUrl
+                dropping.getAddress()
         );
     }
 }
