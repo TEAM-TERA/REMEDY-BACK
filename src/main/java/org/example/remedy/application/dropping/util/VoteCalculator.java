@@ -1,4 +1,4 @@
-package org.example.remedy.application.dropping;
+package org.example.remedy.application.dropping.util;
 
 import org.example.remedy.application.dropping.dto.response.VoteOptionInfo;
 import org.example.remedy.domain.dropping.VoteDroppingPayload;

@@ -1,6 +1,6 @@
 package org.example.remedy.application.dropping.dto.response;
 
-import org.example.remedy.application.dropping.VoteCalculator;
+import org.example.remedy.application.dropping.util.VoteCalculator;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.VoteDroppingPayload;
 import org.example.remedy.domain.song.Song;

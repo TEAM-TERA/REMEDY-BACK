@@ -2,7 +2,7 @@ package org.example.remedy.presentation.dropping;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.application.dropping.port.in.DroppingService;
+import org.example.remedy.application.dropping.port.in.DroppingServiceFacade;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
 import org.example.remedy.presentation.dropping.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.presentation.dropping.dto.request.VoteRequest;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/droppings")
 @RequiredArgsConstructor
 public class DroppingController {
-    private final DroppingService droppingService;
+    private final DroppingServiceFacade droppingService;
 
     @PostMapping
     public ResponseEntity<Void> createDropping(

@@ -1,10 +1,9 @@
 package org.example.remedy.presentation.user;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
-import org.example.remedy.application.dropping.port.in.DroppingService;
+import org.example.remedy.application.dropping.port.in.DroppingServiceFacade;
 import org.example.remedy.application.like.port.in.LikeService;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.presentation.user.dto.request.UserProfileUpdateRequest;
@@ -26,7 +25,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final DroppingService droppingService;
+    private final DroppingServiceFacade droppingService;
     private final LikeService likeService;
     private final CookieManager cookieManager;
 
