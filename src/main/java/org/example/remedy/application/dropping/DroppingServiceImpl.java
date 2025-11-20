@@ -166,8 +166,8 @@ public class DroppingServiceImpl implements DroppingService {
         LocalDateTime now = LocalDateTime.now();
 
         LinkedHashMap<String, List<Long>> optionVotes = new LinkedHashMap<>();
-        for (String option : request.options()) {
-            optionVotes.put(option, new ArrayList<>());
+        for (String songId : request.options()) {
+            optionVotes.put(songId, new ArrayList<>());
         }
 
         VoteDroppingPayload payload = VoteDroppingPayload.builder()
@@ -196,11 +196,11 @@ public class DroppingServiceImpl implements DroppingService {
 
     @Override
     @Transactional
-    public void vote(String droppingId, Long userId, String optionText) {
+    public void vote(String droppingId, Long userId, String songId) {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
-        dropping.vote(userId, optionText);
+        dropping.vote(userId, songId);
         droppingPersistencePort.save(dropping);
     }
 
@@ -219,6 +219,10 @@ public class DroppingServiceImpl implements DroppingService {
         Dropping dropping = droppingPersistencePort.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
-        return VoteDroppingResponse.from(dropping, userId);
+        return VoteDroppingResponse.from(
+                dropping,
+                userId,
+                songId -> songPersistencePort.findById(songId).orElse(null)
+        );
     }
 }

@@ -22,14 +22,14 @@ public class VoteDroppingPayload implements Payload {
     @Builder.Default
     private LinkedHashMap<String, List<Long>> optionVotes = new LinkedHashMap<>();
 
-    public void addVote(Long userId, String optionText) {
-        if (!optionVotes.containsKey(optionText)) {
+    public void addVote(Long userId, String songId) {
+        if (!optionVotes.containsKey(songId)) {
             throw InvalidVoteOptionException.EXCEPTION;
         }
 
         optionVotes.values().forEach(voters -> voters.remove(userId));
 
-        optionVotes.get(optionText).add(userId);
+        optionVotes.get(songId).add(userId);
     }
 
     public void removeVote(Long userId) {

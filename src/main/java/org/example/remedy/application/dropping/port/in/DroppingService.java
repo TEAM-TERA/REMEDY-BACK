@@ -25,7 +25,7 @@ public interface DroppingService {
 
     void createVoteDropping(AuthDetails authDetails, VoteDroppingCreateRequest request);
 
-    void vote(String droppingId, Long userId, String optionText);
+    void vote(String droppingId, Long userId, String songId);
 
     void cancelVote(String droppingId, Long userId);
 

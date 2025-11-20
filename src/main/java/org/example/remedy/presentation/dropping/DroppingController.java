@@ -64,7 +64,7 @@ public class DroppingController {
             @PathVariable(name = "dropping-id") String id,
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody VoteRequest request) {
-        droppingService.vote(id, authDetails.getUserId(), request.optionText());
+        droppingService.vote(id, authDetails.getUserId(), request.songId());
         return ResponseEntity.ok().build();
     }
 
