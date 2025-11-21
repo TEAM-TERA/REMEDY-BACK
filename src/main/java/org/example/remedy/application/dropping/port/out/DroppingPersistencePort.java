@@ -17,9 +17,12 @@ public interface DroppingPersistencePort {
     List<Dropping> findExpiredAndNotDeletedDroppings(LocalDateTime now);
 
     void deleteById(String id);
-
+  
+    void save(Dropping dropping);
+  
     void softDelete(Dropping dropping);
-
+  
     void saveAll(List<Dropping> droppings);
+  
     boolean existsById(String id);
 }

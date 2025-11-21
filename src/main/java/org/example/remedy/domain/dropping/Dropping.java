@@ -1,7 +1,7 @@
 package org.example.remedy.domain.dropping;
 
 import lombok.Getter;
-import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
+import org.example.remedy.application.dropping.exception.InvalidDroppingTypeException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
@@ -15,23 +15,25 @@ import java.time.LocalDateTime;
 public class Dropping {
     @Id
     private String droppingId;
-    
+
+    private DroppingType droppingType;
+
+    private Payload payload;
+
     private Long userId;
-    
-    private String songId;
-    
+
     private String content;
-    
+
     private Double latitude;
-    
+
     private Double longitude;
-    
+
     private String address;
 
     private LocalDateTime expiryDate;
-    
+
     private LocalDateTime createdAt;
-    
+
     private boolean isDeleted = false;
 
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
@@ -39,9 +41,10 @@ public class Dropping {
 
     private Dropping() {}
 
-    public Dropping(Long userId, String songId, String content, Double latitude, Double longitude, String address, LocalDateTime expiryDate, LocalDateTime createdAt, boolean isDeleted) {
+    public Dropping(DroppingType droppingType, Payload payload, Long userId, String content, Double latitude, Double longitude, String address, LocalDateTime expiryDate, LocalDateTime createdAt, boolean isDeleted) {
+        this.droppingType = droppingType;
+        this.payload = payload;
         this.userId = userId;
-        this.songId = songId;
         this.content = content;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -52,26 +55,29 @@ public class Dropping {
         this.location = new GeoJsonPoint(longitude, latitude);
     }
 
-    public static Dropping getInstance(Long userId, DroppingCreateRequest request) {
-        LocalDateTime now = LocalDateTime.now();
+    private VoteDroppingPayload asVotePayload() {
+        if (!(this.payload instanceof VoteDroppingPayload votePayload)) {
+            throw InvalidDroppingTypeException.EXCEPTION;
+        }
+        return votePayload;
+    }
 
-        return new Dropping(
-                userId,
-                request.songId(),
-                request.content(),
-                request.latitude(),
-                request.longitude(),
-                request.address(),
-                now.plusDays(3),
-                now,
-                false
-        );
+    public VoteDroppingPayload getVotePayload() {
+        return asVotePayload();
+    }
+
+    public void vote(Long userId, String optionText) {
+        asVotePayload().addVote(userId, optionText);
+    }
+
+    public void cancelVote(Long userId) {
+        asVotePayload().removeVote(userId);
     }
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiryDate);
     }
-    
+
     public void markAsDeleted() {
         this.isDeleted = true;
     }

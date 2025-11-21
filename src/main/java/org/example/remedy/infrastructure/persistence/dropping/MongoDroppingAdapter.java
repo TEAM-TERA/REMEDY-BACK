@@ -72,6 +72,11 @@ public class MongoDroppingAdapter implements DroppingPersistencePort {
     }
 
     @Override
+    public void save(Dropping dropping) {
+        repository.save(dropping);
+    }
+
+    @Override
     public void saveAll(List<Dropping> droppings) {
         repository.saveAll(droppings);
     }
@@ -93,7 +98,7 @@ public class MongoDroppingAdapter implements DroppingPersistencePort {
 
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.geoNear(nearQuery, "distance"),
-                Aggregation.project("userId", "songId", "content", "location", "distance", "latitude", "longitude", "address", "expiryDate", "createdAt", "isDeleted")
+                Aggregation.project("userId", "droppingType", "payload", "content", "location", "distance", "latitude", "longitude", "address", "expiryDate", "createdAt", "isDeleted")
         );
 
         return mongoTemplate.aggregate(agg, "droppings", Dropping.class);
