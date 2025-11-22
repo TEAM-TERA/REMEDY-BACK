@@ -25,18 +25,14 @@ public class Song {
     private int duration;    // 재생 시간 (초)
 
     @Field(type = FieldType.Keyword)
-    private String hlsPath;      // HLS 플레이리스트 경로
-
-    @Field(type = FieldType.Keyword)
     private String albumImagePath;  // 앨범 이미지 경로
 
     @Builder
-    public Song(String id, String title, String artist, int duration, String hlsPath, String albumImagePath) {
+    public Song(String id, String title, String artist, int duration, String albumImagePath) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.duration = duration;
-        this.hlsPath = hlsPath;
         this.albumImagePath = albumImagePath;
     }
 }
