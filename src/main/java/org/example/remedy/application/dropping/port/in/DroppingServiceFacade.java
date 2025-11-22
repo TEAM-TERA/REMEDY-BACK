@@ -2,9 +2,11 @@ package org.example.remedy.application.dropping.port.in;
 
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
+import org.example.remedy.application.dropping.dto.response.PlaylistDroppingResponse;
 import org.example.remedy.application.dropping.dto.response.VoteDroppingResponse;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
+import org.example.remedy.presentation.dropping.dto.request.PlaylistDroppingCreateRequest;
 import org.example.remedy.presentation.dropping.dto.request.VoteDroppingCreateRequest;
 
 public interface DroppingServiceFacade {
@@ -28,4 +30,8 @@ public interface DroppingServiceFacade {
     void cancelVote(String droppingId, Long userId);
 
     VoteDroppingResponse getVoteDropping(String droppingId, Long userId);
+
+    void createPlaylistDropping(AuthDetails authDetails, PlaylistDroppingCreateRequest request);
+
+    PlaylistDroppingResponse getPlaylistDropping(String droppingId, Long userId);
 }

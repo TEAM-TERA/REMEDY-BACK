@@ -74,6 +74,13 @@ public class Dropping {
         asVotePayload().removeVote(userId);
     }
 
+    public String getSongId() {
+        if (this.payload instanceof MusicDroppingPayload musicPayload) {
+            return musicPayload.getSongId();
+        }
+        return null;
+    }
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiryDate);
     }

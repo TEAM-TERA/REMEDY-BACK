@@ -6,6 +6,7 @@ import org.example.remedy.application.dropping.dto.response.DroppingFindResponse
 import org.example.remedy.application.dropping.dto.response.DroppingResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
 import org.example.remedy.application.dropping.dto.response.MusicDroppingSearchResponse;
+import org.example.remedy.application.dropping.dto.response.PlaylistDroppingSearchResponse;
 import org.example.remedy.application.dropping.dto.response.VoteDroppingSearchResponse;
 import org.example.remedy.application.dropping.exception.DroppingNotFoundException;
 import org.example.remedy.application.dropping.exception.InvalidDroppingDeleteRequestException;
@@ -18,6 +19,7 @@ import org.example.remedy.application.user.port.out.UserPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
 import org.example.remedy.domain.dropping.DroppingType;
 import org.example.remedy.domain.dropping.MusicDroppingPayload;
+import org.example.remedy.domain.dropping.PlaylistDroppingPayload;
 import org.example.remedy.domain.user.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -81,6 +83,7 @@ public class DroppingServiceImpl implements DroppingService {
         return switch (dropping.getDroppingType()) {
             case MUSIC -> createMusicResponse(dropping);
             case VOTE -> createVoteResponse(dropping);
+            case PLAYLIST -> createPlaylistResponse(dropping);
         };
     }
 
@@ -94,6 +97,10 @@ public class DroppingServiceImpl implements DroppingService {
 
     private VoteDroppingSearchResponse createVoteResponse(Dropping dropping) {
         return VoteDroppingSearchResponse.from(dropping);
+    }
+
+    private PlaylistDroppingSearchResponse createPlaylistResponse(Dropping dropping) {
+        return PlaylistDroppingSearchResponse.from(dropping);
     }
 
     @Override
