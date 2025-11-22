@@ -8,7 +8,4 @@ public record CommentResponse(
         String droppingId,
         String username
 ) {
-    public static CommentResponse of(Comment comment) {
-        return new CommentResponse(comment.getId(), comment.getContent(), comment.getDroppingId(), comment.getUser().getUsername());
-    }
 }

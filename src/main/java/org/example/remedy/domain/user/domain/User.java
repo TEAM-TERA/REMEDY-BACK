@@ -57,16 +57,6 @@ public class User {
         this.status = Status.JOIN;
     }
 
-    public static User create(AuthRegisterRequest req, String password) {
-        return new User(
-                req.username(),
-                password,
-                req.email(),
-                req.birthDate(),
-                req.gender()
-        );
-    }
-
     public void updateProfile(String username, LocalDate birthDate, boolean gender) {
         if(username != null && !this.username.equals(username)) this.username = username;
         if(birthDate != null && !this.birthDate.equals(birthDate)) this.birthDate = birthDate;

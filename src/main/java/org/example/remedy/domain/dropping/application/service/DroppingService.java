@@ -10,6 +10,7 @@ import org.example.remedy.domain.dropping.application.dto.response.PlaylistDropp
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingDeleteRequestException;
+import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.example.remedy.domain.song.application.exception.SongNotFoundException;
 import org.example.remedy.domain.song.repository.SongRepository;
@@ -43,7 +44,7 @@ public class DroppingService {
         List<DroppingResponse> droppings = allDroppings.stream()
                 .map(this::convertToResponse)
                 .toList();
-        return DroppingSearchListResponse.of(droppings);
+        return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
     public DroppingFindResponse getDropping(String droppingId) {
@@ -58,10 +59,10 @@ public class DroppingService {
             String albumImageUrl = songRepository.findById(payload.getSongId())
                     .orElseThrow(() -> SongNotFoundException.EXCEPTION)
                     .getAlbumImagePath();
-            return DroppingFindResponse.newInstance(dropping, payload.getSongId(), username, albumImageUrl);
+            return DroppingMapper.toDroppingFindResponse(dropping, payload.getSongId(), username, albumImageUrl);
         }
 
-        return DroppingFindResponse.newInstance(dropping, null, username, null);
+        return DroppingMapper.toDroppingFindResponse(dropping, null, username, null);
     }
 
     public DroppingSearchListResponse getUserDroppings(Long userId) {
@@ -71,7 +72,7 @@ public class DroppingService {
         List<DroppingResponse> droppings = allDroppings.stream()
                 .map(this::convertToResponse)
                 .toList();
-        return DroppingSearchListResponse.of(droppings);
+        return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
     private DroppingResponse convertToResponse(Dropping dropping) {
@@ -87,15 +88,15 @@ public class DroppingService {
         String albumImageUrl = songRepository.findById(payload.getSongId())
                 .orElseThrow(() -> SongNotFoundException.EXCEPTION)
                 .getAlbumImagePath();
-        return MusicDroppingSearchResponse.from(dropping, albumImageUrl);
+        return DroppingMapper.toMusicDroppingSearchResponse(dropping, albumImageUrl);
     }
 
     private VoteDroppingSearchResponse createVoteResponse(Dropping dropping) {
-        return VoteDroppingSearchResponse.from(dropping);
+        return DroppingMapper.toVoteDroppingSearchResponse(dropping);
     }
 
     private PlaylistDroppingSearchResponse createPlaylistResponse(Dropping dropping) {
-        return PlaylistDroppingSearchResponse.from(dropping);
+        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping);
     }
 
     @Transactional

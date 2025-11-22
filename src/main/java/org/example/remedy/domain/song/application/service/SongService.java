@@ -6,13 +6,15 @@ import org.example.remedy.domain.song.application.dto.response.SongListResponse;
 import org.example.remedy.domain.song.application.dto.response.SongResponse;
 import org.example.remedy.domain.song.application.dto.response.SongSearchListResponse;
 import org.example.remedy.domain.song.application.exception.SongNotFoundException;
+import org.example.remedy.domain.song.application.mapper.SongMapper;
 import org.example.remedy.domain.song.repository.SongRepository;
 import org.example.remedy.domain.song.domain.Song;
-import org.example.remedy.global.util.mapper.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * 간소화된 노래 서비스
@@ -32,7 +34,7 @@ public class SongService {
     public SongResponse getSongById(String id) {
         Song song = songRepository.findById(id)
                 .orElseThrow(()-> SongNotFoundException.EXCEPTION);
-        return SongResponse.newInstance(song);
+        return SongMapper.toSongResponse(song);
     }
 
     /**
@@ -40,16 +42,16 @@ public class SongService {
      */
     public SongSearchListResponse searchSongs(String query) {
         List<Song> songs = songRepository.searchSongs(query);
-        return SongSearchListResponse.newInstanceBySongList(songs);
+        return SongMapper.toSongSearchListResponse(songs);
     }
 
     /**
      * 모든 곡 조회 (관리자용)
      */
     public SongListResponse getAllSongs() {
-        // songRepository의 Iterable<Song> 반환값을 Mapper 클래스의 toList()로 List로 변환
-        List<Song> songs = Mapper.toList(songRepository.findAll());
-        return SongListResponse.newInstanceBySongs(songs);
+        List<Song> songs = StreamSupport.stream(songRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+        return SongMapper.toSongListResponse(songs);
     }
 
     /**

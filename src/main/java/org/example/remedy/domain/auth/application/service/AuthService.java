@@ -1,9 +1,8 @@
-package org.example.remedy.domain.auth.application.service;
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.application.exception.InvalidPasswordException;
 import org.example.remedy.domain.auth.application.exception.UserAlreadyExistsException;
+import org.example.remedy.domain.auth.application.mapper.AuthMapper;
 import org.example.remedy.domain.user.application.exception.UserNotFoundException;
 import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.user.domain.Status;
@@ -30,7 +29,7 @@ public class AuthService {
 
         String password = passwordEncoder.encode(req.password());
 
-        User user = User.create(req, password);
+        User user = AuthMapper.toEntity(req, password);
 
         userRepository.save(user);
     }

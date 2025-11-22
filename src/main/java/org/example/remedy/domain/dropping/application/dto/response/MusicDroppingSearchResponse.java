@@ -15,18 +15,4 @@ public record MusicDroppingSearchResponse(
         String albumImageUrl
 ) implements DroppingResponse {
 
-    public static MusicDroppingSearchResponse from(Dropping dropping, String albumImageUrl) {
-        MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
-
-        return new MusicDroppingSearchResponse(
-                DroppingType.MUSIC,
-                dropping.getDroppingId(),
-                dropping.getUserId(),
-                payload.getSongId(),
-                dropping.getLatitude(),
-                dropping.getLongitude(),
-                dropping.getAddress(),
-                albumImageUrl
-        );
-    }
 }

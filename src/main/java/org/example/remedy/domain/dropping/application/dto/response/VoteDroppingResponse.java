@@ -24,28 +24,4 @@ public record VoteDroppingResponse(
         String userVotedOption
 ) {
 
-    public static VoteDroppingResponse from(
-            Dropping dropping,
-            Long currentUserId,
-            Function<String, Song> songFinder
-    ) {
-        VoteDroppingPayload payload = dropping.getVotePayload();
-
-        VoteCalculator.VoteCalculationResult calc = VoteCalculator.calculate(payload, currentUserId, songFinder);
-
-        return new VoteDroppingResponse(
-                dropping.getDroppingId(),
-                dropping.getUserId(),
-                payload.getTopic(),
-                calc.options(),
-                dropping.getContent(),
-                dropping.getLatitude(),
-                dropping.getLongitude(),
-                dropping.getAddress(),
-                dropping.getExpiryDate(),
-                dropping.getCreatedAt(),
-                calc.totalVotes(),
-                calc.userVotedSongId()
-        );
-    }
 }

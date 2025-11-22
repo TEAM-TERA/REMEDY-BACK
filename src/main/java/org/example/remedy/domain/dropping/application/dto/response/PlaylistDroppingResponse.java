@@ -21,36 +21,6 @@ public record PlaylistDroppingResponse(
         LocalDateTime createdAt
 ) {
 
-    public static PlaylistDroppingResponse from(
-            Dropping dropping,
-            Function<String, Song> songFinder
-    ) {
-        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
-
-        List<SongInfo> songs = payload.getSongIds().stream()
-                .map(songFinder)
-                .map(song -> new SongInfo(
-                        song.getId(),
-                        song.getTitle(),
-                        song.getArtist(),
-                        song.getAlbumImagePath()
-                ))
-                .toList();
-
-        return new PlaylistDroppingResponse(
-                dropping.getDroppingId(),
-                dropping.getUserId(),
-                payload.getPlaylistName(),
-                songs,
-                dropping.getContent(),
-                dropping.getLatitude(),
-                dropping.getLongitude(),
-                dropping.getAddress(),
-                dropping.getExpiryDate(),
-                dropping.getCreatedAt()
-        );
-    }
-
     public record SongInfo(
             String songId,
             String title,

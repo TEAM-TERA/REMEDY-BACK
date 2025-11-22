@@ -17,18 +17,4 @@ public record VoteDroppingSearchResponse(
         String address
 ) implements DroppingResponse {
 
-    public static VoteDroppingSearchResponse from(Dropping dropping) {
-        VoteDroppingPayload payload = dropping.getVotePayload();
-
-        return new VoteDroppingSearchResponse(
-                DroppingType.VOTE,
-                dropping.getDroppingId(),
-                dropping.getUserId(),
-                payload.getTopic(),
-                List.copyOf(payload.getOptionVotes().keySet()),
-                dropping.getLatitude(),
-                dropping.getLongitude(),
-                dropping.getAddress()
-        );
-    }
 }

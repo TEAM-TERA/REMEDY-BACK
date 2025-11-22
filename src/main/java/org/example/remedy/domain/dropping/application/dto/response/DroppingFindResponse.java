@@ -13,16 +13,4 @@ public record DroppingFindResponse(
         LocalDateTime createdAt,
         String albumImageUrl
 ) {
-    public static DroppingFindResponse newInstance(Dropping dropping, String songId, String username, String albumImageUrl) {
-        return new DroppingFindResponse(
-                dropping.getDroppingId(),
-                songId,
-                dropping.getUserId(),
-                username,
-                dropping.getContent(),
-                dropping.getExpiryDate(),
-                dropping.getCreatedAt(),
-                albumImageUrl
-        );
-    }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.comment.application.dto.response.CommentResponse;
 import org.example.remedy.domain.comment.application.exception.CommentAccessDeniedException;
 import org.example.remedy.domain.comment.application.exception.CommentNotFoundException;
+import org.example.remedy.domain.comment.application.mapper.CommentMapper;
 import org.example.remedy.domain.comment.repository.CommentRepository;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
@@ -32,7 +33,7 @@ public class CommentService {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
-        Comment comment = new Comment(content, user, droppingId);
+        Comment comment = CommentMapper.toEntity(content, user, droppingId);
         commentRepository.save(comment);
 
         publishCommentCreatedEvent(user, dropping, droppingId, content);
@@ -67,7 +68,7 @@ public class CommentService {
         }
 
         return comments.stream()
-                .map(CommentResponse::of)
+                .map(CommentMapper::toResponse)
                 .toList();
     }
 

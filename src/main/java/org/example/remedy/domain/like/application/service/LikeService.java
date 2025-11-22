@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.example.remedy.domain.like.application.dto.response.LikeDroppingResponse;
+import org.example.remedy.domain.like.application.mapper.LikeMapper;
 import org.example.remedy.domain.like.repository.LikeRepository;
 import org.example.remedy.domain.like.application.event.LikeCreatedEvent;
 import org.example.remedy.domain.song.repository.SongRepository;
 import org.example.remedy.domain.dropping.domain.Dropping;
-import org.example.remedy.domain.dropping.domain.PlaylistDroppingPayload;
-import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
 import org.example.remedy.domain.like.domain.Like;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.global.event.GlobalEventPublisher;
@@ -40,7 +39,7 @@ public class LikeService {
             likeRepository.delete(existingLike.get());
             return false;
         } else {
-            Like like = new Like(user, droppingId);
+            Like like = LikeMapper.toEntity(user, droppingId);
             likeRepository.save(like);
 
             publishLikeCreatedEvent(user, dropping, droppingId);
@@ -96,42 +95,14 @@ public class LikeService {
                 .filter(Dropping::isActive)
                 .flatMap(dropping -> switch (dropping.getDroppingType()) {
                     case MUSIC -> createMusicLikeResponse(dropping);
-                    case VOTE -> createVoteLikeResponse(dropping);
-                    case PLAYLIST -> createPlaylistLikeResponse(dropping);
+                    case VOTE -> LikeMapper.toVoteLikeResponse(dropping);
+                    case PLAYLIST -> LikeMapper.toPlaylistLikeResponse(dropping);
                 });
     }
 
     private Optional<LikeDroppingResponse> createMusicLikeResponse(Dropping dropping) {
         String songId = dropping.getSongId();
         return songRepository.findById(songId)
-                .map(song -> new LikeDroppingResponse(
-                        dropping.getDroppingId(),
-                        dropping.getDroppingType(),
-                        song.getTitle(),
-                        song.getAlbumImagePath(),
-                        dropping.getAddress()
-                ));
-    }
-
-    private Optional<LikeDroppingResponse> createVoteLikeResponse(Dropping dropping) {
-        VoteDroppingPayload payload = dropping.getVotePayload();
-        return Optional.of(new LikeDroppingResponse(
-                dropping.getDroppingId(),
-                dropping.getDroppingType(),
-                payload.getTopic(),
-                null,
-                dropping.getAddress()
-        ));
-    }
-
-    private Optional<LikeDroppingResponse> createPlaylistLikeResponse(Dropping dropping) {
-        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
-        return Optional.of(new LikeDroppingResponse(
-                dropping.getDroppingId(),
-                dropping.getDroppingType(),
-                payload.getPlaylistName(),
-                null,
-                dropping.getAddress()
-        ));
+                .flatMap(song -> LikeMapper.toMusicLikeResponse(dropping, song));
     }
 }

@@ -17,18 +17,4 @@ public record PlaylistDroppingSearchResponse(
         String address
 ) implements DroppingResponse {
 
-    public static PlaylistDroppingSearchResponse from(Dropping dropping) {
-        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
-
-        return new PlaylistDroppingSearchResponse(
-                DroppingType.PLAYLIST,
-                dropping.getDroppingId(),
-                dropping.getUserId(),
-                payload.getPlaylistName(),
-                payload.getSongIds(),
-                dropping.getLatitude(),
-                dropping.getLongitude(),
-                dropping.getAddress()
-        );
-    }
 }
