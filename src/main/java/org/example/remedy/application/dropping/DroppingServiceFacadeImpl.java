@@ -3,12 +3,15 @@ package org.example.remedy.application.dropping;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.application.dropping.port.in.DroppingServiceFacade;
 import org.example.remedy.application.dropping.port.in.MusicDroppingService;
+import org.example.remedy.application.dropping.port.in.PlaylistDroppingService;
 import org.example.remedy.application.dropping.port.in.VoteDroppingService;
 import org.example.remedy.application.dropping.port.in.DroppingService;
 import org.example.remedy.presentation.dropping.dto.request.DroppingCreateRequest;
+import org.example.remedy.presentation.dropping.dto.request.PlaylistDroppingCreateRequest;
 import org.example.remedy.presentation.dropping.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.application.dropping.dto.response.DroppingFindResponse;
 import org.example.remedy.application.dropping.dto.response.DroppingSearchListResponse;
+import org.example.remedy.application.dropping.dto.response.PlaylistDroppingResponse;
 import org.example.remedy.application.dropping.dto.response.VoteDroppingResponse;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class DroppingServiceFacadeImpl implements DroppingServiceFacade {
 
     private final MusicDroppingService musicDroppingService;
+    private final PlaylistDroppingService playlistDroppingService;
     private final VoteDroppingService voteDroppingService;
     private final DroppingService droppingQueryService;
 
@@ -69,5 +73,15 @@ public class DroppingServiceFacadeImpl implements DroppingServiceFacade {
     @Override
     public VoteDroppingResponse getVoteDropping(String droppingId, Long userId) {
         return voteDroppingService.getVoteDropping(droppingId, userId);
+    }
+
+    @Override
+    public void createPlaylistDropping(AuthDetails authDetails, PlaylistDroppingCreateRequest request) {
+        playlistDroppingService.createPlaylistDropping(authDetails, request);
+    }
+
+    @Override
+    public PlaylistDroppingResponse getPlaylistDropping(String droppingId, Long userId) {
+        return playlistDroppingService.getPlaylistDropping(droppingId, userId);
     }
 }
