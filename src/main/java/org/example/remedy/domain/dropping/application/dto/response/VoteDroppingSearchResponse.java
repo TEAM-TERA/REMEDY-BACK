@@ -1,8 +1,6 @@
 package org.example.remedy.domain.dropping.application.dto.response;
 
-import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.domain.dropping.domain.DroppingType;
-import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
 
 import java.util.List;
 

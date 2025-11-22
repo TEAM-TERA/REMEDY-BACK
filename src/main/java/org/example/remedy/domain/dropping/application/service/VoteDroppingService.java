@@ -1,20 +1,18 @@
 package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
+import org.example.remedy.domain.dropping.domain.Dropping;
+import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.example.remedy.domain.song.application.exception.SongNotFoundException;
 import org.example.remedy.domain.song.repository.SongRepository;
-import org.example.remedy.domain.dropping.domain.Dropping;
-import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
 import org.example.remedy.global.security.auth.AuthDetails;
-import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

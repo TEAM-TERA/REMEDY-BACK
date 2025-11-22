@@ -29,7 +29,7 @@ public class PlaylistDroppingService {
         droppingRepository.createDropping(dropping);
     }
 
-    public PlaylistDroppingResponse getPlaylistDropping(String droppingId, Long userId) {
+    public PlaylistDroppingResponse getPlaylistDropping(String droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         return DroppingMapper.toPlaylistDroppingResponse(
