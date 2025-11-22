@@ -1,9 +1,9 @@
 package org.example.remedy.application.user;
 
-import org.example.remedy.application.user.port.out.UserPersistencePort;
-import org.example.remedy.application.storage.port.out.StoragePort;
-import org.example.remedy.domain.user.Status;
-import org.example.remedy.domain.user.User;
+import org.example.remedy.domain.user.application.UserServiceImpl;
+import org.example.remedy.domain.user.repository.UserRepository;
+import org.example.remedy.domain.user.domain.Status;
+import org.example.remedy.domain.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @Mock
-    private UserPersistencePort userPersistencePort;
+    private UserRepository userRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -45,7 +45,7 @@ class UserServiceTest {
     void withdrawalUser_Success() {
 
         // given
-        doNothing().when(userPersistencePort).save(any(User.class));
+        doNothing().when(userRepository).save(any(User.class));
 
         // when
         userService.withdrawUser(testUser);

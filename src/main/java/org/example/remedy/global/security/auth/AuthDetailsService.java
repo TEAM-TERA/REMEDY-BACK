@@ -1,8 +1,8 @@
 package org.example.remedy.global.security.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.application.user.exception.UserNotFoundException;
-import org.example.remedy.application.user.port.out.UserPersistencePort;
+import org.example.remedy.domain.user.application.exception.UserNotFoundException;
+import org.example.remedy.domain.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class AuthDetailsService implements UserDetailsService {
-    private final UserPersistencePort userPersistencePort;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return new AuthDetails(
-                userPersistencePort.findByEmail(email)
+                userRepository.findByEmail(email)
                         .orElseThrow(()->UserNotFoundException.EXCEPTION)
         );
     }
