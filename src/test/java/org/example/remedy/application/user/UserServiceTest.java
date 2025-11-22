@@ -1,9 +1,9 @@
 package org.example.remedy.application.user;
 
-import org.example.remedy.domain.user.application.UserServiceImpl;
-import org.example.remedy.domain.user.repository.UserRepository;
+import org.example.remedy.domain.user.application.service.UserService;
 import org.example.remedy.domain.user.domain.Status;
 import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -25,7 +25,7 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserService userService;
 
     private User testUser;
 
