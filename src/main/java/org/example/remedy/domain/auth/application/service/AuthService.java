@@ -1,16 +1,18 @@
+package org.example.remedy.domain.auth.application.service;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.auth.application.dto.request.AuthLoginRequest;
+import org.example.remedy.domain.auth.application.dto.request.AuthRegisterRequest;
 import org.example.remedy.domain.auth.application.exception.InvalidPasswordException;
 import org.example.remedy.domain.auth.application.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.auth.application.mapper.AuthMapper;
 import org.example.remedy.domain.user.application.exception.UserNotFoundException;
-import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.user.domain.Status;
 import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.global.security.jwt.TokenProvider;
 import org.example.remedy.global.security.util.CookieManager;
-import org.example.remedy.domain.auth.application.dto.request.AuthLoginRequest;
-import org.example.remedy.domain.auth.application.dto.request.AuthRegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
