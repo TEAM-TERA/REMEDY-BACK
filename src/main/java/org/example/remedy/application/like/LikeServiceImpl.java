@@ -10,6 +10,8 @@ import org.example.remedy.application.like.port.out.LikePersistencePort;
 import org.example.remedy.application.like.event.LikeCreatedEvent;
 import org.example.remedy.application.song.port.out.SongPersistencePort;
 import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.domain.dropping.PlaylistDroppingPayload;
+import org.example.remedy.domain.dropping.VoteDroppingPayload;
 import org.example.remedy.domain.like.Like;
 import org.example.remedy.domain.user.User;
 import org.example.remedy.global.event.GlobalEventPublisher;
@@ -97,15 +99,44 @@ public class LikeServiceImpl implements LikeService {
     private Optional<LikeDroppingResponse> convertToLikeDroppingResponse(String droppingId) {
         return droppingPersistencePort.findById(droppingId)
                 .filter(Dropping::isActive)
-                .filter(dropping -> dropping.getSongId() != null)
-                .flatMap(dropping -> songPersistencePort.findById(dropping.getSongId())
-                        .map(song -> new LikeDroppingResponse(
-                                droppingId,
-                                dropping.getSongId(),
-                                song.getTitle(),
-                                song.getAlbumImagePath(),
-                                dropping.getAddress()
-                        ))
-                );
+                .flatMap(dropping -> switch (dropping.getDroppingType()) {
+                    case MUSIC -> createMusicLikeResponse(dropping);
+                    case VOTE -> createVoteLikeResponse(dropping);
+                    case PLAYLIST -> createPlaylistLikeResponse(dropping);
+                });
+    }
+
+    private Optional<LikeDroppingResponse> createMusicLikeResponse(Dropping dropping) {
+        String songId = dropping.getSongId();
+        return songPersistencePort.findById(songId)
+                .map(song -> new LikeDroppingResponse(
+                        dropping.getDroppingId(),
+                        dropping.getDroppingType(),
+                        song.getTitle(),
+                        song.getAlbumImagePath(),
+                        dropping.getAddress()
+                ));
+    }
+
+    private Optional<LikeDroppingResponse> createVoteLikeResponse(Dropping dropping) {
+        VoteDroppingPayload payload = dropping.getVotePayload();
+        return Optional.of(new LikeDroppingResponse(
+                dropping.getDroppingId(),
+                dropping.getDroppingType(),
+                payload.getTopic(),
+                null,
+                dropping.getAddress()
+        ));
+    }
+
+    private Optional<LikeDroppingResponse> createPlaylistLikeResponse(Dropping dropping) {
+        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
+        return Optional.of(new LikeDroppingResponse(
+                dropping.getDroppingId(),
+                dropping.getDroppingType(),
+                payload.getPlaylistName(),
+                null,
+                dropping.getAddress()
+        ));
     }
 }
