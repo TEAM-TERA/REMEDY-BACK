@@ -3,7 +3,7 @@ package org.example.remedy.infrastructure.storage.s3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.infrastructure.storage.exception.FileUploadFailedException;
-import org.example.remedy.global.config.properties.S3Properties;
+import org.example.remedy.global.properties.S3Properties;
 import org.example.remedy.infrastructure.storage.StorageService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,7 +1,7 @@
 package org.example.remedy.global.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.global.config.properties.S3Properties;
+import org.example.remedy.global.properties.S3Properties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

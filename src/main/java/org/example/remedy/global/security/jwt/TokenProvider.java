@@ -9,7 +9,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.user.domain.Role;
-import org.example.remedy.global.config.properties.JwtProperties;
+import org.example.remedy.global.properties.JwtProperties;
 import org.example.remedy.global.security.auth.AuthDetailsService;
 import org.example.remedy.global.security.jwt.exception.ExpiredJwtTokenException;
 import org.example.remedy.global.security.jwt.exception.InvalidJwtTokenException;
