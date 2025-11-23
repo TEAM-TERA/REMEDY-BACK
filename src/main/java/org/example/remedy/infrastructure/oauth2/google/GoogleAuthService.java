@@ -1,6 +1,7 @@
 package org.example.remedy.infrastructure.oauth2.google;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.infrastructure.oauth2.OAuth2AuthService;
 import org.example.remedy.infrastructure.oauth2.google.dto.response.GoogleTokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class GoogleAuthService {
+public class GoogleAuthService implements OAuth2AuthService {
 	private final GoogleAuthClient googleAuthClient;
 
 	@Value("${google.client-id}")
@@ -35,7 +36,8 @@ public class GoogleAuthService {
 		return googleTokenResponse.access_token();
 	}
 
-	public Map<String, Object> getGoogleUserInfo(String accessToken) {
+	@Override
+	public Map<String, Object> getUserInfo(String accessToken) {
 		return googleAuthClient.getUserInfo("Bearer " + accessToken);
 	}
 }

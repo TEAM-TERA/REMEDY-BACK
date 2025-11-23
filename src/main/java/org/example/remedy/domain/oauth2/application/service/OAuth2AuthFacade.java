@@ -35,7 +35,7 @@ public class OAuth2AuthFacade {
     public OAuth2LoginResponse googleLogin(GoogleAuthRequest request) {
         String accessToken = googleAuthService.getAccessToken(request.authCode());
 
-        Map<String, Object> userAttributes = googleAuthService.getGoogleUserInfo(accessToken);
+        Map<String, Object> userAttributes = googleAuthService.getUserInfo(accessToken);
 
         OAuth2UserInfo oAuth2UserInfo = new GoogleOAuth2UserInfo(userAttributes);
 
