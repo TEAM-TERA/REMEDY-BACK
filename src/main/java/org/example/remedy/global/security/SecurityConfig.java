@@ -3,9 +3,6 @@ package org.example.remedy.global.security;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.global.security.jwt.TokenFilter;
 import org.example.remedy.global.security.jwt.TokenProvider;
-import org.example.remedy.infrastructure.oauth2.CustomOAuth2UserService;
-import org.example.remedy.infrastructure.oauth2.OAuth2FailureHandler;
-import org.example.remedy.infrastructure.oauth2.OAuth2SuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,9 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
     private final TokenProvider jwtTokenProvider;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -66,15 +60,6 @@ public class SecurityConfig {
                 new TokenFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
         );
-
-        http
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2SuccessHandler)
-                        .failureHandler(oAuth2FailureHandler)
-                );
 
         return http.build();
     }

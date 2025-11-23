@@ -1,4 +1,4 @@
-package org.example.remedy.infrastructure.oauth2;
+package org.example.remedy.domain.oauth2.domain;
 
 import org.example.remedy.domain.user.domain.OAuth2Provider;
 

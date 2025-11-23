@@ -1,6 +1,7 @@
-package org.example.remedy.infrastructure.oauth2;
+package org.example.remedy.domain.oauth2.application.mapper;
 
 import org.example.remedy.domain.user.domain.User;
+import org.example.remedy.domain.oauth2.domain.OAuth2UserInfo;
 
 public class Oauth2Mapper {
 	public static User toUserEntity(OAuth2UserInfo oAuth2UserInfo) {
