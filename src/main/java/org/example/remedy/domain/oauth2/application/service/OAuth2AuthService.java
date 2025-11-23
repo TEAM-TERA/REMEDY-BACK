@@ -88,7 +88,7 @@ public class OAuth2AuthService {
         // JWT 생성
         String jwtToken = tokenProvider.createAccessToken(user.getEmail());
 
-        return OAuth2LoginResponse.of(jwtToken, "Bearer", 3600L);
+        return OAuth2LoginResponse.of(jwtToken);
     }
 
 	private User createUser(OAuth2UserInfo oAuth2UserInfo) {
