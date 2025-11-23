@@ -1,7 +1,6 @@
-package org.example.remedy.global.security;
+package org.example.remedy.global.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.global.security.jwt.TokenFilter;
 import org.example.remedy.global.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
