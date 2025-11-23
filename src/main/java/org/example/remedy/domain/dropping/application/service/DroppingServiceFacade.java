@@ -64,7 +64,7 @@ public class DroppingServiceFacade {
         playlistDroppingService.createPlaylistDropping(authDetails, request);
     }
 
-    public PlaylistDroppingResponse getPlaylistDropping(String droppingId, Long userId) {
-        return playlistDroppingService.getPlaylistDropping(droppingId, userId);
+    public PlaylistDroppingResponse getPlaylistDropping(String droppingId) {
+        return playlistDroppingService.getPlaylistDropping(droppingId);
     }
 }

@@ -2,7 +2,6 @@ package org.example.remedy.domain.dropping.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.domain.dropping.application.service.DroppingServiceFacade;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.request.PlaylistDroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
@@ -11,6 +10,7 @@ import org.example.remedy.domain.dropping.application.dto.response.DroppingFindR
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
+import org.example.remedy.domain.dropping.application.service.DroppingServiceFacade;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,9 +96,8 @@ public class DroppingController {
 
     @GetMapping("/{dropping-id}/playlist")
     public ResponseEntity<PlaylistDroppingResponse> getPlaylistDropping(
-            @PathVariable(name = "dropping-id") String id,
-            @AuthenticationPrincipal AuthDetails authDetails) {
-        PlaylistDroppingResponse response = droppingService.getPlaylistDropping(id, authDetails.getUserId());
+            @PathVariable(name = "dropping-id") String id) {
+        PlaylistDroppingResponse response = droppingService.getPlaylistDropping(id);
         return ResponseEntity.ok(response);
     }
 }
