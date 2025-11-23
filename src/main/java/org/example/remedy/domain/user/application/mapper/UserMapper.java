@@ -1,8 +1,8 @@
 package org.example.remedy.domain.user.application.mapper;
 
-import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.application.dto.response.UserProfileImageResponse;
 import org.example.remedy.domain.user.application.dto.response.UserProfileResponse;
+import org.example.remedy.domain.user.domain.User;
 
 public class UserMapper {
     public static UserProfileImageResponse toUserProfileImageResponse(User user) {
@@ -15,7 +15,7 @@ public class UserMapper {
         return new UserProfileResponse(
                 user.getUsername(),
                 user.getProfileImage(),
-                user.isGender(),
+                user.getGender(),
                 user.getBirthDate()
         );
     }

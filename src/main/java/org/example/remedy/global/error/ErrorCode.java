@@ -14,6 +14,8 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "U5", "존재하지 않는 RefreshToken입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "U6", "올바르지 않은 비밀번호입니다."),
     USER_WITHDRAWN(HttpStatus.FORBIDDEN, "U7", "탈퇴한 회원입니다."),
+    OAUTH2_USER_CANNOT_USE_PASSWORD_LOGIN(HttpStatus.BAD_REQUEST, "U8", "소셜 로그인으로 가입한 계정입니다. 해당 소셜 로그인을 이용해주세요."),
+    EMAIL_ALREADY_EXISTS_WITH_OAUTH2(HttpStatus.CONFLICT, "U9", "이미 소셜 로그인으로 가입된 이메일입니다. 해당 소셜 로그인을 이용해주세요."),
 
     DROPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "D1", "반경 5미터 이내에 이미 드랍이 존재합니다."),
     DROPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "D2", "삭제되었거나 존재하지 않는 드랍입니다."),
