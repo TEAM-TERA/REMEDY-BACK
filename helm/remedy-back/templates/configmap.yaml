@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-config
+  labels:
+    app: {{ .Values.app.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+data:
+  # PostgreSQL settings
+  POSTGRES_DB: {{ .Values.postgresql.database | quote }}
+  POSTGRES_USER: {{ .Values.postgresql.username | quote }}
+  POSTGRES_URL: "jdbc:postgresql://{{ .Values.postgresql.name }}:{{ .Values.postgresql.service.port }}/{{ .Values.postgresql.database }}"
+
+  # AWS S3 settings
+  AWS_S3_BUCKET: {{ .Values.aws.s3.bucket | quote }}
+  AWS_S3_REGION: {{ .Values.aws.s3.region | quote }}
+
+  # MongoDB settings
+  MONGO_DB_URI: "mongodb://{{ .Values.mongodb.name }}:{{ .Values.mongodb.service.port }}/{{ .Values.mongodb.database }}"
+  MONGO_DB: {{ .Values.mongodb.database | quote }}
+
+  # Elasticsearch settings (external service)
+  ELASTICSEARCH_URL: "{{ .Values.elasticsearch.host }}:{{ .Values.elasticsearch.port }}"
+
+  # Redis settings
+  REDIS_URL: "redis://{{ .Values.redis.name }}:{{ .Values.redis.service.port }}"
+
+  # JWT settings
+  JWT_ACCESS_TIME: {{ .Values.jwt.accessTime | quote }}
+  JWT_PREFIX: {{ .Values.jwt.prefix | quote }}
+  JWT_HEADER: {{ .Values.jwt.header | quote }}
