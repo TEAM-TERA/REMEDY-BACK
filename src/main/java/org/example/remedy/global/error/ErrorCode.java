@@ -57,7 +57,12 @@ public enum ErrorCode {
     FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "N1", "FCM 토큰을 찾을 수 없습니다."),
     NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "N2", "알림 전송에 실패했습니다."),
 
-    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "F1", "파일 업로드에 실패했습니다.");
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "F1", "파일 업로드에 실패했습니다."),
+
+    PLAYLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "P1", "존재하지 않는 플레이리스트입니다."),
+    PLAYLIST_ACCESS_DENIED(HttpStatus.FORBIDDEN, "P2", "본인 플레이리스트만 수정/삭제할 수 있습니다."),
+    SONG_ALREADY_IN_PLAYLIST(HttpStatus.CONFLICT, "P3", "이미 플레이리스트에 존재하는 곡입니다."),
+    SONG_NOT_IN_PLAYLIST(HttpStatus.NOT_FOUND, "P4", "플레이리스트에 존재하지 않는 곡입니다.");
 
 
     private final HttpStatus status;
