@@ -13,6 +13,4 @@ public interface KakaoAuthClient {
 		@RequestHeader("Authorization") String bearerToken,
 		@RequestHeader("Content-Type") String contentType
 	);
-
-
 }

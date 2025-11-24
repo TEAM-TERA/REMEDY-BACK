@@ -1,0 +1,18 @@
+{{- if .Values.mongodb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mongodb.name }}
+  labels:
+    app: {{ .Values.mongodb.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ .Values.mongodb.name }}
+    release: {{ .Release.Name }}
+  ports:
+    - port: {{ .Values.mongodb.service.port }}
+      name: mongo
+{{- end }}

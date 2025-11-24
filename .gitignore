@@ -44,3 +44,8 @@ out/
 http-request-get.js
 
 CLAUDE.md
+
+# Helm values with secrets
+helm/remedy-back/values.yaml
+helm/remedy-back/values-*.yaml
+!helm/remedy-back/values.example.yaml
