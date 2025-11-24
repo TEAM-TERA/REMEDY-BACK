@@ -38,14 +38,12 @@ public class PlaylistService {
     private final UserRepository userRepository;
     private final SongRepository songRepository;
 
-    public Long createPlaylist(Long userId, PlaylistCreateRequest request) {
+    public void createPlaylist(Long userId, PlaylistCreateRequest request) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
         Playlist playlist = PlaylistMapper.toEntity(request, user);
-        Playlist savedPlaylist = playlistRepository.save(playlist);
-
-        return savedPlaylist.getId();
+        playlistRepository.save(playlist);
     }
 
     public PlaylistDetailResponse getPlaylist(Long playlistId) {
@@ -55,8 +53,7 @@ public class PlaylistService {
         List<SongResponse> songs = playlist.getSongIdList().stream()
                 .map(songId -> songRepository.findById(songId)
                         .map(SongMapper::toSongResponse)
-                        .orElse(null))
-                .filter(java.util.Objects::nonNull)
+                        .orElseThrow(() -> SongNotFoundException.EXCEPTION))
                 .collect(Collectors.toList());
 
         return PlaylistMapper.toPlaylistDetailResponse(playlist, songs);
