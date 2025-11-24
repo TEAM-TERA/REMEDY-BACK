@@ -33,9 +33,7 @@ public class OAuth2AuthFacade {
 	private final KakaoAuthService kakaoAuthService;
 
     public OAuth2LoginResponse googleLogin(GoogleAuthRequest request) {
-        String accessToken = googleAuthService.getAccessToken(request.authCode());
-
-        Map<String, Object> userAttributes = googleAuthService.getUserInfo(accessToken);
+        Map<String, Object> userAttributes = googleAuthService.getUserInfo(request.accessToken());
 
         OAuth2UserInfo oAuth2UserInfo = new GoogleOAuth2UserInfo(userAttributes);
 
