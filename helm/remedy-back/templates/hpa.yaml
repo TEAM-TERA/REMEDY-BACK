@@ -1,0 +1,55 @@
+{{- if .Values.app.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.app.name }}-hpa
+  labels:
+    app: {{ .Values.app.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.app.name }}
+  minReplicas: {{ .Values.app.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.app.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.app.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.app.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.app.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.app.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.app.autoscaling.scaleDown.stabilizationWindowSeconds }}
+      policies:
+      - type: Percent
+        value: {{ .Values.app.autoscaling.scaleDown.percentPolicy }}
+        periodSeconds: {{ .Values.app.autoscaling.scaleDown.periodSeconds }}
+      - type: Pods
+        value: {{ .Values.app.autoscaling.scaleDown.podsPolicy }}
+        periodSeconds: {{ .Values.app.autoscaling.scaleDown.periodSeconds }}
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: {{ .Values.app.autoscaling.scaleUp.stabilizationWindowSeconds }}
+      policies:
+      - type: Percent
+        value: {{ .Values.app.autoscaling.scaleUp.percentPolicy }}
+        periodSeconds: {{ .Values.app.autoscaling.scaleUp.periodSeconds }}
+      - type: Pods
+        value: {{ .Values.app.autoscaling.scaleUp.podsPolicy }}
+        periodSeconds: {{ .Values.app.autoscaling.scaleUp.periodSeconds }}
+      selectPolicy: Max
+{{- end }}
