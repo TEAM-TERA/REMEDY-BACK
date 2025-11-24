@@ -1,7 +1,7 @@
 package org.example.remedy.infrastructure.storage.s3;
 
 import org.example.remedy.global.config.S3Config;
-import org.example.remedy.global.config.properties.S3Properties;
+import org.example.remedy.global.properties.S3Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

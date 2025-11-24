@@ -4,10 +4,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.application.dto.request.AuthLoginRequest;
 import org.example.remedy.domain.auth.application.dto.request.AuthRegisterRequest;
+import org.example.remedy.domain.auth.application.exception.EmailAlreadyExistsWithOAuth2Exception;
 import org.example.remedy.domain.auth.application.exception.InvalidPasswordException;
+import org.example.remedy.domain.auth.application.exception.OAuth2UserCannotUsePasswordLoginException;
 import org.example.remedy.domain.auth.application.exception.UserAlreadyExistsException;
 import org.example.remedy.domain.auth.application.mapper.AuthMapper;
 import org.example.remedy.domain.user.application.exception.UserNotFoundException;
+import org.example.remedy.domain.user.domain.OAuth2Provider;
 import org.example.remedy.domain.user.domain.Status;
 import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.repository.UserRepository;
@@ -27,7 +30,12 @@ public class AuthService {
 
     @Transactional
     public void signup (AuthRegisterRequest req) {
-        if (userRepository.existsUserByEmail(req.email())) throw UserAlreadyExistsException.EXCEPTION;
+        userRepository.findByEmail(req.email()).ifPresent(existingUser -> {
+            if (existingUser.getProvider() != OAuth2Provider.LOCAL) {
+                throw EmailAlreadyExistsWithOAuth2Exception.EXCEPTION;
+            }
+            throw UserAlreadyExistsException.EXCEPTION;
+        });
 
         String password = passwordEncoder.encode(req.password());
 
@@ -41,6 +49,10 @@ public class AuthService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> UserNotFoundException.EXCEPTION);
+
+        if (user.getProvider() != OAuth2Provider.LOCAL) {
+            throw OAuth2UserCannotUsePasswordLoginException.EXCEPTION;
+        }
 
         if(!passwordEncoder.matches(req.password(), user.getPassword())) throw InvalidPasswordException.EXCEPTION;
 

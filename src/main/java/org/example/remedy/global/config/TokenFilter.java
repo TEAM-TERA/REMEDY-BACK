@@ -1,10 +1,11 @@
-package org.example.remedy.global.security.jwt;
+package org.example.remedy.global.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.global.security.jwt.TokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -20,12 +21,13 @@ public class TokenFilter extends OncePerRequestFilter {
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/api/v1/auth/login",
-            "/api/v1/auth/register",
-            "/api/v1/auth/refresh",
-            "/api/v1/songs/search",
-            "/api/v1/songs/*/stream",
-            "/api/v1/health"
+		"/api/v1/auth/login",
+		"/api/v1/auth/register",
+		"/api/v1/auth/refresh",
+		"/api/v1/songs/search",
+		"/api/v1/songs/*/stream",
+		"/api/v1/health",
+		"/api/v1/oauth2/**"
     );
 
     @Override

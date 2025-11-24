@@ -1,6 +1,7 @@
 package org.example.remedy.domain.user.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.user.domain.OAuth2Provider;
 import org.example.remedy.domain.user.domain.User;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +16,8 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserPersistenceRepository userPersistenceRepository;
 
     @Override
-    public void save(User user) {
-        userPersistenceRepository.save(user);
+    public User save(User user) {
+        return userPersistenceRepository.save(user);
     }
 
     @Override
@@ -32,6 +33,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByUserId(Long userId) {
         return userPersistenceRepository.findByUserId(userId);
+    }
+
+    @Override
+    public Optional<User> findByProviderAndProviderId(OAuth2Provider provider, String providerId) {
+        return userPersistenceRepository.findByProviderAndProviderId(provider, providerId);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.example.remedy.global.config.properties;
+package org.example.remedy.global.properties;
 
 import lombok.Getter;
 import lombok.Setter;
