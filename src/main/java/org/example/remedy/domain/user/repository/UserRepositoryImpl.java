@@ -16,8 +16,8 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserPersistenceRepository userPersistenceRepository;
 
     @Override
-    public void save(User user) {
-        userPersistenceRepository.save(user);
+    public User save(User user) {
+        return userPersistenceRepository.save(user);
     }
 
     @Override
