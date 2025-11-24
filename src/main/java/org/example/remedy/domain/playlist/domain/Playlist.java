@@ -1,39 +1,31 @@
 package org.example.remedy.domain.playlist.domain;
 
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.remedy.domain.user.domain.User;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Entity
-@Table(name = "playlists")
+@Document(collection = "playlists")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Playlist {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column
-    private String songIds;
+    private List<String> songIds;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long userId;
 
-    public Playlist(String name, User user) {
+    public Playlist(String name, Long userId) {
         this.name = name;
-        this.user = user;
-        this.songIds = "";
+        this.userId = userId;
+        this.songIds = new ArrayList<>();
     }
 
     public void update(String name) {
@@ -42,32 +34,20 @@ public class Playlist {
         }
     }
 
-    private List<String> getSongList() {
-        if (songIds == null || songIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return new ArrayList<>(Arrays.asList(songIds.split(",")));
-    }
-
     public void addSong(String songId) {
         if (hasSong(songId)) return;
-
-        List<String> songs = getSongList();
-        songs.add(songId);
-        this.songIds = String.join(",", songs);
+        this.songIds.add(songId);
     }
 
     public void removeSong(String songId) {
-        List<String> songs = getSongList();
-        songs.remove(songId);
-        this.songIds = String.join(",", songs);
+        this.songIds.remove(songId);
     }
 
     public boolean hasSong(String songId) {
-        return songIds != null && songIds.contains(songId);
+        return this.songIds.contains(songId);
     }
 
     public List<String> getSongIdList() {
-        return getSongList();
+        return new ArrayList<>(this.songIds);
     }
 }

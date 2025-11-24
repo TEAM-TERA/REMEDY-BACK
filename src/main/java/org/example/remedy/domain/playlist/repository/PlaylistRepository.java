@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface PlaylistRepository {
     Playlist save(Playlist playlist);
 
-    Optional<Playlist> findById(Long id);
+    Optional<Playlist> findById(String id);
 
     List<Playlist> findByUserId(Long userId);
 

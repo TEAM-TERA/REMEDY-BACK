@@ -19,13 +19,13 @@ public class PlaylistRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public Optional<Playlist> findById(Long id) {
+    public Optional<Playlist> findById(String id) {
         return playlistPersistenceRepository.findById(id);
     }
 
     @Override
     public List<Playlist> findByUserId(Long userId) {
-        return playlistPersistenceRepository.findByUserUserId(userId);
+        return playlistPersistenceRepository.findByUserId(userId);
     }
 
     @Override

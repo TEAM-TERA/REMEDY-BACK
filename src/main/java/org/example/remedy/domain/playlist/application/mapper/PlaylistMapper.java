@@ -6,14 +6,13 @@ import org.example.remedy.domain.playlist.application.dto.response.PlaylistListR
 import org.example.remedy.domain.playlist.application.dto.response.PlaylistResponse;
 import org.example.remedy.domain.playlist.domain.Playlist;
 import org.example.remedy.domain.song.application.dto.response.SongResponse;
-import org.example.remedy.domain.user.domain.User;
 
 import java.util.List;
 
 public class PlaylistMapper {
 
-    public static Playlist toEntity(PlaylistCreateRequest request, User user) {
-        return new Playlist(request.name(), user);
+    public static Playlist toEntity(PlaylistCreateRequest request, Long userId) {
+        return new Playlist(request.name(), userId);
     }
 
     public static PlaylistResponse toPlaylistResponse(Playlist playlist) {

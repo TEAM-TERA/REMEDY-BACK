@@ -20,7 +20,6 @@ import org.example.remedy.domain.song.application.exception.SongNotFoundExceptio
 import org.example.remedy.domain.song.application.mapper.SongMapper;
 import org.example.remedy.domain.song.repository.SongRepository;
 import org.example.remedy.domain.user.application.exception.UserNotFoundException;
-import org.example.remedy.domain.user.domain.User;
 import org.example.remedy.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +38,15 @@ public class PlaylistService {
     private final SongRepository songRepository;
 
     public void createPlaylist(Long userId, PlaylistCreateRequest request) {
-        User user = userRepository.findByUserId(userId)
+        // User 존재 여부 검증
+        userRepository.findByUserId(userId)
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
 
-        Playlist playlist = PlaylistMapper.toEntity(request, user);
+        Playlist playlist = PlaylistMapper.toEntity(request, userId);
         playlistRepository.save(playlist);
     }
 
-    public PlaylistDetailResponse getPlaylist(Long playlistId) {
+    public PlaylistDetailResponse getPlaylist(String playlistId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -69,26 +69,26 @@ public class PlaylistService {
         return PlaylistMapper.toPlaylistListResponse(playlistResponses);
     }
 
-    public void updatePlaylist(Long playlistId, Long userId, PlaylistUpdateRequest request) {
+    public void updatePlaylist(String playlistId, Long userId, PlaylistUpdateRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
         validatePlaylistOwner(playlist, userId);
 
         playlist.update(request.name());
+        playlistRepository.save(playlist);
     }
 
-    public void deletePlaylist(Long playlistId, Long userId) {
+    public void deletePlaylist(String playlistId, Long userId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
         validatePlaylistOwner(playlist, userId);
 
         playlistRepository.delete(playlist);
-
     }
 
-    public void addSongToPlaylist(Long playlistId, Long userId, PlaylistSongAddRequest request) {
+    public void addSongToPlaylist(String playlistId, Long userId, PlaylistSongAddRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -102,9 +102,10 @@ public class PlaylistService {
         }
 
         playlist.addSong(request.songId());
+        playlistRepository.save(playlist);
     }
 
-    public void removeSongFromPlaylist(Long playlistId, String songId, Long userId) {
+    public void removeSongFromPlaylist(String playlistId, String songId, Long userId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -115,10 +116,11 @@ public class PlaylistService {
         }
 
         playlist.removeSong(songId);
+        playlistRepository.save(playlist);
     }
 
     private void validatePlaylistOwner(Playlist playlist, Long userId) {
-        if (!playlist.getUser().getUserId().equals(userId)) {
+        if (!playlist.getUserId().equals(userId)) {
             throw PlaylistAccessDeniedException.EXCEPTION;
         }
     }
