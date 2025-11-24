@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(url = "https://oauth2.googleapis.com")
+@FeignClient(name = "google-auth", url = "https://oauth2.googleapis.com")
 public interface GoogleAuthClient {
 	@PostMapping(value = "/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	GoogleTokenResponse getToken(@RequestBody MultiValueMap<String, String> params);

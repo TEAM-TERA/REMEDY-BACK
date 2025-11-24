@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(url = "https://openapi.naver.com")
+@FeignClient(name = "naver-auth", url = "https://openapi.naver.com")
 public interface NaverAuthClient {
 	@GetMapping("/v2/nid/me")
 	Map<String, Object> getUserInfo(

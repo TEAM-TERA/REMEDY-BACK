@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(url = "https://kapi.kakao.com")
+@FeignClient(name = "kakao-auth", url = "https://kapi.kakao.com")
 public interface KakaoAuthClient {
 	@GetMapping("/v2/user/me")
 	Map<String, Object> getUserInfo(
