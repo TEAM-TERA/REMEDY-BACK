@@ -20,6 +20,7 @@ public class LikeMapper {
             dropping.getDroppingId(),
             dropping.getDroppingType(),
             song.getTitle(),
+            song.getArtist(),
             song.getAlbumImagePath(),
             dropping.getAddress()));
   }
@@ -32,6 +33,7 @@ public class LikeMapper {
             dropping.getDroppingType(),
             payload.getTopic(),
             null,
+            null,
             dropping.getAddress()));
   }
 
@@ -42,6 +44,7 @@ public class LikeMapper {
             dropping.getDroppingId(),
             dropping.getDroppingType(),
             payload.getPlaylistName(),
+            null,
             null,
             dropping.getAddress()));
   }

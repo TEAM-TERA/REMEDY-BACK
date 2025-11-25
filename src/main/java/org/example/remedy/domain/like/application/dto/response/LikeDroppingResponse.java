@@ -6,6 +6,7 @@ public record LikeDroppingResponse(
         String droppingId,
         DroppingType droppingType,
         String title,
+        String artist,
         String imageUrl,
         String address
 ) {
