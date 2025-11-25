@@ -3,12 +3,14 @@ package org.example.remedy.domain.dropping.application.service;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
+import org.example.remedy.domain.dropping.application.dto.response.MusicDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.event.DroppingCreatedEvent;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.domain.dropping.domain.MusicDroppingPayload;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
+import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.song.application.exception.SongNotFoundException;
 import org.example.remedy.domain.song.repository.SongRepository;
 import org.example.remedy.domain.user.application.exception.UserNotFoundException;
@@ -52,6 +54,13 @@ public class MusicDroppingService {
                 .getAlbumImagePath();
 
         return DroppingMapper.toDroppingFindResponse(dropping, payload.getSongId(), username, albumImageUrl);
+    }
+
+    public MusicDroppingSearchResponse createMusicSearchResponse(Dropping dropping) {
+        Song song = songRepository.findById(dropping.getSongId())
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
+
+        return DroppingMapper.toMusicDroppingSearchResponse(dropping, song);
     }
 
     private void publishDroppingCreatedEvent(Long userId, String songId) {

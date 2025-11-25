@@ -2,10 +2,7 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
-import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingResponse;
-import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingTypeException;
 import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.global.security.auth.AuthDetails;

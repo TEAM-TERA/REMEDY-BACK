@@ -3,6 +3,9 @@ package org.example.remedy.domain.dropping.application.service;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingResponse;
+import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingSearchResponse;
+import org.example.remedy.domain.dropping.application.exception.EmptyPlaylistSongsException;
+import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
@@ -37,5 +40,17 @@ public class PlaylistDroppingService {
                 songId -> songRepository.findById(songId)
                         .orElseThrow(() -> SongNotFoundException.EXCEPTION)
         );
+    }
+
+    public PlaylistDroppingSearchResponse createPlaylistSearchResponse(Dropping dropping) {
+        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
+
+        String firstAlbumImageUrl = payload.getSongIds().stream()
+                .findFirst()
+                .flatMap(songRepository::findById)
+                .map(Song::getAlbumImagePath)
+                .orElseThrow(() -> EmptyPlaylistSongsException.EXCEPTION);
+
+        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
 }

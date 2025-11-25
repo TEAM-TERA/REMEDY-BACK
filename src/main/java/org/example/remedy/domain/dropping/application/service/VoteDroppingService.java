@@ -3,6 +3,9 @@ package org.example.remedy.domain.dropping.application.service;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
+import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingSearchResponse;
+import org.example.remedy.domain.dropping.application.exception.EmptyVoteOptionsException;
+import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.domain.Dropping;
@@ -54,5 +57,17 @@ public class VoteDroppingService {
                 songId -> songRepository.findById(songId)
                         .orElseThrow(() -> SongNotFoundException.EXCEPTION)
         );
+    }
+
+    public VoteDroppingSearchResponse createVoteSearchResponse(Dropping dropping) {
+        VoteDroppingPayload payload = dropping.getVotePayload();
+
+        String firstAlbumImageUrl = payload.getOptionVotes().keySet().stream()
+                .findFirst()
+                .flatMap(songRepository::findById)
+                .map(Song::getAlbumImagePath)
+                .orElseThrow(() -> EmptyVoteOptionsException.EXCEPTION);
+
+        return DroppingMapper.toVoteDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
 }

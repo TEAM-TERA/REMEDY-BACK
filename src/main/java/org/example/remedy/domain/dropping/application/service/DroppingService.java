@@ -4,22 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
-import org.example.remedy.domain.dropping.application.dto.response.MusicDroppingSearchResponse;
-import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingSearchResponse;
-import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
-import org.example.remedy.domain.dropping.application.exception.EmptyPlaylistSongsException;
-import org.example.remedy.domain.dropping.application.exception.EmptyVoteOptionsException;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingDeleteRequestException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
-import org.example.remedy.domain.song.application.exception.SongNotFoundException;
-import org.example.remedy.domain.song.repository.SongRepository;
 import org.example.remedy.domain.dropping.domain.Dropping;
-import org.example.remedy.domain.dropping.domain.DroppingType;
-import org.example.remedy.domain.dropping.domain.PlaylistDroppingPayload;
-import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
-import org.example.remedy.domain.song.domain.Song;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,7 +23,9 @@ import java.util.List;
 public class DroppingService {
 
     private final DroppingRepository droppingRepository;
-    private final SongRepository songRepository;
+    private final MusicDroppingService musicDroppingService;
+    private final VoteDroppingService voteDroppingService;
+    private final PlaylistDroppingService playlistDroppingService;
 
     public DroppingSearchListResponse searchDroppings(double longitude, double latitude) {
         List<Dropping> allDroppings = droppingRepository
@@ -63,41 +54,10 @@ public class DroppingService {
 
     private DroppingResponse convertToResponse(Dropping dropping) {
         return switch (dropping.getDroppingType()) {
-            case MUSIC -> createMusicResponse(dropping);
-            case VOTE -> createVoteResponse(dropping);
-            case PLAYLIST -> createPlaylistResponse(dropping);
+            case MUSIC -> musicDroppingService.createMusicSearchResponse(dropping);
+            case VOTE -> voteDroppingService.createVoteSearchResponse(dropping);
+            case PLAYLIST -> playlistDroppingService.createPlaylistSearchResponse(dropping);
         };
-    }
-
-    private MusicDroppingSearchResponse createMusicResponse(Dropping dropping) {
-        Song song = songRepository.findById(dropping.getSongId())
-                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
-
-        return DroppingMapper.toMusicDroppingSearchResponse(dropping, song);
-    }
-
-    private VoteDroppingSearchResponse createVoteResponse(Dropping dropping) {
-        VoteDroppingPayload payload = dropping.getVotePayload();
-
-        String firstAlbumImageUrl = payload.getOptionVotes().keySet().stream()
-                .findFirst()
-                .flatMap(songRepository::findById)
-                .map(Song::getAlbumImagePath)
-                .orElseThrow(() -> EmptyVoteOptionsException.EXCEPTION);
-
-        return DroppingMapper.toVoteDroppingSearchResponse(dropping, firstAlbumImageUrl);
-    }
-
-    private PlaylistDroppingSearchResponse createPlaylistResponse(Dropping dropping) {
-        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
-
-        String firstAlbumImageUrl = payload.getSongIds().stream()
-                .findFirst()
-                .flatMap(songRepository::findById)
-                .map(Song::getAlbumImagePath)
-                .orElseThrow(() -> EmptyPlaylistSongsException.EXCEPTION);
-
-        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
 
     @Transactional
