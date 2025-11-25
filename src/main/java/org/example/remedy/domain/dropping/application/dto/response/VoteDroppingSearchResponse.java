@@ -13,7 +13,8 @@ public record VoteDroppingSearchResponse(
         String content,
         Double latitude,
         Double longitude,
-        String address
+        String address,
+        String firstAlbumImageUrl
 ) implements DroppingResponse {
 
 }

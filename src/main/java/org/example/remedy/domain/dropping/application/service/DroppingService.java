@@ -9,6 +9,8 @@ import org.example.remedy.domain.dropping.application.dto.response.MusicDropping
 import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
+import org.example.remedy.domain.dropping.application.exception.EmptyPlaylistSongsException;
+import org.example.remedy.domain.dropping.application.exception.EmptyVoteOptionsException;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingDeleteRequestException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
@@ -19,6 +21,9 @@ import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.domain.dropping.domain.DroppingType;
 import org.example.remedy.domain.dropping.domain.MusicDroppingPayload;
+import org.example.remedy.domain.dropping.domain.PlaylistDroppingPayload;
+import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
+import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.user.domain.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -85,18 +90,34 @@ public class DroppingService {
 
     private MusicDroppingSearchResponse createMusicResponse(Dropping dropping) {
         MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
-        String albumImageUrl = songRepository.findById(payload.getSongId())
-                .orElseThrow(() -> SongNotFoundException.EXCEPTION)
-                .getAlbumImagePath();
-        return DroppingMapper.toMusicDroppingSearchResponse(dropping, albumImageUrl);
+        Song song = songRepository.findById(payload.getSongId())
+                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
+
+        return DroppingMapper.toMusicDroppingSearchResponse(dropping, song);
     }
 
     private VoteDroppingSearchResponse createVoteResponse(Dropping dropping) {
-        return DroppingMapper.toVoteDroppingSearchResponse(dropping);
+        VoteDroppingPayload payload = dropping.getVotePayload();
+
+        String firstAlbumImageUrl = payload.getOptionVotes().keySet().stream()
+                .findFirst()
+                .flatMap(songRepository::findById)
+                .map(Song::getAlbumImagePath)
+                .orElseThrow(()-> EmptyVoteOptionsException.EXCEPTION);
+
+        return DroppingMapper.toVoteDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
 
     private PlaylistDroppingSearchResponse createPlaylistResponse(Dropping dropping) {
-        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping);
+        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
+
+        String firstAlbumImageUrl = payload.getSongIds().stream()
+                .findFirst()
+                .flatMap(songRepository::findById)
+                .map(Song::getAlbumImagePath)
+                .orElseThrow(()-> EmptyPlaylistSongsException.EXCEPTION);
+
+        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
 
     @Transactional

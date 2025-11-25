@@ -39,7 +39,7 @@ public class DroppingMapper {
   }
 
   public static MusicDroppingSearchResponse toMusicDroppingSearchResponse(
-      Dropping dropping, String albumImageUrl) {
+      Dropping dropping, Song song) {
     MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
 
     return new MusicDroppingSearchResponse(
@@ -47,14 +47,16 @@ public class DroppingMapper {
         dropping.getDroppingId(),
         dropping.getUserId(),
         payload.getSongId(),
+        song.getTitle(),
+        song.getArtist(),
         dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
         dropping.getAddress(),
-        albumImageUrl);
+        song.getAlbumImagePath());
   }
 
-  public static VoteDroppingSearchResponse toVoteDroppingSearchResponse(Dropping dropping) {
+  public static VoteDroppingSearchResponse toVoteDroppingSearchResponse(Dropping dropping, String firstAlbumImageUrl) {
     VoteDroppingPayload payload = dropping.getVotePayload();
 
     return new VoteDroppingSearchResponse(
@@ -66,10 +68,11 @@ public class DroppingMapper {
         dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
-        dropping.getAddress());
+        dropping.getAddress(),
+        firstAlbumImageUrl);
   }
 
-  public static PlaylistDroppingSearchResponse toPlaylistDroppingSearchResponse(Dropping dropping) {
+  public static PlaylistDroppingSearchResponse toPlaylistDroppingSearchResponse(Dropping dropping, String firstAlbumImageUrl) {
     PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
 
     return new PlaylistDroppingSearchResponse(
@@ -81,7 +84,8 @@ public class DroppingMapper {
         dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
-        dropping.getAddress());
+        dropping.getAddress(),
+        firstAlbumImageUrl);
   }
 
   public static Dropping toEntity(
