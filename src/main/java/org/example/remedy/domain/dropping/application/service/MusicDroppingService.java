@@ -2,7 +2,7 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
+import org.example.remedy.domain.dropping.application.dto.response.MusicDroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.MusicDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.event.DroppingCreatedEvent;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
@@ -40,7 +40,7 @@ public class MusicDroppingService {
         publishDroppingCreatedEvent(authDetails.getUserId(), payload.getSongId());
     }
 
-    public DroppingFindResponse getMusicDropping(String droppingId) {
+    public MusicDroppingResponse getMusicDropping(String droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
@@ -53,7 +53,7 @@ public class MusicDroppingService {
                 .orElseThrow(() -> SongNotFoundException.EXCEPTION)
                 .getAlbumImagePath();
 
-        return DroppingMapper.toDroppingFindResponse(dropping, payload.getSongId(), username, albumImageUrl);
+        return DroppingMapper.toMusicDroppingResponse(dropping, payload.getSongId(), username, albumImageUrl);
     }
 
     public MusicDroppingSearchResponse createMusicSearchResponse(Dropping dropping) {

@@ -23,9 +23,9 @@ public class DroppingMapper {
     return new DroppingSearchListResponse(droppings);
   }
 
-  public static DroppingFindResponse toDroppingFindResponse(
+  public static MusicDroppingResponse toMusicDroppingResponse(
       Dropping dropping, String songId, String username, String albumImageUrl) {
-    return new DroppingFindResponse(
+    return new MusicDroppingResponse(
         dropping.getDroppingId(),
         songId,
         dropping.getUserId(),
