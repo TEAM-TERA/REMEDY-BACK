@@ -1,0 +1,84 @@
+services:
+  spring-boot:
+    build: .
+    container_name: spring-boot
+    env_file:
+      - .env
+    depends_on:
+      mongodb:
+        condition: service_started
+      postgresql:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_URL=${POSTGRES_URL}
+
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+
+      # MongoDB 설정
+      - MONGO_DB_URI=${MONGO_DB_URI}
+
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
+
+      - REDIS_URL=${REDIS_URL}
+
+      # JWT 설정
+      - JWT_ACCESS_TIME=${JWT_ACCESS_TIME}
+      - JWT_PREFIX=${JWT_PREFIX}
+      - JWT_HEADER=${JWT_HEADER}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    ports:
+      - "${APPLICATION_PORT}:8080"
+    networks:
+      - remedy-network
+
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DB}
+    networks:
+      - remedy-network
+
+  postgresql:
+    image: postgres:17
+    container_name: postgresql
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - remedy-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - remedy-network
+
+networks:
+  remedy-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  postgresql_data:
+    driver: local
+  redis_data:
+    driver: local

@@ -20,6 +20,29 @@ spec:
         app: {{ .Values.mongodb.name }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.mongodb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.mongodb.nodeSelector.label }}: {{ .Values.mongodb.nodeSelector.value }}
+      {{- end }}
+      {{- if .Values.mongodb.tolerations.enabled }}
+      tolerations:
+        - key: {{ .Values.mongodb.tolerations.key }}
+          operator: "Equal"
+          value: {{ .Values.mongodb.tolerations.value | quote }}
+          effect: {{ .Values.mongodb.tolerations.effect }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ .Values.mongodb.name }}
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: mongodb
           image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"

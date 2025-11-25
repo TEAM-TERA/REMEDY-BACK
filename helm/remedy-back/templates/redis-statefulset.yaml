@@ -20,6 +20,29 @@ spec:
         app: {{ .Values.redis.name }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.redis.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.redis.nodeSelector.label }}: {{ .Values.redis.nodeSelector.value }}
+      {{- end }}
+      {{- if .Values.redis.tolerations.enabled }}
+      tolerations:
+        - key: {{ .Values.redis.tolerations.key }}
+          operator: "Equal"
+          value: {{ .Values.redis.tolerations.value | quote }}
+          effect: {{ .Values.redis.tolerations.effect }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ .Values.redis.name }}
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: redis
           image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
