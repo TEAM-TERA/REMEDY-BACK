@@ -6,8 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.PlaylistDroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.*;
 import org.example.remedy.domain.dropping.application.util.VoteCalculator;
 import org.example.remedy.domain.dropping.domain.Dropping;
@@ -39,7 +37,7 @@ public class DroppingMapper {
   }
 
   public static MusicDroppingSearchResponse toMusicDroppingSearchResponse(
-      Dropping dropping, String albumImageUrl) {
+      Dropping dropping, Song song) {
     MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
 
     return new MusicDroppingSearchResponse(
@@ -47,13 +45,16 @@ public class DroppingMapper {
         dropping.getDroppingId(),
         dropping.getUserId(),
         payload.getSongId(),
+        song.getTitle(),
+        song.getArtist(),
+        dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
         dropping.getAddress(),
-        albumImageUrl);
+        song.getAlbumImagePath());
   }
 
-  public static VoteDroppingSearchResponse toVoteDroppingSearchResponse(Dropping dropping) {
+  public static VoteDroppingSearchResponse toVoteDroppingSearchResponse(Dropping dropping, String firstAlbumImageUrl) {
     VoteDroppingPayload payload = dropping.getVotePayload();
 
     return new VoteDroppingSearchResponse(
@@ -62,12 +63,14 @@ public class DroppingMapper {
         dropping.getUserId(),
         payload.getTopic(),
         List.copyOf(payload.getOptionVotes().keySet()),
+        dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
-        dropping.getAddress());
+        dropping.getAddress(),
+        firstAlbumImageUrl);
   }
 
-  public static PlaylistDroppingSearchResponse toPlaylistDroppingSearchResponse(Dropping dropping) {
+  public static PlaylistDroppingSearchResponse toPlaylistDroppingSearchResponse(Dropping dropping, String firstAlbumImageUrl) {
     PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
 
     return new PlaylistDroppingSearchResponse(
@@ -76,9 +79,11 @@ public class DroppingMapper {
         dropping.getUserId(),
         payload.getPlaylistName(),
         payload.getSongIds(),
+        dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
-        dropping.getAddress());
+        dropping.getAddress(),
+        firstAlbumImageUrl);
   }
 
   public static Dropping toEntity(
@@ -124,7 +129,7 @@ public class DroppingMapper {
   }
 
   public static Dropping toVoteDroppingEntity(
-      AuthDetails authDetails, VoteDroppingCreateRequest request, VoteDroppingPayload payload) {
+      AuthDetails authDetails, DroppingCreateRequest request, VoteDroppingPayload payload) {
     LocalDateTime now = LocalDateTime.now();
     return new Dropping(
         DroppingType.VOTE,
@@ -139,7 +144,7 @@ public class DroppingMapper {
         false);
   }
 
-  public static VoteDroppingPayload toVoteDroppingPayload(VoteDroppingCreateRequest request) {
+  public static VoteDroppingPayload toVoteDroppingPayload(DroppingCreateRequest request) {
     LinkedHashMap<String, List<Long>> optionVotes = new LinkedHashMap<>();
     for (String songId : request.options()) {
       optionVotes.put(songId, new ArrayList<>());
@@ -176,7 +181,7 @@ public class DroppingMapper {
 
   public static Dropping toPlaylistDroppingEntity(
       AuthDetails authDetails,
-      PlaylistDroppingCreateRequest request,
+      DroppingCreateRequest request,
       PlaylistDroppingPayload payload) {
     LocalDateTime now = LocalDateTime.now();
     return new Dropping(
@@ -193,7 +198,7 @@ public class DroppingMapper {
   }
 
   public static PlaylistDroppingPayload toPlaylistDroppingPayload(
-      PlaylistDroppingCreateRequest request) {
+      DroppingCreateRequest request) {
     return PlaylistDroppingPayload.builder()
         .playlistName(request.playlistName())
         .songIds(request.songIds())

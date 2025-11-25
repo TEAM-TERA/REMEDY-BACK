@@ -1,7 +1,7 @@
 package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
+import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
@@ -22,7 +22,7 @@ public class VoteDroppingService {
     private final SongRepository songRepository;
 
     @Transactional
-    public void createVoteDropping(AuthDetails authDetails, VoteDroppingCreateRequest request) {
+    public void createVoteDropping(AuthDetails authDetails, DroppingCreateRequest request) {
         VoteDroppingPayload payload = DroppingMapper.toVoteDroppingPayload(request);
         Dropping dropping = DroppingMapper.toVoteDroppingEntity(authDetails, request, payload);
 
