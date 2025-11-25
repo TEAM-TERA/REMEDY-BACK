@@ -1,0 +1,145 @@
+# Default values for remedy-back
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Application configuration
+app:
+  name: remedy-app
+  replicaCount: 2
+  image:
+    repository: remedy-back
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+
+  probes:
+    startup:
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 30
+    liveness:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+    readiness:
+      initialDelaySeconds: 0
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  name: postgresql
+  image:
+    repository: postgres
+    tag: "17"
+
+  service:
+    port: 5432
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  database: remedy
+  username: tera
+  password: "CHANGE_ME"  # TODO: Set your PostgreSQL password
+
+# MongoDB configuration
+mongodb:
+  enabled: true
+  name: mongodb
+  image:
+    repository: mongo
+    tag: "8.0"
+
+  service:
+    port: 27017
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  database: remedy
+
+# Redis configuration
+redis:
+  enabled: true
+  name: redis
+  image:
+    repository: redis
+    tag: "7-alpine"
+
+  service:
+    port: 6379
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: ""
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# Elasticsearch configuration (external service)
+elasticsearch:
+  host: "YOUR_ELASTICSEARCH_HOST"  # TODO: Set your Elasticsearch host
+  port: 9200
+
+# AWS S3 configuration
+aws:
+  s3:
+    bucket: "your-s3-bucket-name"  # TODO: Set your S3 bucket name
+    region: "ap-northeast-2"
+  accessKey: "YOUR_AWS_ACCESS_KEY"  # TODO: Set your AWS access key
+  secretKey: "YOUR_AWS_SECRET_KEY"  # TODO: Set your AWS secret key
+
+# JWT configuration
+jwt:
+  secretKey: "YOUR_JWT_SECRET_KEY_AT_LEAST_32_CHARACTERS_LONG"  # TODO: Generate a secure random key
+  accessTime: "86400000"  # 24 hours in milliseconds
+  prefix: "Bearer"
+  header: "Authorization"

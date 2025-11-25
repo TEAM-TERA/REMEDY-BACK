@@ -1,0 +1,96 @@
+{{- if .Values.mongodb.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.mongodb.name }}
+  labels:
+    app: {{ .Values.mongodb.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+spec:
+  serviceName: {{ .Values.mongodb.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.mongodb.name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mongodb.name }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.mongodb.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.mongodb.nodeSelector.label }}: {{ .Values.mongodb.nodeSelector.value }}
+      {{- end }}
+      {{- if .Values.mongodb.tolerations.enabled }}
+      tolerations:
+        - key: {{ .Values.mongodb.tolerations.key }}
+          operator: "Equal"
+          value: {{ .Values.mongodb.tolerations.value | quote }}
+          effect: {{ .Values.mongodb.tolerations.effect }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ .Values.mongodb.name }}
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.mongodb.service.port }}
+              name: mongo
+          env:
+            - name: MONGO_INITDB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.app.name }}-config
+                  key: MONGO_DB
+          {{- if .Values.mongodb.persistence.enabled }}
+          volumeMounts:
+            - name: mongo-pv
+              mountPath: /data/db
+          {{- end }}
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+          livenessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+  {{- if .Values.mongodb.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-pv
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- if .Values.mongodb.persistence.storageClass }}
+        storageClassName: {{ .Values.mongodb.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.mongodb.persistence.size }}
+  {{- end }}
+{{- end }}

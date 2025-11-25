@@ -1,7 +1,7 @@
 package org.example.remedy.infrastructure.storage.s3;
 
 import org.example.remedy.global.config.S3Config;
-import org.example.remedy.global.config.properties.S3Properties;
+import org.example.remedy.global.properties.S3Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         classes = {
                 S3Config.class,
                 S3Properties.class,
-                S3StorageAdapter.class
+                S3StorageService.class
         })
         @EnableAutoConfiguration(exclude = {
                 HibernateJpaAutoConfiguration.class,
@@ -35,7 +35,7 @@ public class S3ConnectionTest {
     private S3Properties s3Properties;
 
     @Autowired
-    private S3StorageAdapter s3StorageAdapter;
+    private S3StorageService s3StorageService;
 
     @Test
     @DisplayName("S3 버킷에 정상적으로 연결되야 함")
@@ -58,7 +58,7 @@ public class S3ConnectionTest {
                 "dummy data".getBytes()
         );
 
-        String url = s3StorageAdapter.uploadFile(file);
+        String url = s3StorageService.uploadFile(file);
         System.out.println("업로드 성공! 접근 URL: " + url);
     }
 

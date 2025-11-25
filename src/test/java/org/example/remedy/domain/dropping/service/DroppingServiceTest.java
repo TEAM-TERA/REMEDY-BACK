@@ -1,7 +1,7 @@
 /*
 package org.example.remedy.domain.dropping.service;
 
-import org.example.remedy.domain.dropping.Dropping;
+import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.infrastructure.persistence.dropping.DroppingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,7 +79,7 @@ public class DroppingServiceTest {
         // Mock 동작 정의
         when(droppingRepository.saveAll(any())).thenReturn(dummyDroppings);
         when(droppingRepository.findAll()).thenReturn(dummyDroppings);
-        
+
         // 강남역 기준 3미터 이내 활성 dropping 2개 반환 (첫 번째, 두 번째)
         List<Dropping> activeNearbyDroppings = Arrays.asList(dummyDroppings.get(0), dummyDroppings.get(1));
         when(droppingRepositoryCustom.findActiveDroppingsWithinRadius(anyDouble(), anyDouble()))
@@ -87,20 +87,20 @@ public class DroppingServiceTest {
 
         // 테스트 실행
         droppingRepository.saveAll(dummyDroppings);
-        
+
         List<Dropping> allData = droppingRepository.findAll();
         System.out.println("저장된 데이터 개수: " + allData.size());
-        
+
         allData.forEach(d -> {
-            System.out.println("ID: " + d.getDroppingId() + 
-                             ", 위치: " + d.getLatitude() + "," + d.getLongitude() + 
+            System.out.println("ID: " + d.getDroppingId() +
+                             ", 위치: " + d.getLatitude() + "," + d.getLongitude() +
                              ", 활성: " + d.isActive());
         });
 
         // 지리적 검색 테스트 (강남역 기준)
         List<Dropping> result = droppingRepositoryCustom
                 .findActiveDroppingsWithinRadius(37.4979, 127.0276);
-        
+
         System.out.println("검색 결과: " + result.size());
 
         assertThat(result).hasSize(2); // 3미터 이내 활성 dropping 2개
