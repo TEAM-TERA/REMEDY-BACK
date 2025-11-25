@@ -30,8 +30,10 @@ public class DroppingController {
     }
 
     @GetMapping("/{dropping-id}")
-    public ResponseEntity<DroppingFindResponse> getDropping(@PathVariable(name = "dropping-id") String id) {
-        DroppingFindResponse response = droppingService.getDropping(id);
+    public ResponseEntity<?> getDropping(
+            @PathVariable(name = "dropping-id") String id,
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        Object response = droppingService.getDropping(id, authDetails.getUserId());
         return ResponseEntity.ok(response);
     }
 
@@ -68,18 +70,4 @@ public class DroppingController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{dropping-id}/vote")
-    public ResponseEntity<VoteDroppingResponse> getVoteDropping(
-            @PathVariable(name = "dropping-id") String id,
-            @AuthenticationPrincipal AuthDetails authDetails) {
-        VoteDroppingResponse response = droppingService.getVoteDropping(id, authDetails.getUserId());
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{dropping-id}/playlist")
-    public ResponseEntity<PlaylistDroppingResponse> getPlaylistDropping(
-            @PathVariable(name = "dropping-id") String id) {
-        PlaylistDroppingResponse response = droppingService.getPlaylistDropping(id);
-        return ResponseEntity.ok(response);
-    }
 }

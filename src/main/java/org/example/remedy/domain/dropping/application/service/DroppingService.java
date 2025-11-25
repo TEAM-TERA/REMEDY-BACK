@@ -52,9 +52,13 @@ public class DroppingService {
         return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
-    public DroppingFindResponse getDropping(String droppingId) {
-        Dropping dropping = droppingRepository.findById(droppingId)
+    public Dropping getDroppingEntity(String droppingId) {
+        return droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
+    }
+
+    public DroppingFindResponse getDropping(String droppingId) {
+        Dropping dropping = getDroppingEntity(droppingId);
         String username = userRepository.findByUserId(dropping.getUserId())
                 .map(User::getUsername)
                 .orElseThrow(() -> UserNotFoundException.EXCEPTION);
@@ -121,8 +125,7 @@ public class DroppingService {
 
     @Transactional
     public void deleteDropping(String droppingId, Long userId) {
-        Dropping dropping = droppingRepository.findById(droppingId)
-                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
+        Dropping dropping = getDroppingEntity(droppingId);
 
         if (!dropping.getUserId().equals(userId)) {
             throw new InvalidDroppingDeleteRequestException();
