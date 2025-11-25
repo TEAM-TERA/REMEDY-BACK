@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
-import org.example.remedy.domain.like.application.dto.response.LikeDroppingResponse;
+import org.example.remedy.domain.like.application.dto.response.LikeDroppingListResponse;
+import org.example.remedy.domain.like.application.dto.response.MusicLikeDroppingResponse;
+import org.example.remedy.domain.like.application.dto.response.PlaylistLikeDroppingResponse;
+import org.example.remedy.domain.like.application.dto.response.VoteLikeDroppingResponse;
 import org.example.remedy.domain.like.application.mapper.LikeMapper;
 import org.example.remedy.domain.like.repository.LikeRepository;
 import org.example.remedy.domain.like.application.event.LikeCreatedEvent;
@@ -83,26 +86,40 @@ public class LikeService {
     }
 
     @Transactional(readOnly = true)
-    public List<LikeDroppingResponse> getLikeDroppingsDetailByUser(User user) {
-        return likeRepository.findByUser(user).stream()
-                .map(like -> convertToLikeDroppingResponse(like.getDroppingId()))
+    public LikeDroppingListResponse getLikeDroppingsDetailByUser(User user) {
+        List<Object> droppings = likeRepository.findByUser(user).stream()
+                .map(Like::getDroppingId)
+                .map(this::convertToLikeDroppingResponse)
                 .flatMap(Optional::stream)
                 .toList();
+
+        return new LikeDroppingListResponse(droppings);
     }
 
-    private Optional<LikeDroppingResponse> convertToLikeDroppingResponse(String droppingId) {
+    private Optional<Object> convertToLikeDroppingResponse(String droppingId) {
         return droppingRepository.findById(droppingId)
                 .filter(Dropping::isActive)
-                .flatMap(dropping -> switch (dropping.getDroppingType()) {
-                    case MUSIC -> createMusicLikeResponse(dropping);
-                    case VOTE -> LikeMapper.toVoteLikeResponse(dropping);
-                    case PLAYLIST -> LikeMapper.toPlaylistLikeResponse(dropping);
-                });
+                .flatMap(this::createLikeResponse);
     }
 
-    private Optional<LikeDroppingResponse> createMusicLikeResponse(Dropping dropping) {
-        String songId = dropping.getSongId();
-        return songRepository.findById(songId)
+    private Optional<Object> createLikeResponse(Dropping dropping) {
+        return switch (dropping.getDroppingType()) {
+            case MUSIC -> createMusicLikeResponse(dropping).map(response -> (Object) response);
+            case VOTE -> createVoteLikeResponse(dropping).map(response -> (Object) response);
+            case PLAYLIST -> createPlaylistLikeResponse(dropping).map(response -> (Object) response);
+        };
+    }
+
+    private Optional<MusicLikeDroppingResponse> createMusicLikeResponse(Dropping dropping) {
+        return songRepository.findById(dropping.getSongId())
                 .flatMap(song -> LikeMapper.toMusicLikeResponse(dropping, song));
+    }
+
+    private Optional<VoteLikeDroppingResponse> createVoteLikeResponse(Dropping dropping) {
+        return LikeMapper.toVoteLikeResponse(dropping);
+    }
+
+    private Optional<PlaylistLikeDroppingResponse> createPlaylistLikeResponse(Dropping dropping) {
+        return LikeMapper.toPlaylistLikeResponse(dropping);
     }
 }

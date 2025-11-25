@@ -89,8 +89,7 @@ public class DroppingService {
     }
 
     private MusicDroppingSearchResponse createMusicResponse(Dropping dropping) {
-        MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
-        Song song = songRepository.findById(payload.getSongId())
+        Song song = songRepository.findById(dropping.getSongId())
                 .orElseThrow(() -> SongNotFoundException.EXCEPTION);
 
         return DroppingMapper.toMusicDroppingSearchResponse(dropping, song);
@@ -103,7 +102,7 @@ public class DroppingService {
                 .findFirst()
                 .flatMap(songRepository::findById)
                 .map(Song::getAlbumImagePath)
-                .orElseThrow(()-> EmptyVoteOptionsException.EXCEPTION);
+                .orElseThrow(() -> EmptyVoteOptionsException.EXCEPTION);
 
         return DroppingMapper.toVoteDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
@@ -115,7 +114,7 @@ public class DroppingService {
                 .findFirst()
                 .flatMap(songRepository::findById)
                 .map(Song::getAlbumImagePath)
-                .orElseThrow(()-> EmptyPlaylistSongsException.EXCEPTION);
+                .orElseThrow(() -> EmptyPlaylistSongsException.EXCEPTION);
 
         return DroppingMapper.toPlaylistDroppingSearchResponse(dropping, firstAlbumImageUrl);
     }
