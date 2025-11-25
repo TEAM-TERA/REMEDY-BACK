@@ -10,6 +10,7 @@ public record VoteDroppingSearchResponse(
         Long userId,
         String topic,
         List<String> options,
+        String content,
         Double latitude,
         Double longitude,
         String address

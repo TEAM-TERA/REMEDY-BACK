@@ -7,6 +7,7 @@ public record MusicDroppingSearchResponse(
         String droppingId,
         Long userId,
         String songId,
+        String content,
         Double latitude,
         Double longitude,
         String address,

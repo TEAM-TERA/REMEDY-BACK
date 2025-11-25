@@ -47,6 +47,7 @@ public class DroppingMapper {
         dropping.getDroppingId(),
         dropping.getUserId(),
         payload.getSongId(),
+        dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
         dropping.getAddress(),
@@ -62,6 +63,7 @@ public class DroppingMapper {
         dropping.getUserId(),
         payload.getTopic(),
         List.copyOf(payload.getOptionVotes().keySet()),
+        dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
         dropping.getAddress());
@@ -76,6 +78,7 @@ public class DroppingMapper {
         dropping.getUserId(),
         payload.getPlaylistName(),
         payload.getSongIds(),
+        dropping.getContent(),
         dropping.getLatitude(),
         dropping.getLongitude(),
         dropping.getAddress());

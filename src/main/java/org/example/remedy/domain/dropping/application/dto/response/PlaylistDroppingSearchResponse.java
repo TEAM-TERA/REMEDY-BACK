@@ -10,6 +10,7 @@ public record PlaylistDroppingSearchResponse(
         Long userId,
         String playlistName,
         List<String> songIds,
+        String content,
         Double latitude,
         Double longitude,
         String address
