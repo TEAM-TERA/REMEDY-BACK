@@ -22,6 +22,8 @@ services:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
 
+      - SPRING_JPA_DDL_AUTO=${SPRING_JPA_DDL_AUTO}
+
       # MongoDB 설정
       - MONGO_DB_URI=${MONGO_DB_URI}
 

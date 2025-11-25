@@ -14,32 +14,39 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<ErrorResponse> handle(HttpRequestMethodNotSupportedException e) {
-        log.error("HttpRequestMethodNotSupportedException", e);
+        logError(ErrorCode.METHOD_NOT_ALLOWED);
         return createErrorResponseEntity(ErrorCode.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
-        log.error("Validation error", e);
-        String msg = e.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
-        return new ResponseEntity<>(
-                ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, msg),
-                ErrorCode.INVALID_INPUT_VALUE.getStatus()
-        );
+        logError(ErrorCode.INVALID_INPUT_VALUE, e);
+        return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE);
     }
 
     @ExceptionHandler(BusinessBaseException.class)
     protected ResponseEntity<ErrorResponse> handle(BusinessBaseException e) {
-        log.error("BusinessException", e);
+        logError(e);
         return createErrorResponseEntity(e.getErrorCode());
     }
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handle(Exception e) {
-        e.printStackTrace();
-        log.error("Exception", e);
+		logError(ErrorCode.INTERNAL_SERVER_ERROR);
         return createErrorResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);
     }
+
+	private void logError(ErrorCode errorCode) {
+		log.error("[ERROR] : { errorMessage : {}, errorCode : {} }", errorCode.getMessage(), errorCode.getCode());
+	}
+
+	private void logError(BusinessBaseException e) {
+		log.error("[ERROR] : { errorMessage : {}, errorCode : {} }", e.getMessage(), e.getErrorCode());
+	}
+
+	private void logError(ErrorCode errorCode, MethodArgumentNotValidException e) {
+		log.error("[ERROR] : { errorMessage : {}, errorCode : {} }", e.getMessage(), errorCode.getCode());
+	}
 
     private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode) {
         return new ResponseEntity<>(
