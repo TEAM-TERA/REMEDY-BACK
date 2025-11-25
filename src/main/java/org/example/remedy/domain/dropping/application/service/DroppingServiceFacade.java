@@ -2,12 +2,11 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.PlaylistDroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
+import org.example.remedy.domain.dropping.application.exception.InvalidDroppingTypeException;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,12 @@ public class DroppingServiceFacade {
     private final DroppingService droppingQueryService;
 
     public void createDropping(AuthDetails authDetails, DroppingCreateRequest request) {
-        musicDroppingService.createDropping(authDetails, request);
+        switch (request.type()) {
+            case MUSIC -> musicDroppingService.createDropping(authDetails, request);
+            case VOTE -> voteDroppingService.createVoteDropping(authDetails, request);
+            case PLAYLIST -> playlistDroppingService.createPlaylistDropping(authDetails, request);
+            default -> throw InvalidDroppingTypeException.EXCEPTION;
+        }
     }
 
     public DroppingSearchListResponse searchDroppings(double longitude, double latitude) {
@@ -44,10 +48,6 @@ public class DroppingServiceFacade {
         droppingQueryService.cleanupExpiredDroppings();
     }
 
-    public void createVoteDropping(AuthDetails authDetails, VoteDroppingCreateRequest request) {
-        voteDroppingService.createVoteDropping(authDetails, request);
-    }
-
     public void vote(String droppingId, Long userId, String songId) {
         voteDroppingService.vote(droppingId, userId, songId);
     }
@@ -58,10 +58,6 @@ public class DroppingServiceFacade {
 
     public VoteDroppingResponse getVoteDropping(String droppingId, Long userId) {
         return voteDroppingService.getVoteDropping(droppingId, userId);
-    }
-
-    public void createPlaylistDropping(AuthDetails authDetails, PlaylistDroppingCreateRequest request) {
-        playlistDroppingService.createPlaylistDropping(authDetails, request);
     }
 
     public PlaylistDroppingResponse getPlaylistDropping(String droppingId) {

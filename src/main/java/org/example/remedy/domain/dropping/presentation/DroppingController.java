@@ -3,8 +3,6 @@ package org.example.remedy.domain.dropping.presentation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.PlaylistDroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.request.VoteRequest;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
@@ -53,14 +51,6 @@ public class DroppingController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/vote")
-    public ResponseEntity<Void> createVoteDropping(
-            @AuthenticationPrincipal AuthDetails authDetails,
-            @Valid @RequestBody VoteDroppingCreateRequest request) {
-        droppingService.createVoteDropping(authDetails, request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
     @PostMapping("/{dropping-id}/vote")
     public ResponseEntity<Void> vote(
             @PathVariable(name = "dropping-id") String id,
@@ -84,14 +74,6 @@ public class DroppingController {
             @AuthenticationPrincipal AuthDetails authDetails) {
         VoteDroppingResponse response = droppingService.getVoteDropping(id, authDetails.getUserId());
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/playlist")
-    public ResponseEntity<Void> createPlaylistDropping(
-            @AuthenticationPrincipal AuthDetails authDetails,
-            @Valid @RequestBody PlaylistDroppingCreateRequest request) {
-        droppingService.createPlaylistDropping(authDetails, request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{dropping-id}/playlist")

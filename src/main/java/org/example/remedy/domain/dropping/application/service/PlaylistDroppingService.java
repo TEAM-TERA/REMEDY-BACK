@@ -1,6 +1,7 @@
 package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
@@ -10,7 +11,6 @@ import org.example.remedy.domain.song.repository.SongRepository;
 import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.domain.dropping.domain.PlaylistDroppingPayload;
 import org.example.remedy.global.security.auth.AuthDetails;
-import org.example.remedy.domain.dropping.application.dto.request.PlaylistDroppingCreateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ public class PlaylistDroppingService {
     private final SongRepository songRepository;
 
     @Transactional
-    public void createPlaylistDropping(AuthDetails authDetails, PlaylistDroppingCreateRequest request) {
+    public void createPlaylistDropping(AuthDetails authDetails, DroppingCreateRequest request) {
         PlaylistDroppingPayload payload = DroppingMapper.toPlaylistDroppingPayload(request);
         Dropping dropping = DroppingMapper.toPlaylistDroppingEntity(authDetails, request, payload);
 

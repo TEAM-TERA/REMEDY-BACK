@@ -6,8 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.PlaylistDroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.request.VoteDroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.response.*;
 import org.example.remedy.domain.dropping.application.util.VoteCalculator;
 import org.example.remedy.domain.dropping.domain.Dropping;
@@ -131,7 +129,7 @@ public class DroppingMapper {
   }
 
   public static Dropping toVoteDroppingEntity(
-      AuthDetails authDetails, VoteDroppingCreateRequest request, VoteDroppingPayload payload) {
+      AuthDetails authDetails, DroppingCreateRequest request, VoteDroppingPayload payload) {
     LocalDateTime now = LocalDateTime.now();
     return new Dropping(
         DroppingType.VOTE,
@@ -146,7 +144,7 @@ public class DroppingMapper {
         false);
   }
 
-  public static VoteDroppingPayload toVoteDroppingPayload(VoteDroppingCreateRequest request) {
+  public static VoteDroppingPayload toVoteDroppingPayload(DroppingCreateRequest request) {
     LinkedHashMap<String, List<Long>> optionVotes = new LinkedHashMap<>();
     for (String songId : request.options()) {
       optionVotes.put(songId, new ArrayList<>());
@@ -183,7 +181,7 @@ public class DroppingMapper {
 
   public static Dropping toPlaylistDroppingEntity(
       AuthDetails authDetails,
-      PlaylistDroppingCreateRequest request,
+      DroppingCreateRequest request,
       PlaylistDroppingPayload payload) {
     LocalDateTime now = LocalDateTime.now();
     return new Dropping(
@@ -200,7 +198,7 @@ public class DroppingMapper {
   }
 
   public static PlaylistDroppingPayload toPlaylistDroppingPayload(
-      PlaylistDroppingCreateRequest request) {
+      DroppingCreateRequest request) {
     return PlaylistDroppingPayload.builder()
         .playlistName(request.playlistName())
         .songIds(request.songIds())
