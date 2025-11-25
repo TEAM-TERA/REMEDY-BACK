@@ -19,6 +19,8 @@ public record DroppingCreateRequest(
         List<String> options,
 
 		//PLAYLIST
+        String playlistId,
+
         String playlistName,
         List<String> songIds,
 

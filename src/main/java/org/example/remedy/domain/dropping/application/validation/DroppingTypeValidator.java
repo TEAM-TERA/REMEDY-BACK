@@ -46,6 +46,13 @@ public class DroppingTypeValidator implements ConstraintValidator<ValidDroppingT
             isValid = false;
         }
 
+        if (request.playlistId() != null) {
+            context.buildConstraintViolationWithTemplate("MUSIC 타입에는 playlistId를 포함할 수 없습니다")
+                    .addPropertyNode("playlistId")
+                    .addConstraintViolation();
+            isValid = false;
+        }
+
         if (request.playlistName() != null) {
             context.buildConstraintViolationWithTemplate("MUSIC 타입에는 playlistName을 포함할 수 없습니다")
                     .addPropertyNode("playlistName")
@@ -92,6 +99,13 @@ public class DroppingTypeValidator implements ConstraintValidator<ValidDroppingT
             isValid = false;
         }
 
+        if (request.playlistId() != null) {
+            context.buildConstraintViolationWithTemplate("VOTE 타입에는 playlistId를 포함할 수 없습니다")
+                    .addPropertyNode("playlistId")
+                    .addConstraintViolation();
+            isValid = false;
+        }
+
         if (request.playlistName() != null) {
             context.buildConstraintViolationWithTemplate("VOTE 타입에는 playlistName을 포함할 수 없습니다")
                     .addPropertyNode("playlistName")
@@ -112,23 +126,43 @@ public class DroppingTypeValidator implements ConstraintValidator<ValidDroppingT
     private boolean validatePlaylistType(DroppingCreateRequest request, ConstraintValidatorContext context) {
         boolean isValid = true;
 
-        if (request.playlistName() == null || request.playlistName().isBlank()) {
-            context.buildConstraintViolationWithTemplate("PLAYLIST 타입은 playlistName이 필수입니다")
-                    .addPropertyNode("playlistName")
+        // playlistId와 (playlistName + songIds) 중 하나만 있어야 함
+        boolean hasPlaylistId = request.playlistId() != null && !request.playlistId().isBlank();
+        boolean hasNewPlaylist = (request.playlistName() != null && !request.playlistName().isBlank()) ||
+                                  (request.songIds() != null && !request.songIds().isEmpty());
+
+        if (!hasPlaylistId && !hasNewPlaylist) {
+            context.buildConstraintViolationWithTemplate("PLAYLIST 타입은 playlistId 또는 (playlistName + songIds)가 필수입니다")
+                    .addPropertyNode("playlistId")
+                    .addConstraintViolation();
+            isValid = false;
+        } else if (hasPlaylistId && hasNewPlaylist) {
+            context.buildConstraintViolationWithTemplate("PLAYLIST 타입은 playlistId와 (playlistName + songIds)를 동시에 사용할 수 없습니다")
+                    .addPropertyNode("playlistId")
                     .addConstraintViolation();
             isValid = false;
         }
 
-        if (request.songIds() == null || request.songIds().isEmpty()) {
-            context.buildConstraintViolationWithTemplate("PLAYLIST 타입은 songIds가 필수입니다 (최소 1개)")
-                    .addPropertyNode("songIds")
-                    .addConstraintViolation();
-            isValid = false;
-        } else if (request.songIds().size() > 50) {
-            context.buildConstraintViolationWithTemplate("PLAYLIST 타입의 songIds는 최대 50개까지 가능합니다")
-                    .addPropertyNode("songIds")
-                    .addConstraintViolation();
-            isValid = false;
+        // 새 플레이리스트 생성 시 validation
+        if (!hasPlaylistId && hasNewPlaylist) {
+            if (request.playlistName() == null || request.playlistName().isBlank()) {
+                context.buildConstraintViolationWithTemplate("새 플레이리스트 생성 시 playlistName이 필수입니다")
+                        .addPropertyNode("playlistName")
+                        .addConstraintViolation();
+                isValid = false;
+            }
+
+            if (request.songIds() == null || request.songIds().isEmpty()) {
+                context.buildConstraintViolationWithTemplate("새 플레이리스트 생성 시 songIds가 필수입니다 (최소 1개)")
+                        .addPropertyNode("songIds")
+                        .addConstraintViolation();
+                isValid = false;
+            } else if (request.songIds().size() > 50) {
+                context.buildConstraintViolationWithTemplate("PLAYLIST 타입의 songIds는 최대 50개까지 가능합니다")
+                        .addPropertyNode("songIds")
+                        .addConstraintViolation();
+                isValid = false;
+            }
         }
 
         if (request.songId() != null) {

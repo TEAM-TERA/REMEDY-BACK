@@ -2,11 +2,9 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
-import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingResponse;
-import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingResponse;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingTypeException;
+import org.example.remedy.domain.dropping.domain.Dropping;
 import org.example.remedy.global.security.auth.AuthDetails;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +30,14 @@ public class DroppingServiceFacade {
         return droppingQueryService.searchDroppings(longitude, latitude);
     }
 
-    public DroppingFindResponse getDropping(String droppingId) {
-        return droppingQueryService.getDropping(droppingId);
+    public Object getDropping(String droppingId, Long userId) {
+        Dropping dropping = droppingQueryService.getDroppingEntity(droppingId);
+
+        return switch (dropping.getDroppingType()) {
+            case MUSIC -> musicDroppingService.getMusicDropping(droppingId);
+            case VOTE -> voteDroppingService.getVoteDropping(droppingId, userId);
+            case PLAYLIST -> playlistDroppingService.getPlaylistDropping(droppingId);
+        };
     }
 
     public DroppingSearchListResponse getUserDroppings(Long userId) {
@@ -54,13 +58,5 @@ public class DroppingServiceFacade {
 
     public void cancelVote(String droppingId, Long userId) {
         voteDroppingService.cancelVote(droppingId, userId);
-    }
-
-    public VoteDroppingResponse getVoteDropping(String droppingId, Long userId) {
-        return voteDroppingService.getVoteDropping(droppingId, userId);
-    }
-
-    public PlaylistDroppingResponse getPlaylistDropping(String droppingId) {
-        return playlistDroppingService.getPlaylistDropping(droppingId);
     }
 }

@@ -27,8 +27,10 @@ public enum ErrorCode {
     INVALID_DROPPING_TYPE(HttpStatus.BAD_REQUEST, "D7", "투표 드랍이 아닙니다."),
     EMPTY_VOTE_OPTIONS(HttpStatus.BAD_REQUEST, "D8", "투표 옵션이 비어있습니다."),
     EMPTY_PLAYLIST_SONGS(HttpStatus.BAD_REQUEST, "D9", "플레이리스트 드랍의 곡 목록이 비어있습니다."),
+	UNAUTHORIZED_PLAYLIST_ACCESS(HttpStatus.FORBIDDEN, "D10", "다른 사용자의 플레이리스트는 드랍할 수 없습니다."),
 
-    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "S1", "올바르지 않은 입력값입니다."),
+
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "S1", "올바르지 않은 입력값입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "S2", "잘못된 HTTP 메서드를 호출했습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3", "서버 에러가 발생했습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "S4", "존재하지 않는 엔티티입니다."),
@@ -65,7 +67,6 @@ public enum ErrorCode {
     PLAYLIST_ACCESS_DENIED(HttpStatus.FORBIDDEN, "P2", "본인 플레이리스트만 수정/삭제할 수 있습니다."),
     SONG_ALREADY_IN_PLAYLIST(HttpStatus.CONFLICT, "P3", "이미 플레이리스트에 존재하는 곡입니다."),
     SONG_NOT_IN_PLAYLIST(HttpStatus.NOT_FOUND, "P4", "플레이리스트에 존재하지 않는 곡입니다.");
-
 
     private final HttpStatus status;
     private final String code;
