@@ -37,7 +37,7 @@ public class DroppingServiceFacade {
         Dropping dropping = droppingQueryService.getDroppingEntity(droppingId);
 
         return switch (dropping.getDroppingType()) {
-            case MUSIC -> droppingQueryService.getDropping(droppingId);
+            case MUSIC -> musicDroppingService.getMusicDropping(droppingId);
             case VOTE -> voteDroppingService.getVoteDropping(droppingId, userId);
             case PLAYLIST -> playlistDroppingService.getPlaylistDropping(droppingId);
         };
