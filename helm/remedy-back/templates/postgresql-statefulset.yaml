@@ -20,6 +20,29 @@ spec:
         app: {{ .Values.postgresql.name }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.postgresql.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.postgresql.nodeSelector.label }}: {{ .Values.postgresql.nodeSelector.value }}
+      {{- end }}
+      {{- if .Values.postgresql.tolerations.enabled }}
+      tolerations:
+        - key: {{ .Values.postgresql.tolerations.key }}
+          operator: "Equal"
+          value: {{ .Values.postgresql.tolerations.value | quote }}
+          effect: {{ .Values.postgresql.tolerations.effect }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ .Values.postgresql.name }}
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: postgresql
           image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
