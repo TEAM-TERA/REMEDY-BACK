@@ -6,6 +6,7 @@ public record PlaylistLikeDroppingResponse(
         String droppingId,
         DroppingType droppingType,
         String playlistName,
+        String imageUrl,
         String address
 ) {
 }

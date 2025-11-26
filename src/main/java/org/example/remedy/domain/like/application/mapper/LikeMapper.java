@@ -27,23 +27,27 @@ public class LikeMapper {
             dropping.getAddress()));
   }
 
-  public static Optional<VoteLikeDroppingResponse> toVoteLikeResponse(Dropping dropping) {
+  public static Optional<VoteLikeDroppingResponse> toVoteLikeResponse(Dropping dropping, Song song) {
     VoteDroppingPayload payload = dropping.getVotePayload();
+    String imageUrl = song != null ? song.getAlbumImagePath() : null;
     return Optional.of(
         new VoteLikeDroppingResponse(
             dropping.getDroppingId(),
             dropping.getDroppingType(),
             payload.getTopic(),
+            imageUrl,
             dropping.getAddress()));
   }
 
-  public static Optional<PlaylistLikeDroppingResponse> toPlaylistLikeResponse(Dropping dropping) {
+  public static Optional<PlaylistLikeDroppingResponse> toPlaylistLikeResponse(Dropping dropping, Song song) {
     PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
+    String imageUrl = song != null ? song.getAlbumImagePath() : null;
     return Optional.of(
         new PlaylistLikeDroppingResponse(
             dropping.getDroppingId(),
             dropping.getDroppingType(),
             payload.getPlaylistName(),
+            imageUrl,
             dropping.getAddress()));
   }
 }
