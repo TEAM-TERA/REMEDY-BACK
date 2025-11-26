@@ -2,6 +2,7 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.remedy.domain.dropping.application.dto.response.DroppingOwnershipResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
@@ -69,6 +70,12 @@ public class DroppingService {
         }
 
         droppingRepository.softDelete(dropping);
+    }
+
+    public DroppingOwnershipResponse checkOwnership(String droppingId, Long userId) {
+        Dropping dropping = getDroppingEntity(droppingId);
+        boolean isOwner = dropping.getUserId().equals(userId);
+        return new DroppingOwnershipResponse(isOwner);
     }
 
     @Scheduled(cron = "0 * * * * *")
