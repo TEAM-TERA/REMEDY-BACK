@@ -6,6 +6,7 @@ public record VoteLikeDroppingResponse(
         String droppingId,
         DroppingType droppingType,
         String topic,
+        String imageUrl,
         String address
 ) {
 }
