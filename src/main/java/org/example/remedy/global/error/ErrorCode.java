@@ -13,6 +13,8 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "U4", "이미 존재하는 유저입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "U5", "올바르지 않은 비밀번호입니다."),
     USER_WITHDRAWN(HttpStatus.FORBIDDEN, "U6", "탈퇴한 회원입니다."),
+	OAUTH2_USER_CANNOT_USE_PASSWORD_LOGIN(HttpStatus.BAD_REQUEST, "U7", "소셜 로그인으로 가입한 계정입니다. 해당 소셜 로그인을 이용해주세요."),
+	EMAIL_ALREADY_EXISTS_WITH_OAUTH2(HttpStatus.CONFLICT, "U8", "이미 소셜 로그인으로 가입된 이메일입니다. 해당 소셜 로그인을 이용해주세요."),
 
     DROPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "D1", "반경 1미터 이내에 이미 드랍이 존재합니다."),
     DROPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "D2", "삭제되었거나 존재하지 않는 드랍입니다."),
