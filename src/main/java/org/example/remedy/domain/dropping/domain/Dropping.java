@@ -39,7 +39,7 @@ public class Dropping {
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location;
 
-    private Dropping() {}
+    protected Dropping() {}
 
     public Dropping(DroppingType droppingType, Payload payload, Long userId, String content, Double latitude, Double longitude, String address, LocalDateTime expiryDate, LocalDateTime createdAt, boolean isDeleted) {
         this.droppingType = droppingType;
