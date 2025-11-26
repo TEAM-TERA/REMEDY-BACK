@@ -2,14 +2,13 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingOwnershipResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingDeleteRequestException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
-import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.example.remedy.domain.dropping.domain.Dropping;
+import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,14 @@ public class DroppingService {
     private final VoteDroppingService voteDroppingService;
     private final PlaylistDroppingService playlistDroppingService;
 
-    public DroppingSearchListResponse searchDroppings(double longitude, double latitude) {
+    public DroppingSearchListResponse searchDroppings(Long userId, double longitude, double latitude, double distance) {
         List<Dropping> allDroppings = droppingRepository
-                .findActiveDroppingsWithinRadius(longitude, latitude);
+                .findActiveDroppingsWithinRadius(longitude, latitude, distance);
 
-        List<DroppingResponse> droppings = allDroppings.stream()
-                .map(this::convertToResponse)
-                .toList();
+		List<DroppingResponse> droppings = allDroppings.stream()
+			.map(dropping -> convertToResponse(dropping, userId))
+			.toList();
+
         return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
@@ -48,16 +48,17 @@ public class DroppingService {
         List<Dropping> allDroppings = droppingRepository.findByUserId(userId, sort);
 
         List<DroppingResponse> droppings = allDroppings.stream()
-                .map(this::convertToResponse)
+                .map(dropping -> convertToResponse(dropping, userId))
                 .toList();
         return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
-    private DroppingResponse convertToResponse(Dropping dropping) {
+    private DroppingResponse convertToResponse(Dropping dropping, Long userId) {
+		boolean isMyDropping = dropping.isMyDropping(userId);
         return switch (dropping.getDroppingType()) {
-            case MUSIC -> musicDroppingService.createMusicSearchResponse(dropping);
-            case VOTE -> voteDroppingService.createVoteSearchResponse(dropping);
-            case PLAYLIST -> playlistDroppingService.createPlaylistSearchResponse(dropping);
+            case MUSIC -> musicDroppingService.createMusicSearchResponse(dropping, isMyDropping);
+            case VOTE -> voteDroppingService.createVoteSearchResponse(dropping, isMyDropping);
+            case PLAYLIST -> playlistDroppingService.createPlaylistSearchResponse(dropping, isMyDropping);
         };
     }
 
@@ -70,12 +71,6 @@ public class DroppingService {
         }
 
         droppingRepository.softDelete(dropping);
-    }
-
-    public DroppingOwnershipResponse checkOwnership(String droppingId, Long userId) {
-        Dropping dropping = getDroppingEntity(droppingId);
-        boolean isOwner = dropping.getUserId().equals(userId);
-        return new DroppingOwnershipResponse(isOwner);
     }
 
     @Scheduled(cron = "0 * * * * *")

@@ -64,7 +64,7 @@ public class PlaylistDroppingService {
         );
     }
 
-    public PlaylistDroppingSearchResponse createPlaylistSearchResponse(Dropping dropping) {
+    public PlaylistDroppingSearchResponse createPlaylistSearchResponse(Dropping dropping, boolean isMyDropping) {
         PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
 
         String firstAlbumImageUrl = payload.getSongIds().stream()
@@ -73,6 +73,6 @@ public class PlaylistDroppingService {
                 .map(Song::getAlbumImagePath)
                 .orElseThrow(() -> EmptyPlaylistSongsException.EXCEPTION);
 
-        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping, firstAlbumImageUrl);
+        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping, firstAlbumImageUrl, isMyDropping);
     }
 }

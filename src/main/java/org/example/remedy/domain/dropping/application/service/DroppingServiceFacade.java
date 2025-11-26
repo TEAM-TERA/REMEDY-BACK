@@ -2,7 +2,6 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingOwnershipResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingTypeException;
 import org.example.remedy.domain.dropping.domain.Dropping;
@@ -27,8 +26,8 @@ public class DroppingServiceFacade {
         }
     }
 
-    public DroppingSearchListResponse searchDroppings(double longitude, double latitude) {
-        return droppingQueryService.searchDroppings(longitude, latitude);
+    public DroppingSearchListResponse searchDroppings(Long userId, double longitude, double latitude, double distance) {
+        return droppingQueryService.searchDroppings(userId, longitude, latitude, distance);
     }
 
     public Object getDropping(String droppingId, Long userId) {
@@ -59,9 +58,5 @@ public class DroppingServiceFacade {
 
     public void cancelVote(String droppingId, Long userId) {
         voteDroppingService.cancelVote(droppingId, userId);
-    }
-
-    public DroppingOwnershipResponse checkOwnership(String droppingId, Long userId) {
-        return droppingQueryService.checkOwnership(droppingId, userId);
     }
 }

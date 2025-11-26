@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface DroppingRepository {
 
     void createDropping(Dropping dropping);
-    List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude);
+    List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude, double distance);
 
     Optional<Dropping> findById(String id);
     List<Dropping> findByUserId(Long userId, Sort sort);

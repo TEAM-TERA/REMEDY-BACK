@@ -25,22 +25,25 @@ public class DroppingRepositoryImpl implements DroppingRepository {
 
     private final DroppingPersistenceRepository repository;
     private final MongoTemplate mongoTemplate;
+	private final double DROPPING_CONSTRAINT_DISTANCE = 0.001;
 
     public void createDropping(Dropping dropping) {
         AggregationResults<Dropping> results = findDroppingsByAroundRadius(
                 dropping.getLocation().getX(),
                 dropping.getLocation().getY(),
-                0.001);
-        if (results.getMappedResults().isEmpty()){
-            mongoTemplate.insert(dropping);
-        } else {
-            throw DroppingAlreadyExistsException.EXCEPTION;
+				DROPPING_CONSTRAINT_DISTANCE
+		);
+
+        if (!results.getMappedResults().isEmpty()){
+			throw DroppingAlreadyExistsException.EXCEPTION;
         }
+
+		mongoTemplate.insert(dropping);
     }
 
     @Override
-    public List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude) {
-        AggregationResults<Dropping> results = findDroppingsByAroundRadius(longitude, latitude, 0.1);
+    public List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude, double distance) {
+        AggregationResults<Dropping> results = findDroppingsByAroundRadius(longitude, latitude, distance);
         return results.getMappedResults();
     }
 
