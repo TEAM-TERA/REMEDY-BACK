@@ -32,6 +32,11 @@ public class SongRepositoryImpl implements SongRepository {
     }
 
     @Override
+    public List<Song> findAllById(List<String> ids) {
+        return (List<Song>) songPersistenceRepository.findAllById(ids);
+    }
+
+    @Override
     public Song save(Song song) {
         return songPersistenceRepository.save(song);
     }
