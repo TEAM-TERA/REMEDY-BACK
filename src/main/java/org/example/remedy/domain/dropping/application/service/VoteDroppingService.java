@@ -59,7 +59,7 @@ public class VoteDroppingService {
         );
     }
 
-    public VoteDroppingSearchResponse createVoteSearchResponse(Dropping dropping) {
+    public VoteDroppingSearchResponse createVoteSearchResponse(Dropping dropping, boolean isMyDropping) {
         VoteDroppingPayload payload = dropping.getVotePayload();
 
         String firstAlbumImageUrl = payload.getOptionVotes().keySet().stream()
@@ -68,6 +68,6 @@ public class VoteDroppingService {
                 .map(Song::getAlbumImagePath)
                 .orElseThrow(() -> EmptyVoteOptionsException.EXCEPTION);
 
-        return DroppingMapper.toVoteDroppingSearchResponse(dropping, firstAlbumImageUrl);
+        return DroppingMapper.toVoteDroppingSearchResponse(dropping, firstAlbumImageUrl, isMyDropping);
     }
 }
