@@ -1,9 +1,11 @@
 package org.example.remedy.domain.playlist.application.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
 
 public record PlaylistSongAddRequest(
-        @NotBlank(message = "곡 ID는 필수입니다.")
-        String songId
+        @NotEmpty(message = "곡 ID 목록은 필수입니다.")
+        List<String> songIds
 ) {
 }

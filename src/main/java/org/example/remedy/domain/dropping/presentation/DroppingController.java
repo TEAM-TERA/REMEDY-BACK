@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.request.VoteRequest;
+import org.example.remedy.domain.dropping.application.dto.response.DroppingOwnershipResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.service.DroppingServiceFacade;
 import org.example.remedy.global.security.auth.AuthDetails;
@@ -65,6 +66,14 @@ public class DroppingController {
             @AuthenticationPrincipal AuthDetails authDetails) {
         droppingService.cancelVote(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{dropping-id}/ownership")
+    public ResponseEntity<DroppingOwnershipResponse> checkOwnership(
+            @PathVariable(name = "dropping-id") String id,
+            @AuthenticationPrincipal AuthDetails authDetails) {
+        DroppingOwnershipResponse response = droppingService.checkOwnership(id, authDetails.getUserId());
+        return ResponseEntity.ok(response);
     }
 
 }
