@@ -31,8 +31,8 @@ public class DroppingController {
     public ResponseEntity<?> getDropping(
             @PathVariable(name = "dropping-id") String id,
             @AuthenticationPrincipal AuthDetails authDetails) {
-        Object response = droppingService.getDropping(id, authDetails.getUserId());
-        return ResponseEntity.ok(response);
+		Object response = droppingService.getDropping(id, authDetails.getUserId());
+		return ResponseEntity.ok(response);
     }
 
     @GetMapping
