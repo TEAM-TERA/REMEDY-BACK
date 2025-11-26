@@ -12,10 +12,17 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     @Value("${spring.elasticsearch.uris}")
     private String elasticsearchUri;
 
+	@Value("${spring.elasticsearch.username}")
+	private String username;
+
+	@Value("${spring.elasticsearch.password}")
+	private String password;
+
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
                 .connectedTo(elasticsearchUri)
+				.withBasicAuth(username, password)
                 .build();
     }
 }
