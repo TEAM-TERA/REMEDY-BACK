@@ -20,8 +20,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
-        logError(ErrorCode.INVALID_INPUT_VALUE, e);
-        return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE);
+		String errorMessage = e.getFieldError().getDefaultMessage();
+
+        logError(ErrorCode.INVALID_INPUT_VALUE, errorMessage);
+        return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE, errorMessage);
     }
 
     @ExceptionHandler(BusinessBaseException.class)
@@ -44,8 +46,8 @@ public class GlobalExceptionHandler {
 		log.error("[ERROR] : { errorMessage : {}, errorCode : {} }", e.getMessage(), e.getErrorCode());
 	}
 
-	private void logError(ErrorCode errorCode, MethodArgumentNotValidException e) {
-		log.error("[ERROR] : { errorMessage : {}, errorCode : {} }", e.getMessage(), errorCode.getCode());
+	private void logError(ErrorCode errorCode, String errorMessage) {
+		log.error("[ERROR] : { errorMessage : {}, errorCode : {} }", errorMessage, errorCode.getCode());
 	}
 
     private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode) {
@@ -53,4 +55,10 @@ public class GlobalExceptionHandler {
                 ErrorResponse.of(errorCode),
                 errorCode.getStatus());
     }
+
+	private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode, String message) {
+		return new ResponseEntity<>(
+			ErrorResponse.of(errorCode, message),
+			errorCode.getStatus());
+	}
 }
