@@ -11,16 +11,12 @@ public enum ErrorCode {
     EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "U2", "만료된 JWT 토큰입니다."),
     INVALID_JWT(HttpStatus.UNAUTHORIZED, "U3", "올바르지 않은 JWT 토큰입니다."),
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "U4", "이미 존재하는 유저입니다."),
-    REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "U5", "존재하지 않는 RefreshToken입니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "U6", "올바르지 않은 비밀번호입니다."),
-    USER_WITHDRAWN(HttpStatus.FORBIDDEN, "U7", "탈퇴한 회원입니다."),
-    OAUTH2_USER_CANNOT_USE_PASSWORD_LOGIN(HttpStatus.BAD_REQUEST, "U8", "소셜 로그인으로 가입한 계정입니다. 해당 소셜 로그인을 이용해주세요."),
-    EMAIL_ALREADY_EXISTS_WITH_OAUTH2(HttpStatus.CONFLICT, "U9", "이미 소셜 로그인으로 가입된 이메일입니다. 해당 소셜 로그인을 이용해주세요."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "U5", "올바르지 않은 비밀번호입니다."),
+    USER_WITHDRAWN(HttpStatus.FORBIDDEN, "U6", "탈퇴한 회원입니다."),
 
-    DROPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "D1", "반경 5미터 이내에 이미 드랍이 존재합니다."),
+    DROPPING_ALREADY_EXISTS(HttpStatus.CONFLICT, "D1", "반경 1미터 이내에 이미 드랍이 존재합니다."),
     DROPPING_NOT_FOUND(HttpStatus.NOT_FOUND, "D2", "삭제되었거나 존재하지 않는 드랍입니다."),
     SONG_NOT_FOUND(HttpStatus.NOT_FOUND, "D3", "존재하지 않는 노래입니다."),
-    METADATA_NOT_FOUND(HttpStatus.NOT_FOUND, "D4", "유튜브의 메타데이터가 존재하지 않습니다."),
 
     INVALID_DROPPING_DELETE_REQUEST(HttpStatus.BAD_REQUEST, "D5", "다른 사용자가 생성한 드랍핑은 삭제할 수 없습니다."),
     INVALID_VOTE_OPTION(HttpStatus.BAD_REQUEST, "D6", "존재하지 않는 투표 옵션입니다."),
@@ -34,28 +30,6 @@ public enum ErrorCode {
 
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C1", "존재하지 않는 댓글입니다."),
     COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "C2", "본인 댓글만 수정/삭제할 수 있습니다."),
-
-    ACHIEVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "A1", "존재하지 않는 도전과제입니다."),
-    USER_ACHIEVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "A2", "사용자 도전과제 진행 정보를 찾을 수 없습니다."),
-    ACHIEVEMENT_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "A3", "이미 완료된 도전과제입니다."),
-    ACHIEVEMENT_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "A4", "완료되지 않은 도전과제입니다."),
-    REWARD_ALREADY_CLAIMED(HttpStatus.BAD_REQUEST, "A5", "이미 보상을 받은 도전과제입니다."),
-
-    USER_CURRENCY_NOT_FOUND(HttpStatus.NOT_FOUND, "M1", "사용자 재화 정보를 찾을 수 없습니다."),
-    INSUFFICIENT_CURRENCY(HttpStatus.BAD_REQUEST, "M2", "재화가 부족합니다."),
-
-    TITLE_NOT_FOUND(HttpStatus.NOT_FOUND, "T1", "존재하지 않는 칭호입니다."),
-    TITLE_ALREADY_EXISTS(HttpStatus.CONFLICT, "T2", "이미 존재하는 칭호명입니다."),
-    TITLE_NOT_OWNED(HttpStatus.FORBIDDEN, "T3", "보유하지 않은 칭호입니다."),
-    TITLE_ALREADY_OWNED(HttpStatus.BAD_REQUEST, "T4", "이미 보유한 칭호입니다."),
-    TITLE_ALREADY_EQUIPPED(HttpStatus.BAD_REQUEST, "T5", "이미 장착한 칭호입니다."),
-    TITLE_NOT_EQUIPPED(HttpStatus.BAD_REQUEST, "T6", "장착되지 않은 칭호입니다."),
-
-    RUNNING_ALREADY_EXISTS(HttpStatus.CONFLICT, "R1", "이미 해당 노래로 러닝 기록이 존재합니다."),
-    RUNNING_NOT_FOUND(HttpStatus.NOT_FOUND, "R2", "러닝 기록을 찾을 수 없습니다."),
-
-    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "N1", "FCM 토큰을 찾을 수 없습니다."),
-    NOTIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "N2", "알림 전송에 실패했습니다."),
 
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "F1", "파일 업로드에 실패했습니다.");
 

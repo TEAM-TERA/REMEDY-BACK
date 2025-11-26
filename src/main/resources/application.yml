@@ -4,7 +4,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_DDL_AUTO}
     show-sql: true
 
     properties:
@@ -50,4 +50,6 @@ aws:
 
 logging:
   level:
-    web: info
+    org:
+      example:
+        remedy: ERROR
