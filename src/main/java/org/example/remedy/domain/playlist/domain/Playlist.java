@@ -39,6 +39,12 @@ public class Playlist {
         this.songIds.add(songId);
     }
 
+    public void addSongs(List<String> songIds) {
+        songIds.stream()
+                .filter(songId -> !hasSong(songId))
+                .forEach(this.songIds::add);
+    }
+
     public void removeSong(String songId) {
         this.songIds.remove(songId);
     }

@@ -117,15 +117,28 @@ public class PlaylistService {
 
         validatePlaylistOwner(playlist, userId);
 
-        songRepository.findById(request.songId())
-                .orElseThrow(() -> SongNotFoundException.EXCEPTION);
+        List<String> requestedSongIds = request.songIds();
+        validateSongsExist(requestedSongIds);
+        validateNoDuplicateSongs(playlist, requestedSongIds);
 
-        if (playlist.hasSong(request.songId())) {
+        playlist.addSongs(requestedSongIds);
+        playlistRepository.save(playlist);
+    }
+
+    private void validateSongsExist(List<String> songIds) {
+        List<Song> existingSongs = songRepository.findAllById(songIds);
+        if (existingSongs.size() != songIds.size()) {
+            throw SongNotFoundException.EXCEPTION;
+        }
+    }
+
+    private void validateNoDuplicateSongs(Playlist playlist, List<String> songIds) {
+        boolean hasDuplicates = songIds.stream()
+                .anyMatch(playlist::hasSong);
+
+        if (hasDuplicates) {
             throw SongAlreadyInPlaylistException.EXCEPTION;
         }
-
-        playlist.addSong(request.songId());
-        playlistRepository.save(playlist);
     }
 
     public void removeSongFromPlaylist(String playlistId, String songId, Long userId) {
