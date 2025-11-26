@@ -46,6 +46,7 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
+    command: [--auth]
     volumes:
       - mongodb_data:/data/db
     environment:
