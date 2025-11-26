@@ -1,6 +1,7 @@
 package org.example.remedy.domain.auth.presentation;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.auth.application.service.AuthService;
 import org.example.remedy.domain.auth.application.dto.request.AuthLoginRequest;
@@ -17,7 +18,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody AuthRegisterRequest req) {
+    public ResponseEntity<Void> register(@RequestBody @Valid AuthRegisterRequest req) {
         authService.signup(req);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

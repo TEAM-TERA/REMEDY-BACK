@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface SongRepository {
     Optional<Song> findById(String id);
     Iterable<Song> findAll();
+    List<Song> findAllById(List<String> ids);
     Song save(Song song);
     void deleteById(String id);
     List<Song> searchSongs(String query);

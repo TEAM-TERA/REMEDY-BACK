@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.service.DroppingServiceFacade;
-import org.example.remedy.domain.like.application.dto.response.LikeDroppingResponse;
+import org.example.remedy.domain.like.application.dto.response.LikeDroppingListResponse;
 import org.example.remedy.domain.like.application.service.LikeService;
 import org.example.remedy.domain.user.application.dto.request.UserProfileUpdateRequest;
 import org.example.remedy.domain.user.application.dto.response.UserProfileImageResponse;
@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -58,9 +56,9 @@ public class UserController {
     }
 
     @GetMapping("/my-like")
-    public ResponseEntity<List<LikeDroppingResponse>> getLikedDropping(
+    public ResponseEntity<LikeDroppingListResponse> getLikedDropping(
             @AuthenticationPrincipal AuthDetails authDetails) {
-        List<LikeDroppingResponse> likedDroppings = likeService.getLikeDroppingsDetailByUser(authDetails.getUser());
+		LikeDroppingListResponse likedDroppings = likeService.getLikeDroppingsDetailByUser(authDetails.getUser());
         return ResponseEntity.ok(likedDroppings);
     }
 

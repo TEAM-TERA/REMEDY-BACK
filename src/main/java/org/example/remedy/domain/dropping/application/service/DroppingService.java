@@ -2,24 +2,14 @@ package org.example.remedy.domain.dropping.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingFindResponse;
+import org.example.remedy.domain.dropping.application.dto.response.DroppingOwnershipResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
-import org.example.remedy.domain.dropping.application.dto.response.MusicDroppingSearchResponse;
-import org.example.remedy.domain.dropping.application.dto.response.PlaylistDroppingSearchResponse;
-import org.example.remedy.domain.dropping.application.dto.response.VoteDroppingSearchResponse;
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingDeleteRequestException;
 import org.example.remedy.domain.dropping.application.mapper.DroppingMapper;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
-import org.example.remedy.domain.song.application.exception.SongNotFoundException;
-import org.example.remedy.domain.song.repository.SongRepository;
-import org.example.remedy.domain.user.application.exception.UserNotFoundException;
-import org.example.remedy.domain.user.repository.UserRepository;
 import org.example.remedy.domain.dropping.domain.Dropping;
-import org.example.remedy.domain.dropping.domain.DroppingType;
-import org.example.remedy.domain.dropping.domain.MusicDroppingPayload;
-import org.example.remedy.domain.user.domain.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,8 +24,9 @@ import java.util.List;
 public class DroppingService {
 
     private final DroppingRepository droppingRepository;
-    private final SongRepository songRepository;
-    private final UserRepository userRepository;
+    private final MusicDroppingService musicDroppingService;
+    private final VoteDroppingService voteDroppingService;
+    private final PlaylistDroppingService playlistDroppingService;
 
     public DroppingSearchListResponse searchDroppings(double longitude, double latitude) {
         List<Dropping> allDroppings = droppingRepository
@@ -47,22 +38,9 @@ public class DroppingService {
         return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
-    public DroppingFindResponse getDropping(String droppingId) {
-        Dropping dropping = droppingRepository.findById(droppingId)
+    public Dropping getDroppingEntity(String droppingId) {
+        return droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
-        String username = userRepository.findByUserId(dropping.getUserId())
-                .map(User::getUsername)
-                .orElseThrow(() -> UserNotFoundException.EXCEPTION);
-
-        if (dropping.getDroppingType() == DroppingType.MUSIC) {
-            MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
-            String albumImageUrl = songRepository.findById(payload.getSongId())
-                    .orElseThrow(() -> SongNotFoundException.EXCEPTION)
-                    .getAlbumImagePath();
-            return DroppingMapper.toDroppingFindResponse(dropping, payload.getSongId(), username, albumImageUrl);
-        }
-
-        return DroppingMapper.toDroppingFindResponse(dropping, null, username, null);
     }
 
     public DroppingSearchListResponse getUserDroppings(Long userId) {
@@ -77,38 +55,27 @@ public class DroppingService {
 
     private DroppingResponse convertToResponse(Dropping dropping) {
         return switch (dropping.getDroppingType()) {
-            case MUSIC -> createMusicResponse(dropping);
-            case VOTE -> createVoteResponse(dropping);
-            case PLAYLIST -> createPlaylistResponse(dropping);
+            case MUSIC -> musicDroppingService.createMusicSearchResponse(dropping);
+            case VOTE -> voteDroppingService.createVoteSearchResponse(dropping);
+            case PLAYLIST -> playlistDroppingService.createPlaylistSearchResponse(dropping);
         };
-    }
-
-    private MusicDroppingSearchResponse createMusicResponse(Dropping dropping) {
-        MusicDroppingPayload payload = (MusicDroppingPayload) dropping.getPayload();
-        String albumImageUrl = songRepository.findById(payload.getSongId())
-                .orElseThrow(() -> SongNotFoundException.EXCEPTION)
-                .getAlbumImagePath();
-        return DroppingMapper.toMusicDroppingSearchResponse(dropping, albumImageUrl);
-    }
-
-    private VoteDroppingSearchResponse createVoteResponse(Dropping dropping) {
-        return DroppingMapper.toVoteDroppingSearchResponse(dropping);
-    }
-
-    private PlaylistDroppingSearchResponse createPlaylistResponse(Dropping dropping) {
-        return DroppingMapper.toPlaylistDroppingSearchResponse(dropping);
     }
 
     @Transactional
     public void deleteDropping(String droppingId, Long userId) {
-        Dropping dropping = droppingRepository.findById(droppingId)
-                .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
+        Dropping dropping = getDroppingEntity(droppingId);
 
         if (!dropping.getUserId().equals(userId)) {
             throw new InvalidDroppingDeleteRequestException();
         }
 
         droppingRepository.softDelete(dropping);
+    }
+
+    public DroppingOwnershipResponse checkOwnership(String droppingId, Long userId) {
+        Dropping dropping = getDroppingEntity(droppingId);
+        boolean isOwner = dropping.getUserId().equals(userId);
+        return new DroppingOwnershipResponse(isOwner);
     }
 
     @Scheduled(cron = "0 * * * * *")

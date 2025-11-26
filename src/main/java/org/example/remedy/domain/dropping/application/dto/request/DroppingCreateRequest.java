@@ -1,11 +1,28 @@
 package org.example.remedy.domain.dropping.application.dto.request;
 
 import jakarta.validation.constraints.*;
+import org.example.remedy.domain.dropping.application.validation.ValidDroppingType;
+import org.example.remedy.domain.dropping.domain.DroppingType;
 
+import java.util.List;
+
+@ValidDroppingType
 public record DroppingCreateRequest(
-        @NotBlank(message = "노래 ID는 필수입니다")
-        @Size(max = 255, message = "노래 ID는 255자를 초과할 수 없습니다")
+        @NotNull(message = "드랍 타입은 필수입니다")
+        DroppingType type,
+
+		//MUSIC
         String songId,
+
+		//VOTE
+        String topic,
+        List<String> options,
+
+		//PLAYLIST
+        String playlistId,
+
+        String playlistName,
+        List<String> songIds,
 
         @Size(max = 255, message = "내용은 255자를 초과할 수 없습니다")
         String content,
