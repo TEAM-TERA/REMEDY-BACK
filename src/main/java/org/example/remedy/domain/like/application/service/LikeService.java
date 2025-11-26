@@ -3,6 +3,8 @@ package org.example.remedy.domain.like.application.service;
 import lombok.RequiredArgsConstructor;
 
 import org.example.remedy.domain.dropping.application.exception.DroppingNotFoundException;
+import org.example.remedy.domain.dropping.domain.PlaylistDroppingPayload;
+import org.example.remedy.domain.dropping.domain.VoteDroppingPayload;
 import org.example.remedy.domain.dropping.repository.DroppingRepository;
 import org.example.remedy.domain.like.application.dto.response.LikeDroppingListResponse;
 import org.example.remedy.domain.like.application.dto.response.MusicLikeDroppingResponse;
@@ -116,10 +118,30 @@ public class LikeService {
     }
 
     private Optional<VoteLikeDroppingResponse> createVoteLikeResponse(Dropping dropping) {
-        return LikeMapper.toVoteLikeResponse(dropping);
+        VoteDroppingPayload payload = dropping.getVotePayload();
+        String firstSongId = payload.getOptionVotes().keySet().stream()
+                .findFirst()
+                .orElse(null);
+
+        if (firstSongId == null) {
+            return LikeMapper.toVoteLikeResponse(dropping, null);
+        }
+
+        return songRepository.findById(firstSongId)
+                .flatMap(song -> LikeMapper.toVoteLikeResponse(dropping, song));
     }
 
     private Optional<PlaylistLikeDroppingResponse> createPlaylistLikeResponse(Dropping dropping) {
-        return LikeMapper.toPlaylistLikeResponse(dropping);
+        PlaylistDroppingPayload payload = (PlaylistDroppingPayload) dropping.getPayload();
+        String firstSongId = payload.getSongIds().stream()
+                .findFirst()
+                .orElse(null);
+
+        if (firstSongId == null) {
+            return LikeMapper.toPlaylistLikeResponse(dropping, null);
+        }
+
+        return songRepository.findById(firstSongId)
+                .flatMap(song -> LikeMapper.toPlaylistLikeResponse(dropping, song));
     }
 }
