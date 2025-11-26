@@ -14,7 +14,8 @@ public record VoteDroppingSearchResponse(
         Double latitude,
         Double longitude,
         String address,
-        String firstAlbumImageUrl
+        String firstAlbumImageUrl,
+		boolean isMyDropping
 ) implements DroppingResponse {
 
 }

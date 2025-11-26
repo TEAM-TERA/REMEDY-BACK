@@ -13,7 +13,8 @@ public record MusicDroppingSearchResponse(
         Double latitude,
         Double longitude,
         String address,
-        String albumImageUrl
+        String albumImageUrl,
+		boolean isMyDropping
 ) implements DroppingResponse {
 
 }

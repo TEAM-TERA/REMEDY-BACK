@@ -56,11 +56,11 @@ public class MusicDroppingService {
         return DroppingMapper.toMusicDroppingResponse(dropping, payload.getSongId(), username, albumImageUrl);
     }
 
-    public MusicDroppingSearchResponse createMusicSearchResponse(Dropping dropping) {
+    public MusicDroppingSearchResponse createMusicSearchResponse(Dropping dropping, boolean isMyDropping) {
         Song song = songRepository.findById(dropping.getSongId())
                 .orElseThrow(() -> SongNotFoundException.EXCEPTION);
 
-        return DroppingMapper.toMusicDroppingSearchResponse(dropping, song);
+        return DroppingMapper.toMusicDroppingSearchResponse(dropping, song, isMyDropping);
     }
 
     private void publishDroppingCreatedEvent(Long userId, String songId) {

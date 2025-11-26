@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.dto.request.DroppingCreateRequest;
 import org.example.remedy.domain.dropping.application.dto.request.VoteRequest;
-import org.example.remedy.domain.dropping.application.dto.response.DroppingOwnershipResponse;
 import org.example.remedy.domain.dropping.application.dto.response.DroppingSearchListResponse;
 import org.example.remedy.domain.dropping.application.service.DroppingServiceFacade;
 import org.example.remedy.global.security.auth.AuthDetails;
@@ -31,16 +30,19 @@ public class DroppingController {
     public ResponseEntity<?> getDropping(
             @PathVariable(name = "dropping-id") String id,
             @AuthenticationPrincipal AuthDetails authDetails) {
-        Object response = droppingService.getDropping(id, authDetails.getUserId());
-        return ResponseEntity.ok(response);
+		Object response = droppingService.getDropping(id, authDetails.getUserId());
+		return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<DroppingSearchListResponse> searchDroppings(
-            @RequestParam double longitude,
-            @RequestParam double latitude) {
-        DroppingSearchListResponse response = droppingService.searchDroppings(longitude, latitude);
-        return ResponseEntity.ok(response);
+	@ResponseStatus(HttpStatus.OK)
+    public DroppingSearchListResponse searchDroppings(
+		@AuthenticationPrincipal AuthDetails authDetails,
+		@RequestParam double longitude,
+		@RequestParam double latitude,
+		@RequestParam double distance
+	) {
+        return droppingService.searchDroppings(authDetails.getUserId(), longitude, latitude, distance);
     }
 
     @DeleteMapping("/{dropping-id}")
@@ -67,13 +69,4 @@ public class DroppingController {
         droppingService.cancelVote(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/{dropping-id}/ownership")
-    public ResponseEntity<DroppingOwnershipResponse> checkOwnership(
-            @PathVariable(name = "dropping-id") String id,
-            @AuthenticationPrincipal AuthDetails authDetails) {
-        DroppingOwnershipResponse response = droppingService.checkOwnership(id, authDetails.getUserId());
-        return ResponseEntity.ok(response);
-    }
-
 }

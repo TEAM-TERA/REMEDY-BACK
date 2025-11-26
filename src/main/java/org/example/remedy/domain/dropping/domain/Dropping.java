@@ -92,4 +92,8 @@ public class Dropping {
     public boolean isActive() {
         return !isDeleted && !isExpired();
     }
+
+	public boolean isMyDropping(Long userId) {
+		return this.userId.equals(userId);
+	}
 }
