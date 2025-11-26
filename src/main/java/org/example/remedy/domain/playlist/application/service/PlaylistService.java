@@ -16,6 +16,7 @@ import org.example.remedy.domain.playlist.application.mapper.PlaylistMapper;
 import org.example.remedy.domain.playlist.domain.Playlist;
 import org.example.remedy.domain.playlist.repository.PlaylistRepository;
 import org.example.remedy.domain.song.application.dto.response.SongResponse;
+import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.song.application.exception.SongNotFoundException;
 import org.example.remedy.domain.song.application.mapper.SongMapper;
 import org.example.remedy.domain.song.repository.SongRepository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -61,12 +63,33 @@ public class PlaylistService {
 
     public PlaylistListResponse getMyPlaylists(Long userId) {
         List<Playlist> playlists = playlistRepository.findByUserId(userId);
+        Map<String, String> albumImageMap = createAlbumImageMap(playlists);
+        List<PlaylistResponse> responses = convertToResponses(playlists, albumImageMap);
+        return PlaylistMapper.toPlaylistListResponse(responses);
+    }
 
-        List<PlaylistResponse> playlistResponses = playlists.stream()
-                .map(PlaylistMapper::toPlaylistResponse)
-                .collect(Collectors.toList());
+    private Map<String, String> createAlbumImageMap(List<Playlist> playlists) {
+        List<String> firstSongIds = playlists.stream()
+                .flatMap(playlist -> playlist.getSongIdList().stream().limit(1))
+                .distinct()
+                .toList();
 
-        return PlaylistMapper.toPlaylistListResponse(playlistResponses);
+        return songRepository.findAllById(firstSongIds).stream()
+                .collect(Collectors.toMap(Song::getId, Song::getAlbumImagePath));
+    }
+
+    private List<PlaylistResponse> convertToResponses(List<Playlist> playlists, Map<String, String> albumImageMap) {
+        return playlists.stream()
+                .map(playlist -> createPlaylistResponse(playlist, albumImageMap))
+                .toList();
+    }
+
+    private PlaylistResponse createPlaylistResponse(Playlist playlist, Map<String, String> albumImageMap) {
+        String albumImageUrl = null;
+        if (!playlist.getSongIdList().isEmpty()) {
+            albumImageUrl = albumImageMap.get(playlist.getSongIdList().getFirst());
+        }
+        return PlaylistMapper.toPlaylistResponse(playlist, albumImageUrl);
     }
 
     public void updatePlaylist(String playlistId, Long userId, PlaylistUpdateRequest request) {

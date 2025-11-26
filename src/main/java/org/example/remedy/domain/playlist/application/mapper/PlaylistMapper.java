@@ -15,10 +15,11 @@ public class PlaylistMapper {
         return new Playlist(request.name(), userId);
     }
 
-    public static PlaylistResponse toPlaylistResponse(Playlist playlist) {
+    public static PlaylistResponse toPlaylistResponse(Playlist playlist, String albumImageUrl) {
         return new PlaylistResponse(
                 playlist.getId(),
-                playlist.getName()
+                playlist.getName(),
+                albumImageUrl
         );
     }
 
