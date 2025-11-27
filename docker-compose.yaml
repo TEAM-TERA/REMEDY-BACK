@@ -61,6 +61,8 @@ services:
     container_name: postgresql
     volumes:
       - postgresql_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
