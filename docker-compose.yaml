@@ -69,7 +69,6 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=true
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - "ES_JAVA_OPTS=${ES_JAVA_OPTS}"
     ports:
       - "9200:9200"
       - "9300:9300"
