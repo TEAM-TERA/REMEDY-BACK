@@ -40,21 +40,6 @@ services:
     networks:
       - remedy-network
 
-  mongodb:
-    image: mongo:8.0
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    command: [--auth]
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_DB}
-    networks:
-      - remedy-network
-
   postgresql:
     image: postgres:17
     container_name: postgresql
@@ -98,8 +83,6 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:
-    driver: local
   postgresql_data:
     driver: local
   redis_data:

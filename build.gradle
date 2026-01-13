@@ -31,9 +31,6 @@ dependencies {
     //Hypersistence Utils
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
 
-	// MONGO
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-
 	// REDIS
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
