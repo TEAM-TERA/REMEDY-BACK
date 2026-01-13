@@ -33,7 +33,7 @@ public class PlaylistDroppingService {
     public void createPlaylistDropping(AuthDetails authDetails, DroppingCreateRequest request) {
         PlaylistDroppingPayload payload;
 
-        if (request.playlistId() != null && !request.playlistId().isBlank()) {
+        if (request.playlistId() != null) {
 
             Playlist playlist = playlistRepository.findById(request.playlistId())
                     .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);

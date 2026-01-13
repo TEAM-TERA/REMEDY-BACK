@@ -48,7 +48,7 @@ public class PlaylistService {
         playlistRepository.save(playlist);
     }
 
-    public PlaylistDetailResponse getPlaylist(String playlistId) {
+    public PlaylistDetailResponse getPlaylist(Long playlistId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -92,7 +92,7 @@ public class PlaylistService {
         return PlaylistMapper.toPlaylistResponse(playlist, albumImageUrl);
     }
 
-    public void updatePlaylist(String playlistId, Long userId, PlaylistUpdateRequest request) {
+    public void updatePlaylist(Long playlistId, Long userId, PlaylistUpdateRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -102,7 +102,7 @@ public class PlaylistService {
         playlistRepository.save(playlist);
     }
 
-    public void deletePlaylist(String playlistId, Long userId) {
+    public void deletePlaylist(Long playlistId, Long userId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -111,7 +111,7 @@ public class PlaylistService {
         playlistRepository.delete(playlist);
     }
 
-    public void addSongToPlaylist(String playlistId, Long userId, PlaylistSongAddRequest request) {
+    public void addSongToPlaylist(Long playlistId, Long userId, PlaylistSongAddRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 
@@ -141,7 +141,7 @@ public class PlaylistService {
         }
     }
 
-    public void removeSongFromPlaylist(String playlistId, String songId, Long userId) {
+    public void removeSongFromPlaylist(Long playlistId, String songId, Long userId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> PlaylistNotFoundException.EXCEPTION);
 

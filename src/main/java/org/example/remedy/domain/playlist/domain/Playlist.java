@@ -1,25 +1,33 @@
 package org.example.remedy.domain.playlist.domain;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "playlists")
+@Entity
+@Table(name = "playlists")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Playlist {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "playlist_id")
+    private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Type(JsonBinaryType.class)
+    @Column(name = "song_ids", columnDefinition = "jsonb")
     private List<String> songIds;
 
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     public Playlist(String name, Long userId) {

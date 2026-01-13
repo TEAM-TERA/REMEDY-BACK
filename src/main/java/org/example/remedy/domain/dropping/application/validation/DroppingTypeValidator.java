@@ -127,7 +127,7 @@ public class DroppingTypeValidator implements ConstraintValidator<ValidDroppingT
         boolean isValid = true;
 
         // playlistId와 (playlistName + songIds) 중 하나만 있어야 함
-        boolean hasPlaylistId = request.playlistId() != null && !request.playlistId().isBlank();
+        boolean hasPlaylistId = request.playlistId() != null;
         boolean hasNewPlaylist = (request.playlistName() != null && !request.playlistName().isBlank()) ||
                                   (request.songIds() != null && !request.songIds().isEmpty());
 
