@@ -15,7 +15,7 @@ public class LikeRepositoryImpl implements LikeRepository {
     private final LikePersistenceRepository likePersistenceRepository;
 
     @Override
-    public Optional<Like> findByUserAndDroppingId(User user, String droppingId) {
+    public Optional<Like> findByUserAndDroppingId(User user, Long droppingId) {
         return likePersistenceRepository.findByUserAndDroppingId(user, droppingId);
     }
 
@@ -25,7 +25,7 @@ public class LikeRepositoryImpl implements LikeRepository {
     }
 
     @Override
-    public long countByDroppingId(String droppingId) {
+    public long countByDroppingId(Long droppingId) {
         return likePersistenceRepository.countByDroppingId(droppingId);
     }
 

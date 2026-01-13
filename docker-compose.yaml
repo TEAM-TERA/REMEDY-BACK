@@ -5,11 +5,11 @@ services:
     env_file:
       - .env
     depends_on:
-      mongodb:
-        condition: service_started
       postgresql:
         condition: service_started
       redis:
+        condition: service_started
+      elasticsearch:
         condition: service_started
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
@@ -24,10 +24,9 @@ services:
 
       - SPRING_JPA_DDL_AUTO=${SPRING_JPA_DDL_AUTO}
 
-      # MongoDB 설정
-      - MONGO_DB_URI=${MONGO_DB_URI}
-
       - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
+      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
 
       - REDIS_URL=${REDIS_URL}
 
@@ -78,6 +77,22 @@ services:
     networks:
       - remedy-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=${ES_JAVA_OPTS}"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - remedy-network
+
 networks:
   remedy-network:
     driver: bridge
@@ -88,4 +103,6 @@ volumes:
   postgresql_data:
     driver: local
   redis_data:
+    driver: local
+  elasticsearch_data:
     driver: local

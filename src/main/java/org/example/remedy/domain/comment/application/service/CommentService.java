@@ -30,7 +30,8 @@ public class CommentService {
     @Transactional
     public void createComment(String content, User user, String droppingId) {
 
-        Dropping dropping = droppingRepository.findById(droppingId)
+        Long droppingIdValue = parseDroppingId(droppingId);
+        Dropping dropping = droppingRepository.findById(droppingIdValue)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 
         Comment comment = CommentMapper.toEntity(content, user, droppingId);
@@ -63,7 +64,8 @@ public class CommentService {
 
         List<Comment> comments = commentRepository.findAllByDroppingIdDesc(droppingId);
 
-        if (comments.isEmpty() && !droppingRepository.existsById(droppingId)) {
+        Long droppingIdValue = parseDroppingId(droppingId);
+        if (comments.isEmpty() && !droppingRepository.existsById(droppingIdValue)) {
             throw DroppingNotFoundException.EXCEPTION;
         }
 
@@ -105,10 +107,19 @@ public class CommentService {
     @Transactional(readOnly = true)
     public long countByDroppingId(String droppingId) {
 
-        if (!droppingRepository.existsById(droppingId)) {
+        Long droppingIdValue = parseDroppingId(droppingId);
+        if (!droppingRepository.existsById(droppingIdValue)) {
             throw DroppingNotFoundException.EXCEPTION;
         }
 
         return commentRepository.countByDroppingId(droppingId);
+    }
+
+    private Long parseDroppingId(String droppingId) {
+        try {
+            return Long.valueOf(droppingId);
+        } catch (NumberFormatException ex) {
+            throw DroppingNotFoundException.EXCEPTION;
+        }
     }
 }

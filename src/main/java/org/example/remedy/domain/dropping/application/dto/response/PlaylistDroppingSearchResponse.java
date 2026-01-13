@@ -6,7 +6,7 @@ import java.util.List;
 
 public record PlaylistDroppingSearchResponse(
         DroppingType type,
-        String droppingId,
+        Long droppingId,
         Long userId,
         String playlistName,
         List<String> songIds,

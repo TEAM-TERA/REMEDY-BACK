@@ -12,11 +12,11 @@ public interface DroppingRepository {
     void createDropping(Dropping dropping);
     List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude, double distance);
 
-    Optional<Dropping> findById(String id);
+    Optional<Dropping> findById(Long id);
     List<Dropping> findByUserId(Long userId, Sort sort);
     List<Dropping> findExpiredAndNotDeletedDroppings(LocalDateTime now);
 
-    void deleteById(String id);
+    void deleteById(Long id);
 
     void save(Dropping dropping);
 
@@ -24,5 +24,5 @@ public interface DroppingRepository {
 
     void saveAll(List<Dropping> droppings);
 
-    boolean existsById(String id);
+    boolean existsById(Long id);
 }

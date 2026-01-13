@@ -6,7 +6,7 @@ import java.util.List;
 
 public record VoteDroppingSearchResponse(
         DroppingType type,
-        String droppingId,
+        Long droppingId,
         Long userId,
         String topic,
         List<String> options,

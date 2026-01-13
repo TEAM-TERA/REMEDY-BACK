@@ -4,7 +4,7 @@ import org.example.remedy.domain.dropping.domain.DroppingType;
 
 public record MusicDroppingSearchResponse(
         DroppingType type,
-        String droppingId,
+        Long droppingId,
         Long userId,
         String songId,
         String title,

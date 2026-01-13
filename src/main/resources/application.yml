@@ -6,9 +6,11 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_DDL_AUTO}
     show-sql: true
+    open-in-view: false
 
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         default_batch_fetch_size: 500
 
@@ -19,10 +21,6 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   data:
-    mongodb:
-      uri: ${MONGO_DB_URI}
-      auto-index-creation: true
-
     redis:
       url: ${REDIS_URL}
 

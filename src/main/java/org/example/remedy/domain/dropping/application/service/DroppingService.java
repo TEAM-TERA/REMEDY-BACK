@@ -38,7 +38,7 @@ public class DroppingService {
         return DroppingMapper.toDroppingSearchListResponse(droppings);
     }
 
-    public Dropping getDroppingEntity(String droppingId) {
+    public Dropping getDroppingEntity(Long droppingId) {
         return droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
     }
@@ -63,7 +63,7 @@ public class DroppingService {
     }
 
     @Transactional
-    public void deleteDropping(String droppingId, Long userId) {
+    public void deleteDropping(Long droppingId, Long userId) {
         Dropping dropping = getDroppingEntity(droppingId);
 
         if (!dropping.getUserId().equals(userId)) {

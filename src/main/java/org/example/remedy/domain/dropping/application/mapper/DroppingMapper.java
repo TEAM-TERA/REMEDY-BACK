@@ -26,7 +26,7 @@ public class DroppingMapper {
   public static MusicDroppingResponse toMusicDroppingResponse(
       Dropping dropping, String songId, String username, String albumImageUrl) {
     return new MusicDroppingResponse(
-        dropping.getDroppingId(),
+        dropping.getId(),
         songId,
         dropping.getUserId(),
         username,
@@ -42,7 +42,7 @@ public class DroppingMapper {
 
     return new MusicDroppingSearchResponse(
         DroppingType.MUSIC,
-        dropping.getDroppingId(),
+        dropping.getId(),
         dropping.getUserId(),
         payload.getSongId(),
         song.getTitle(),
@@ -61,7 +61,7 @@ public class DroppingMapper {
 
 	return new VoteDroppingSearchResponse(
         DroppingType.VOTE,
-        dropping.getDroppingId(),
+        dropping.getId(),
         dropping.getUserId(),
         payload.getTopic(),
         List.copyOf(payload.getOptionVotes().keySet()),
@@ -78,7 +78,7 @@ public class DroppingMapper {
 
     return new PlaylistDroppingSearchResponse(
         DroppingType.PLAYLIST,
-        dropping.getDroppingId(),
+        dropping.getId(),
         dropping.getUserId(),
         payload.getPlaylistName(),
         payload.getSongIds(),
@@ -119,7 +119,7 @@ public class DroppingMapper {
         VoteCalculator.calculate(payload, currentUserId, songFinder);
 
     return new VoteDroppingResponse(
-        dropping.getDroppingId(),
+        dropping.getId(),
         dropping.getUserId(),
         payload.getTopic(),
         calc.options(),
@@ -172,7 +172,7 @@ public class DroppingMapper {
             .toList();
 
     return new PlaylistDroppingResponse(
-        dropping.getDroppingId(),
+        dropping.getId(),
         dropping.getUserId(),
         payload.getPlaylistName(),
         songs,

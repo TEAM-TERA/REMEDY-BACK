@@ -54,7 +54,7 @@ public class PlaylistDroppingService {
         droppingRepository.createDropping(dropping);
     }
 
-    public PlaylistDroppingResponse getPlaylistDropping(String droppingId) {
+    public PlaylistDroppingResponse getPlaylistDropping(Long droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         return DroppingMapper.toPlaylistDroppingResponse(

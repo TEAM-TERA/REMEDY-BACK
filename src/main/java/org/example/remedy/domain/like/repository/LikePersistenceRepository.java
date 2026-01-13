@@ -10,11 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface LikePersistenceRepository extends JpaRepository<Like, Long> {
-    Optional<Like> findByUserAndDroppingId(User user, String droppingId);
+    Optional<Like> findByUserAndDroppingId(User user, Long droppingId);
 
     long countByUser(User user);
 
-    long countByDroppingId(String droppingId);
+    long countByDroppingId(Long droppingId);
 
     List<Like> findByUser(User user);
 

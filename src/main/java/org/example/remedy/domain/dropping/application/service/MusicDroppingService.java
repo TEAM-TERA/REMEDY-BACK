@@ -40,7 +40,7 @@ public class MusicDroppingService {
         publishDroppingCreatedEvent(authDetails.getUserId(), payload.getSongId());
     }
 
-    public MusicDroppingResponse getMusicDropping(String droppingId) {
+    public MusicDroppingResponse getMusicDropping(Long droppingId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
 

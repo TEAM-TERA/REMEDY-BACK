@@ -33,5 +33,5 @@ public class LikeCreatedEvent {
     /**
      * 좋아요가 눌린 Dropping ID
      */
-    private String droppingId;
+    private Long droppingId;
 }
