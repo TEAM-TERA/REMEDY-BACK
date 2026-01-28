@@ -33,7 +33,7 @@ public class VoteDroppingService {
     }
 
     @Transactional
-    public void vote(String droppingId, Long userId, String songId) {
+    public void vote(Long droppingId, Long userId, String songId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         dropping.vote(userId, songId);
@@ -41,14 +41,14 @@ public class VoteDroppingService {
     }
 
     @Transactional
-    public void cancelVote(String droppingId, Long userId) {
+    public void cancelVote(Long droppingId, Long userId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         dropping.cancelVote(userId);
         droppingRepository.save(dropping);
     }
 
-    public VoteDroppingResponse getVoteDropping(String droppingId, Long userId) {
+    public VoteDroppingResponse getVoteDropping(Long droppingId, Long userId) {
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
         return DroppingMapper.toVoteDroppingResponse(

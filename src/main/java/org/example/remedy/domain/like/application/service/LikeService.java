@@ -33,7 +33,7 @@ public class LikeService {
     private final GlobalEventPublisher eventPublisher;
 
     @Transactional
-    public boolean toggleLike(User user, String droppingId) {
+    public boolean toggleLike(User user, Long droppingId) {
 
         Dropping dropping = droppingRepository.findById(droppingId)
                 .orElseThrow(() -> DroppingNotFoundException.EXCEPTION);
@@ -54,7 +54,7 @@ public class LikeService {
 
     }
 
-    private void publishLikeCreatedEvent(User liker, Dropping dropping, String droppingId) {
+    private void publishLikeCreatedEvent(User liker, Dropping dropping, Long droppingId) {
         // 자기 자신의 Dropping에 좋아요를 누른 경우 알림을 보내지 않음
         if (liker.getUserId().equals(dropping.getUserId())) {
             return;
@@ -78,7 +78,7 @@ public class LikeService {
     }
 
     @Transactional(readOnly = true)
-    public long getLikeCountByDropping(String droppingId) {
+    public long getLikeCountByDropping(Long droppingId) {
 
         if (!droppingRepository.existsById(droppingId)) {
             throw DroppingNotFoundException.EXCEPTION;
@@ -98,7 +98,7 @@ public class LikeService {
         return new LikeDroppingListResponse(droppings);
     }
 
-    private Optional<Object> convertToLikeDroppingResponse(String droppingId) {
+    private Optional<Object> convertToLikeDroppingResponse(Long droppingId) {
         return droppingRepository.findById(droppingId)
                 .filter(Dropping::isActive)
                 .flatMap(this::createLikeResponse);

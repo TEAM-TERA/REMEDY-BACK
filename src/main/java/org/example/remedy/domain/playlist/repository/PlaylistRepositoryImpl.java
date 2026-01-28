@@ -19,7 +19,7 @@ public class PlaylistRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public Optional<Playlist> findById(String id) {
+    public Optional<Playlist> findById(Long id) {
         return playlistPersistenceRepository.findById(id);
     }
 

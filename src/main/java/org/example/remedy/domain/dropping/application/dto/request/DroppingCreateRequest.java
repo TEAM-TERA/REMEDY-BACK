@@ -19,7 +19,7 @@ public record DroppingCreateRequest(
         List<String> options,
 
 		//PLAYLIST
-        String playlistId,
+        Long playlistId,
 
         String playlistName,
         List<String> songIds,

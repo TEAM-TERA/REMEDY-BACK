@@ -12,14 +12,14 @@ import org.example.remedy.domain.song.domain.Song;
 import org.example.remedy.domain.user.domain.User;
 
 public class LikeMapper {
-  public static Like toEntity(User user, String droppingId) {
+  public static Like toEntity(User user, Long droppingId) {
     return new Like(user, droppingId);
   }
 
   public static Optional<MusicLikeDroppingResponse> toMusicLikeResponse(Dropping dropping, Song song) {
     return Optional.of(
         new MusicLikeDroppingResponse(
-            dropping.getDroppingId(),
+            dropping.getId(),
             dropping.getDroppingType(),
             song.getTitle(),
             song.getArtist(),
@@ -32,7 +32,7 @@ public class LikeMapper {
     String imageUrl = song != null ? song.getAlbumImagePath() : null;
     return Optional.of(
         new VoteLikeDroppingResponse(
-            dropping.getDroppingId(),
+            dropping.getId(),
             dropping.getDroppingType(),
             payload.getTopic(),
             imageUrl,
@@ -44,7 +44,7 @@ public class LikeMapper {
     String imageUrl = song != null ? song.getAlbumImagePath() : null;
     return Optional.of(
         new PlaylistLikeDroppingResponse(
-            dropping.getDroppingId(),
+            dropping.getId(),
             dropping.getDroppingType(),
             payload.getPlaylistName(),
             imageUrl,

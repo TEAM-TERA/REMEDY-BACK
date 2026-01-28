@@ -28,7 +28,7 @@ public class DroppingController {
 
     @GetMapping("/{dropping-id}")
     public ResponseEntity<?> getDropping(
-            @PathVariable(name = "dropping-id") String id,
+            @PathVariable(name = "dropping-id") Long id,
             @AuthenticationPrincipal AuthDetails authDetails) {
 		Object response = droppingService.getDropping(id, authDetails.getUserId());
 		return ResponseEntity.ok(response);
@@ -47,7 +47,7 @@ public class DroppingController {
 
     @DeleteMapping("/{dropping-id}")
     public ResponseEntity<Void> deleteDropping(
-            @PathVariable(name = "dropping-id") String id,
+            @PathVariable(name = "dropping-id") Long id,
             @AuthenticationPrincipal AuthDetails authDetails) {
         droppingService.deleteDropping(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();
@@ -55,7 +55,7 @@ public class DroppingController {
 
     @PostMapping("/{dropping-id}/vote")
     public ResponseEntity<Void> vote(
-            @PathVariable(name = "dropping-id") String id,
+            @PathVariable(name = "dropping-id") Long id,
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody VoteRequest request) {
         droppingService.vote(id, authDetails.getUserId(), request.songId());
@@ -64,7 +64,7 @@ public class DroppingController {
 
     @DeleteMapping("/{dropping-id}/vote")
     public ResponseEntity<Void> cancelVote(
-            @PathVariable(name = "dropping-id") String id,
+            @PathVariable(name = "dropping-id") Long id,
             @AuthenticationPrincipal AuthDetails authDetails) {
         droppingService.cancelVote(id, authDetails.getUserId());
         return ResponseEntity.noContent().build();

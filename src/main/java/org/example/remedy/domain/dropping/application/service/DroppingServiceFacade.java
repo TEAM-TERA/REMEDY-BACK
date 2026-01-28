@@ -30,7 +30,7 @@ public class DroppingServiceFacade {
         return droppingQueryService.searchDroppings(userId, longitude, latitude, distance);
     }
 
-    public Object getDropping(String droppingId, Long userId) {
+    public Object getDropping(Long droppingId, Long userId) {
         Dropping dropping = droppingQueryService.getDroppingEntity(droppingId);
 
         return switch (dropping.getDroppingType()) {
@@ -44,7 +44,7 @@ public class DroppingServiceFacade {
         return droppingQueryService.getUserDroppings(userId);
     }
 
-    public void deleteDropping(String droppingId, Long userId) {
+    public void deleteDropping(Long droppingId, Long userId) {
         droppingQueryService.deleteDropping(droppingId, userId);
     }
 
@@ -52,11 +52,11 @@ public class DroppingServiceFacade {
         droppingQueryService.cleanupExpiredDroppings();
     }
 
-    public void vote(String droppingId, Long userId, String songId) {
+    public void vote(Long droppingId, Long userId, String songId) {
         voteDroppingService.vote(droppingId, userId, songId);
     }
 
-    public void cancelVote(String droppingId, Long userId) {
+    public void cancelVote(Long droppingId, Long userId) {
         voteDroppingService.cancelVote(droppingId, userId);
     }
 }

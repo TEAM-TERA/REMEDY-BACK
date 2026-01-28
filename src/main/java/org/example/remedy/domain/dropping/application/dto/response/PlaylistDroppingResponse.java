@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record PlaylistDroppingResponse(
-        String droppingId,
+        Long droppingId,
         Long userId,
         String playlistName,
         List<SongInfo> songs,

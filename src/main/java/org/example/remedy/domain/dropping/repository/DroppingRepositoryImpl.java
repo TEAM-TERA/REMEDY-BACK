@@ -1,18 +1,11 @@
 package org.example.remedy.domain.dropping.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.example.remedy.domain.dropping.application.exception.DroppingAlreadyExistsException;
 import org.example.remedy.domain.dropping.domain.Dropping;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.NearQuery;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -24,31 +17,33 @@ import java.util.Optional;
 public class DroppingRepositoryImpl implements DroppingRepository {
 
     private final DroppingPersistenceRepository repository;
-    private final MongoTemplate mongoTemplate;
-	private final double DROPPING_CONSTRAINT_DISTANCE = 0.001;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    private static final double DROPPING_CONSTRAINT_DISTANCE = 0.001;
 
     public void createDropping(Dropping dropping) {
-        AggregationResults<Dropping> results = findDroppingsByAroundRadius(
-                dropping.getLocation().getX(),
-                dropping.getLocation().getY(),
-				DROPPING_CONSTRAINT_DISTANCE
-		);
+        List<Dropping> nearbyDroppings = findDroppingsByAroundRadius(
+                dropping.getLongitude(),
+                dropping.getLatitude(),
+                DROPPING_CONSTRAINT_DISTANCE
+        );
 
-        if (!results.getMappedResults().isEmpty()){
-			throw DroppingAlreadyExistsException.EXCEPTION;
+        if (!nearbyDroppings.isEmpty()) {
+            throw DroppingAlreadyExistsException.EXCEPTION;
         }
 
-		mongoTemplate.insert(dropping);
+        repository.save(dropping);
     }
 
     @Override
     public List<Dropping> findActiveDroppingsWithinRadius(double longitude, double latitude, double distance) {
-        AggregationResults<Dropping> results = findDroppingsByAroundRadius(longitude, latitude, distance);
-        return results.getMappedResults();
+        return findDroppingsByAroundRadius(longitude, latitude, distance);
     }
 
     @Override
-    public Optional<Dropping> findById(String id) {
+    public Optional<Dropping> findById(Long id) {
         return repository.findById(id);
     }
 
@@ -69,7 +64,7 @@ public class DroppingRepositoryImpl implements DroppingRepository {
     }
 
     @Override
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
         repository.deleteById(id);
     }
 
@@ -84,25 +79,40 @@ public class DroppingRepositoryImpl implements DroppingRepository {
     }
 
     @Override
-    public boolean existsById(String id) {
+    public boolean existsById(Long id) {
         return repository.existsById(id);
     }
 
-    private AggregationResults<Dropping> findDroppingsByAroundRadius(double longitude, double latitude, double distance) {
-        Point location = new Point(longitude, latitude);
-        Distance radius = new Distance(distance, Metrics.KILOMETERS);
+    /**
+     * 하버사인 공식을 사용한 위치 기반 검색
+     * PostgreSQL의 경우 PostGIS 확장을 사용하면 더 효율적이지만,
+     * 기본 SQL로도 구현 가능
+     */
+    private List<Dropping> findDroppingsByAroundRadius(double longitude, double latitude, double distance) {
+        // 대략적인 위도/경도 범위 계산 (1도 ≈ 111km)
+        double latOffset = distance / 111.0;
+        double lonOffset = distance / (111.0 * Math.cos(Math.toRadians(latitude)));
 
-        NearQuery nearQuery = NearQuery.near(location)
-                .maxDistance(radius)
-                .spherical(true)
-                .query(Query.query(Criteria.where("isDeleted").is(false)
-                        .and("expiryDate").gt(LocalDateTime.now())));
+        double minLat = latitude - latOffset;
+        double maxLat = latitude + latOffset;
+        double minLon = longitude - lonOffset;
+        double maxLon = longitude + lonOffset;
 
-        Aggregation agg = Aggregation.newAggregation(
-                Aggregation.geoNear(nearQuery, "distance"),
-                Aggregation.project("userId", "droppingType", "payload", "content", "location", "distance", "latitude", "longitude", "address", "expiryDate", "createdAt", "isDeleted")
-        );
+        // JPQL을 사용한 범위 검색
+        String jpql = """
+            SELECT d FROM Dropping d
+            WHERE d.isDeleted = false
+            AND d.expiryDate > :now
+            AND d.latitude BETWEEN :minLat AND :maxLat
+            AND d.longitude BETWEEN :minLon AND :maxLon
+            """;
 
-        return mongoTemplate.aggregate(agg, "droppings", Dropping.class);
+        return entityManager.createQuery(jpql, Dropping.class)
+                .setParameter("now", LocalDateTime.now())
+                .setParameter("minLat", minLat)
+                .setParameter("maxLat", maxLat)
+                .setParameter("minLon", minLon)
+                .setParameter("maxLon", maxLon)
+                .getResultList();
     }
 }

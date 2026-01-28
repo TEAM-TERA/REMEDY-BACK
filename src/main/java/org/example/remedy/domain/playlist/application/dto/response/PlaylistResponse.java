@@ -1,7 +1,7 @@
 package org.example.remedy.domain.playlist.application.dto.response;
 
 public record PlaylistResponse(
-        String id,
+        Long id,
         String name,
         String albumImageUrl
 ) {

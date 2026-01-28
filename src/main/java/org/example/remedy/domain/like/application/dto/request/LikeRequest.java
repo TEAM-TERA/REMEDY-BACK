@@ -1,7 +1,7 @@
 package org.example.remedy.domain.like.application.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record LikeRequest(
-        @NotBlank String droppingId
+        @NotNull Long droppingId
 ){}

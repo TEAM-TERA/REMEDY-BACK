@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record VoteDroppingResponse(
-        String droppingId,
+        Long droppingId,
         Long userId,
         String topic,
         List<VoteOptionInfo> options,

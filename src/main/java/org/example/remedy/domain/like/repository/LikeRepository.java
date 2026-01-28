@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface LikeRepository {
 
-    Optional<Like> findByUserAndDroppingId(User user, String droppingId);
+    Optional<Like> findByUserAndDroppingId(User user, Long droppingId);
     long countByUser(User user);
-    long countByDroppingId(String droppingId);
+    long countByDroppingId(Long droppingId);
     void save(Like like);
     void delete(Like like);
     List<Like> findByUser(User user);

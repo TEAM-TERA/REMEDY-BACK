@@ -5,7 +5,7 @@ import org.example.remedy.domain.dropping.domain.DroppingType;
 
 public interface DroppingResponse {
     DroppingType type();
-    String droppingId();
+    Long droppingId();
     Long userId();
     Double latitude();
     Double longitude();

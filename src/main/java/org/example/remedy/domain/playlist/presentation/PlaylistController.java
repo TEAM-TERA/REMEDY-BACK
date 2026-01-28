@@ -31,7 +31,7 @@ public class PlaylistController {
 
     @GetMapping("/{playlist-id}")
     public ResponseEntity<PlaylistDetailResponse> getPlaylist(
-            @PathVariable(name = "playlist-id") String playlistId) {
+            @PathVariable(name = "playlist-id") Long playlistId) {
         PlaylistDetailResponse response = playlistService.getPlaylist(playlistId);
         return ResponseEntity.ok(response);
     }
@@ -45,7 +45,7 @@ public class PlaylistController {
 
     @PutMapping("/{playlist-id}")
     public ResponseEntity<Void> updatePlaylist(
-            @PathVariable(name = "playlist-id") String playlistId,
+            @PathVariable(name = "playlist-id") Long playlistId,
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody PlaylistUpdateRequest request) {
         playlistService.updatePlaylist(playlistId, authDetails.getUserId(), request);
@@ -54,7 +54,7 @@ public class PlaylistController {
 
     @DeleteMapping("/{playlist-id}")
     public ResponseEntity<Void> deletePlaylist(
-            @PathVariable(name = "playlist-id") String playlistId,
+            @PathVariable(name = "playlist-id") Long playlistId,
             @AuthenticationPrincipal AuthDetails authDetails) {
         playlistService.deletePlaylist(playlistId, authDetails.getUserId());
         return ResponseEntity.noContent().build();
@@ -62,7 +62,7 @@ public class PlaylistController {
 
     @PostMapping("/{playlist-id}/songs")
     public ResponseEntity<Void> addSongToPlaylist(
-            @PathVariable(name = "playlist-id") String playlistId,
+            @PathVariable(name = "playlist-id") Long playlistId,
             @AuthenticationPrincipal AuthDetails authDetails,
             @Valid @RequestBody PlaylistSongAddRequest request) {
         playlistService.addSongToPlaylist(playlistId, authDetails.getUserId(), request);
@@ -71,7 +71,7 @@ public class PlaylistController {
 
     @DeleteMapping("/{playlist-id}/songs/{song-id}")
     public ResponseEntity<Void> removeSongFromPlaylist(
-            @PathVariable(name = "playlist-id") String playlistId,
+            @PathVariable(name = "playlist-id") Long playlistId,
             @PathVariable(name = "song-id") String songId,
             @AuthenticationPrincipal AuthDetails authDetails) {
         playlistService.removeSongFromPlaylist(playlistId, songId, authDetails.getUserId());

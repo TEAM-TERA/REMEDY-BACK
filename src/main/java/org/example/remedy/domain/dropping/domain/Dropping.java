@@ -1,47 +1,59 @@
 package org.example.remedy.domain.dropping.domain;
 
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.example.remedy.domain.dropping.application.exception.InvalidDroppingTypeException;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "droppings")
 @Getter
-@Document(collection = "droppings")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Dropping {
     @Id
-    private String droppingId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "dropping_id")
+    private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dropping_type", nullable = false)
     private DroppingType droppingType;
 
+    @Type(JsonBinaryType.class)
+    @Column(name = "payload", columnDefinition = "jsonb")
     private Payload payload;
 
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
     private String content;
 
+    @Column(nullable = false)
     private Double latitude;
 
+    @Column(nullable = false)
     private Double longitude;
 
+    @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
     private LocalDateTime expiryDate;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private boolean isDeleted = false;
 
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-    private GeoJsonPoint location;
-
-    protected Dropping() {}
-
-    public Dropping(DroppingType droppingType, Payload payload, Long userId, String content, Double latitude, Double longitude, String address, LocalDateTime expiryDate, LocalDateTime createdAt, boolean isDeleted) {
+    public Dropping(DroppingType droppingType, Payload payload, Long userId,
+                    String content, Double latitude, Double longitude,
+                    String address, LocalDateTime expiryDate, LocalDateTime createdAt, boolean isDeleted) {
         this.droppingType = droppingType;
         this.payload = payload;
         this.userId = userId;
@@ -50,9 +62,8 @@ public class Dropping {
         this.longitude = longitude;
         this.address = address;
         this.expiryDate = expiryDate;
-        this.createdAt = createdAt;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
         this.isDeleted = isDeleted;
-        this.location = new GeoJsonPoint(longitude, latitude);
     }
 
     private VoteDroppingPayload asVotePayload() {
@@ -93,7 +104,7 @@ public class Dropping {
         return !isDeleted && !isExpired();
     }
 
-	public boolean isMyDropping(Long userId) {
-		return this.userId.equals(userId);
-	}
+    public boolean isMyDropping(Long userId) {
+        return this.userId.equals(userId);
+    }
 }

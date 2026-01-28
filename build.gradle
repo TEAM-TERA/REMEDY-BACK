@@ -27,8 +27,9 @@ repositories {
 }
 
 dependencies {
-	// MONGO
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    //Hypersistence Utils
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
 
 	// REDIS
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'

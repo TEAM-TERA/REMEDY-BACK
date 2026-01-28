@@ -18,11 +18,11 @@ public class Like {
     private User user;
 
     @Column(name = "dropping_id", nullable = false)
-    private String droppingId;
+    private Long droppingId;
 
     protected Like() {}
 
-    public Like(User user, String droppingId) {
+    public Like(User user, Long droppingId) {
         this.user = user;
         this.droppingId = droppingId;
     }
